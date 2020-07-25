@@ -10,7 +10,7 @@ Clone repo and run `./install.sh`
 
 Install without git
 ```bash
-cd; mkdir dotfiles; cd dotfiles; \
+cd; mkdir Dotfiles; cd Dotfiles; \
 curl -#L https://github.com/dodecasphere/setup/tarball/master | \
 tar -xzv --strip-components 1; \
 ./install.sh
