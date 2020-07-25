@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+export PATH=/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH
+
+# Add Composer's global binaries to PATH
+export PATH=$PATH:~/.composer/vendor/bin
+
+# PHP
+# export PATH=$(brew --prefix homebrew/php/php72)/bin:$PATH

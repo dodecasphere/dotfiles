@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+PROJECTPATH="."
+MESSAGE="Initial commit"
+QUIET=false
+DEVELOP=false
+AUTH=true
+NODE=false
+CODEEDITOR="code"
+BROWSER=""
+LINK=true
+SECURE=false
+FRONTEND="vue"
+CREATE_DATABASE=true
+DB_USERNAME="root"
+DB_PASSWORD=""

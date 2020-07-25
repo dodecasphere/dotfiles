@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+# alias dodec='ssh serveradmin%dodecasphere.com@s162009.gridserver.com'
+alias crestlite-remote='ssh -t forge@159.65.236.104 "cd crestlite.com ; bash"'
+alias clr='ssh -t forge@159.65.236.104 "cd crestlite.com ; bash"'
+
+alias smart-mirror-remote='ssh -t forge@159.203.182.250 "cd weaux.com ; bash"'
+alias smr='ssh -t forge@159.203.182.250 "cd weaux.com ; bash"'
+
+alias family-remote='ssh -t forge@159.203.182.250 "cd dulle.family ; bash"'
+alias fr='ssh -t forge@159.203.182.250 "cd dulle.family ; bash"'
+
+alias billowing-pebble='ssh forge@67.205.154.110' # billowing-pebble server
+alias bp='ssh forge@67.205.154.110' # billowing-pebble server
+
+alias dns='ssh root@45.55.83.102'
+
+# Local Raspberry Pis
+alias living-room-zero='ssh pi@zero-living-room.local'
+alias lrz='ssh pi@zero-living-room.local'
+
+alias bedroom-zero='ssh pi@zero-bedroom.local'
+alias brz='ssh pi@zero-bedroom.local'
+
+alias lauras-room-zero='ssh pi@zero-lauras-room.local'
+alias lbrz='ssh pi@zero-lauras-room.local'
+
+alias kitchen-zero='ssh pi@zero-kitchen.local'
+alias kz='ssh pi@zero-kitchen.local'
+
+alias balcony-zero='ssh pi@zero-balcony.local'
+alias balcz='ssh pi@zero-balcony.local'
+
+alias smart-mirror-zero='ssh pi@zero-smart-mirror.local'
+alias smz='ssh pi@zero-smart-mirror.local'
+
+alias smart-mirror-pi='ssh pi@smart-mirror.local'
+alias smp='ssh pi@smart-mirror.local'

@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+
+# Run additional commands as you would from the command line.
+echo "
+Installing Composer Dependencies
+"
+composer config repositories.local '{"type": "path", "url": "../Laravel Packages/laravel-presets"}' --file composer.json
+composer require dodecasphere/laravel-presets
+
+# Install my presets from local package
+echo "
+Installing My Laravel Presets
+"
+php artisan ui mine
+
+# Update composer dependencies
+echo "
+Updating Composer
+"
+composer update
+
+# Install NPM dependencies
+echo "
+Installing NPM stuff
+"
+npm install
+
+# Compile
+echo "
+Compiling Assets
+"
+npm run dev
+
+
+
+# To copy standard files to new lambo project place them in ~/.lambo/includes directory.
+# echo "
+# Copying Include Files
+# "
+# cp -R ~/.lambo/includes/ $PROJECTPATH
+
+# To add a git commit after given modifications
+echo "
+Committing after modifications to Git
+"
+git add .
+git commit -am "Initialize Composer dependencies and additional files."
+

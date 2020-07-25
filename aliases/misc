@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+# Enable aliases to be sudo’ed
+alias sudo='sudo '
+
+# Print each PATH entry on a separate line
+alias path='echo -e ${PATH//:/\\n}'
+
+alias crons='crontab -l'
+alias editcrons='crontab -e'
+
+# Super user alias
+alias _='sudo'
+alias please='sudo $(history -p !!)'
+alias redo='sudo $(history -p !!)'
+
+# Replace rm with message to use trash
+# alias rm='echo "Nope. Use trash instead."'
+
+# Reload settings
+alias reload='. ~/.bash_profile'
+alias re='. ~/.bash_profile'
+
+# Always enable colored `grep` output
+# Note: `GREP_OPTIONS="--color=auto"` is deprecated, hence the alias usage.
+alias grep='grep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
+
+alias sshcopy='pbcopy < ~/.ssh/id_rsa.pub'
+
+alias ip='dig +short myip.opendns.com @resolver1.opendns.com'
+alias localip="ipconfig getifaddr en0"
+
+# Recover space by removing unavailable Xcode Simulators
+alias removesims='xcrun simctl delete unavailable'
+
+# strongDM aliases for accessing the read-only console = BRAZE
+alias us01='sdm ssh read-only-console-01'
+alias us03='sdm ssh read-only-console-03'
+alias eu01='sdm ssh read-only-console-eu'

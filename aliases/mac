@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+
+if [ "$(uname)" = "Darwin" ]; then
+  alias update="brewup; npm install npm -g; npm update -g; csu; cgu; dep self-update --upgrade; sudo softwareupdate -i -a"
+  
+  alias preview='open -a $PREVIEW'
+  alias safari="open -a safari"
+  alias firefox="open -a firefox"
+  alias chrome="open -a google\ chrome"
+  # alias gx="gitx --commit"
+  alias gx="fork commit"
+  alias gitx="fork ."
+  alias gu="gitup commit"
+  alias f="open -a Finder "
+  alias ql="qlmanage -p"
+
+  # Stuff I never really use but cannot delete either because of http://xkcd.com/530/
+  alias stfu="osascript -e 'set volume output muted true'"
+  alias pumpitup="osascript -e 'set volume output volume 100'"
+
+  # Lock macOS
+  alias lock='/System/Library/CoreServices/Menu\ Extras/User.menu/Contents/Resources/CGSession -suspend'
+  alias afk='/System/Library/CoreServices/Menu\ Extras/User.menu/Contents/Resources/CGSession -suspend'
+
+  # Empty the Trash on all mounted volumes and the main HDD.
+  # Also, clear Apple’s System Logs to improve shell startup speed.
+  # Finally, clear download history from quarantine. https://mths.be/bum
+  alias emptytrash="sudo rm -rfv /Volumes/*/.Trashes; sudo rm -rfv ~/.Trash; sudo rm -rfv /private/var/log/asl/*.asl; sqlite3 ~/Library/Preferences/com.apple.LaunchServices.QuarantineEventsV* 'delete from LSQuarantineEvent'"
+
+  # Hide/show all desktop icons (useful when presenting)
+  alias hidedesktop="defaults write com.apple.finder CreateDesktop -bool false && killall Finder"
+  alias showdesktop="defaults write com.apple.finder CreateDesktop -bool true && killall Finder"
+
+  # Show/hide hidden files in the Finder
+  alias showfiles="defaults write com.apple.finder AppleShowAllFiles -bool true && killall Finder"
+  alias hidefiles="defaults write com.apple.finder AppleShowAllFiles -bool false && killall Finder"
+
+  alias mac-hide="chflags hidden"
+  alias mac-show="chflags nohidden"
+
+  alias mac-fast-terminal='sudo rm -rf /private/var/log/asl/*.asl'
+
+  alias mac-fix-open-with-duplicated='/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/LaunchServices.framework/Versions/A/Support/lsregister -kill -r -domain local -domain user && killall Finder && echo "Open With has been rebuilt, Finder will relaunch"'
+
+  alias mac-openports='sudo lsof -iTCP -sTCP:LISTEN -P'
+
+  # Recursively delete `.DS_Store` files
+  alias mac-ds-store-cleanup="find . -name '*.DS_Store' -type f -ls -delete"
+
+  alias mac-mac-address-wired="ifconfig en0 | grep ether"
+  alias mac-mac-address-wireless="ifconfig en1 | grep ether"
+
+  alias mac-screenshot-no-shadow-enable="defaults write com.apple.screencapture disable-shadow -bool true && killall SystemUIServer"
+  alias mac-screenshot-no-shadow-disable="defaults write com.apple.screencapture disable-shadow -bool false && killall SystemUIServer"
+
+  alias electron-apps="find /Applications/ -type d -name *Electron* | sed -E 's/\/Applications\///g' | sed -E 's/\.app.+//g'"
+fi

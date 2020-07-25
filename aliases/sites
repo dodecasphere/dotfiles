@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+# Website Project shortcuts
+alias conc="cd ~/Dropbox/Sites/Concrete"
+alias dra="cd ~/Dropbox/Sites/DRA-4.0.11"
+alias dranew="cd ~/Dropbox/Sites/DRA"
+alias cl="cd ~/Dropbox/Sites/CrestLite55"
+alias sm="cd ~/Dropbox/Sites/smart-mirror"
+alias fam="cd ~/Dropbox/Sites/Family"
+
+# Other project shortcuts
+alias dots="cd ~/Dropbox/Settings/dotfiles" 
+alias bs="cd ~/Dropbox/Settings/bootstrap"
+
+# Braze-specific
+alias dev="cd ~/Documents/appboy-localdev"
+alias success="cd ~/Documents/success"
+alias docs="cd ~/Documents/braze-docs"
+
+alias docs-serve='docs_server'
+
+function docs_server() {
+    docs
+    rake
+}

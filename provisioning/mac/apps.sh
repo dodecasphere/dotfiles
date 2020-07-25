@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+
+# 
+# Install Brew Cask Apps
+# 
+
+doing "Installing Apps..."
+
+cask "dropbox"
+
+cask "1password"
+cask "1password-cli"
+cask "alfred"
+cask "adobe-creative-cloud" # open '/usr/local/Caskroom/adobe-creative-cloud/latest/Creative Cloud Installer.app'
+# cask "aerial"
+# cask "balsamiq-mockups"
+cask "bartender"
+# cask "charles"
+cask "clipy"
+cask "coconutbattery"; read -p "Coconutbattery: Set menubar to display '%t  •  %r%s  •  %p%' [Press any key...]" -n 1 -r
+cask "dash"
+# cask "divvy"
+cask "firefox"
+# cask "flinto"
+# cask "flux"
+cask "github"
+cask "gitter"
+cask "google-chrome"; read -p "Chrome: Remember to remove from starting at login. [Press any key...]" -n 1 -r
+cask "grandperspective"
+# cask "hyper"
+cask "imageoptim"
+cask "iterm2"
+cask "jiggler"
+cask "keepingyouawake"
+# cask "lingon-x"
+# cask "macdown"
+# cask "postico"
+cask "postman"
+# cask "psequel"
+cask "qlcolorcode"
+cask "qlmarkdown"
+cask "quicklook-csv"
+cask "quicklook-json"
+cask "qlimagesize"
+cask "qlvideo"
+cask "qlstephen"
+cask "raspberry-pi-imager"
+cask "rocket"
+# cask "sip"
+# cask "sketch"
+cask "slack"
+cask "spotify"
+# cask "spectacle"
+# cask "sublime-text"
+cask "tableplus"
+cask "tinkerwell"
+cask "the-unarchiver"
+cask "transmission" # uTorrent
+cask "transmit"
+# cask "tunnelblick"
+# cask "vagrant"
+# cask "vagrant-manager"
+# cask "virtualbox"
+cask "visual-studio-code"
+# cask "zeplin"
+cask "whatsapp"
+cask "zoomus"
