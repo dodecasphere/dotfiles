@@ -76,7 +76,7 @@ fi;
 
 # Highlight the hostname when connected via SSH.
 if [[ "${SSH_TTY}" ]]; then
-    remote="${bold}${blue} ==> ssh@$(ifconfig | grep "inet " | grep -v 127.0.0. | awk '{print $2}') ${white}: ${reset}";
+    remote="${bold}${blue} ==> ssh@$(dig +short myip.opendns.com @resolver1.opendns.com) ${white}: ${reset}";
 else
     remote="";
 fi;

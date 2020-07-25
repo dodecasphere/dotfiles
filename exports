@@ -11,7 +11,6 @@ export CLICOLOR=1
 # export LSCOLORS=ExFxCxDxBxegedabagacad # light background
 # export LSCOLORS=gxBxhxDxfxhxhxhxhxcxcx # dark background
 
-export GREP_OPTIONS='--color=always'
 export GREP_COLOR='1;35;40'
 
 # Enable persistent REPL history for `node`.
