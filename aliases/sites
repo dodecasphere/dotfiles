@@ -8,10 +8,6 @@ alias cl="cd ~/Dropbox/Sites/CrestLite55"
 alias sm="cd ~/Dropbox/Sites/smart-mirror"
 alias fam="cd ~/Dropbox/Sites/Family"
 
-# Other project shortcuts
-alias dots="cd ~/Dropbox/Settings/dotfiles" 
-alias bs="cd ~/Dropbox/Settings/bootstrap"
-
 # Braze-specific
 alias dev="cd ~/Documents/appboy-localdev"
 alias success="cd ~/Documents/success"

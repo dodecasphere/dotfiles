@@ -20,6 +20,7 @@ alias db="cd ~/Dropbox"
 alias dl="cd ~/Downloads"
 alias dt="cd ~/Desktop"
 alias s="cd ~/Sites"
+alias dots="cd ~/Dotfiles"
 
 alias ..='cd ..'
 alias ...='cd ../..'
