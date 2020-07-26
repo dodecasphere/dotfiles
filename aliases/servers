@@ -13,6 +13,12 @@ alias fr='ssh -t forge@159.203.182.250 "cd dulle.family ; bash"'
 alias billowing-pebble='ssh forge@67.205.154.110' # billowing-pebble server
 alias bp='ssh forge@67.205.154.110' # billowing-pebble server
 
+alias mellow-lake='ssh forge@159.65.236.104' # billowing-pebble server
+alias ml='ssh forge@159.65.236.104' # billowing-pebble server
+
+alias smart-mirror='ssh forge@159.203.182.250' # smart-mirror server
+# alias sm='ssh forge@159.203.182.250' # smart-mirror server
+
 alias dns='ssh root@45.55.83.102'
 
 # Local Raspberry Pis

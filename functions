@@ -108,7 +108,7 @@ function aka() {
     if [ $# -eq 0 ]; then
         alias;
     else
-        alias | grep $@;
+        alias | grep $@ --color=auto;
     fi;
 }
 
