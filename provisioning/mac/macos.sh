@@ -322,7 +322,7 @@ sudo chflags uchg /private/var/vm/sleepimage
 doing "Setting the icon size of Dock items to 64 pixels, 72 magnified..."
 defaults write com.apple.dock magnification -bool true
 defaults write com.apple.dock tilesize -int 64
-defaults write com.apple.dock largesize -int 72
+defaults write com.apple.dock largesize -int 80
 
 # Autohide the Dock
 doing "Setting the dock to autohide..."
