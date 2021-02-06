@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 
 # Run additional commands as you would from the command line.
-echo "
-Installing Composer Dependencies
-"
-composer config repositories.local '{"type": "path", "url": "../Laravel Packages/laravel-presets"}' --file composer.json
-composer require dodecasphere/laravel-presets
+# echo "
+# Installing Composer Dependencies
+# "
+# composer config repositories.local '{"type": "path", "url": "../Laravel Packages/laravel-presets"}' --file composer.json
+# composer require dodecasphere/laravel-presets
 
-# Install my presets from local package
-echo "
-Installing My Laravel Presets
-"
-php artisan ui mine
+# # Install my presets from local package
+# echo "
+# Installing My Laravel Presets
+# "
+# php artisan ui mine
 
 # Update composer dependencies
 echo "
