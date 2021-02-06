@@ -257,9 +257,9 @@ sudo rm -rf ~/Sites
 ln -s ~/Dropbox/Sites ~/Sites
 
 # Symlink ~/Library/Fonts to dropbox
-doing "Linking ~/Library/Fonts to Dropbox..."
-sudo rm -rf ~/Library/Fonts
-ln -s ~/Dropbox/Fonts/installed ~/Library/Fonts
+# doing "Linking ~/Library/Fonts to Dropbox..."
+# sudo rm -rf ~/Library/Fonts
+# ln -s ~/Dropbox/Fonts/installed ~/Library/Fonts
 
 ###############################################################################
 # Energy saving                                                               #
