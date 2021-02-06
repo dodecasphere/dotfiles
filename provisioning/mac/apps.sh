@@ -19,6 +19,7 @@ cask "bartender"
 cask "clipy"
 cask "coconutbattery"; read -p "Coconutbattery: Set menubar to display '%t  •  %r%s  •  %p%' [Press any key...]" -n 1 -r
 cask "dash"
+cask "dbngin"
 # cask "divvy"
 cask "firefox"
 # cask "flinto"
