@@ -36,3 +36,5 @@ else
     check_for_xcode
   done
 fi
+
+sudo xcodebuild -license
