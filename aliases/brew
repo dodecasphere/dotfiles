@@ -4,7 +4,7 @@ alias brewup='brew update && brew upgrade && brew cleanup && brew cask upgrade'
 
 # Check Cask version
 function cask_version_available() {
-    brew cask info "$1" | head -n 1 | cut -d " " -f 2
+    brew info "$1" | head -n 1 | cut -d " " -f 2
 }
 
 # Check Cask version
@@ -14,5 +14,5 @@ function cask_version_installed() {
 
 # Get Cask staging location
 function cask_staging_location() {
-    brew cask doctor | grep -A1 '==> Homebrew-Cask Staging Location:' | tail -n1
+    brew doctor | grep -A1 '==> Homebrew-Cask Staging Location:' | tail -n1
 }
