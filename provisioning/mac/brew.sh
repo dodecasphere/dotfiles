@@ -7,7 +7,7 @@
 
 # Check Cask version
 function cask_version_available() {
-    brew cask info "$1" | head -n 1 | cut -d " " -f 2
+    brew info "$1" | head -n 1 | cut -d " " -f 2
 }
 
 # Check Cask version
@@ -18,7 +18,7 @@ function cask_version_installed() {
 
 # Get Cask staging location
 function cask_staging_location() {
-    brew cask doctor | grep -A1 '==> Homebrew Cask Staging Location:' | tail -n1
+    brew doctor | grep -A1 '==> Homebrew Cask Staging Location:' | tail -n1
 }
 
 # Install brew app
@@ -35,10 +35,10 @@ function formula {
 # Install brew cask app
 function cask {
   aver=`cask_version_available $1`
-  doing "Installing Homebrew Cask [$1 $aver]..."
-  brew cask list | grep "$1" > /dev/null 2>&1
+  doing "Installing Homebrew Application [$1 $aver]..."
+  brew list | grep "$1" > /dev/null 2>&1
   if [[ $? -ne 0 ]]; then
-    if [ "yes" == $(ask_yes_or_no "Continue installing $1 $aver?") ]; then brew cask install $1; fi
+    if [ "yes" == $(ask_yes_or_no "Continue installing $1 $aver?") ]; then brew install $1; fi
   else
     iver=`cask_version_installed $1`
     echo "$1 $iver already installed"
@@ -60,8 +60,8 @@ brew tap homebrew/cask
 brew tap homebrew/cask-versions
 brew tap homebrew/cask-fonts
 
-brew tap adoptopenjdk/openjdk
-brew cask install adoptopenjdk13
+# brew tap adoptopenjdk/openjdk
+# brew cask install adoptopenjdk13
 
 doing "Checking in with the brew doctor..."
 brew doctor

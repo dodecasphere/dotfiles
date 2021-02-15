@@ -15,7 +15,6 @@
 (crontab -l 2>/dev/null; echo "0 1 * * * brew update >> /dev/null 2>&1") | crontab
 (crontab -l 2>/dev/null; echo "5 1 * * * brew upgrade >> /dev/null 2>&1") | crontab
 (crontab -l 2>/dev/null; echo "30 1 * * * brew cleanup >> /dev/null 2>&1") | crontab
-(crontab -l 2>/dev/null; echo "35 1 * * * brew cask upgrade >> /dev/null 2>&1") | crontab
 
 (crontab -l 2>/dev/null; echo "* * * * * cd ~/Dropbox/Sites/smart-mirror && php artisan schedule:run >> /dev/null 2>&1") | crontab
 (crontab -l 2>/dev/null; echo "* * * * * cd ~/Dropbox/Sites/family && php artisan schedule:run >> /dev/null 2>&1") | crontab
