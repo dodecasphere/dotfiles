@@ -38,7 +38,7 @@ function cask {
   doing "Installing Homebrew Application [$1 $aver]..."
   brew list | grep "$1" > /dev/null 2>&1
   if [[ $? -ne 0 ]]; then
-    if [ "yes" == $(ask_yes_or_no "Continue installing $1 $aver?") ]; then brew install $1; fi
+    if [ "yes" == $(ask_yes_or_no "Continue installing $1 $aver?") ]; then brew install --cask $1; fi
   else
     iver=`cask_version_installed $1`
     echo "$1 $iver already installed"
