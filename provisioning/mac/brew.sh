@@ -56,6 +56,9 @@ else
   brew upgrade
 fi
 
+echo 'eval $(/opt/homebrew/bin/brew shellenv)' >> /Users/michaeldulle/.zprofile
+eval $(/opt/homebrew/bin/brew shellenv)
+
 brew tap homebrew/cask
 brew tap homebrew/cask-versions
 brew tap homebrew/cask-fonts
