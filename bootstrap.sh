@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 #
-# bootstrap.sh — set up a brand-new Mac from this (private) dotfiles repo.
+# bootstrap.sh — clone this (public) dotfiles repo and link it on a fresh machine.
 #
-# Uses the GitHub CLI's browser device-flow to authenticate — no token to create
-# or store. That login also unlocks the private dotfiles-secrets repo that the
-# provisioner pulls SSH keys/tokens from.
+# Deliberately minimal: it only needs git to clone the repo. Everything else —
+# Homebrew, gh, languages, apps, and the private secrets (via `gh auth login`) —
+# is installed by `provision.sh` afterward.
 #
-# This repo is public, so run it straight from its raw URL on a fresh machine:
+# Run it straight from the raw URL on a fresh machine:
 #
 #   curl -fsSL https://raw.githubusercontent.com/dodecasphere/dotfiles/master/bootstrap.sh | bash
 #
@@ -15,61 +15,61 @@
 
 set -euo pipefail
 
-REPO="dodecasphere/dotfiles"
+REPO_URL="https://github.com/dodecasphere/dotfiles.git"
 DOTFILES_DIR="$HOME/Dotfiles"
 
 info() { printf '\n\033[1;32m==> %s\033[0m\n' "$1"; }
 
-# 1. Xcode Command Line Tools (gives us git, compilers, etc.)
-if xcode-select -p &>/dev/null; then
-  info "Xcode Command Line Tools already installed"
-else
-  info "Installing Xcode Command Line Tools — accept the GUI prompt, then wait…"
-  xcode-select --install || true
-  until xcode-select -p &>/dev/null; do sleep 5; done
+# Ensure git is available. On macOS git ships with the Xcode Command Line Tools
+# (there's no standalone git — a bare `git` on a fresh Mac just triggers their
+# installer), so install those if git isn't found yet.
+if ! command -v git &>/dev/null; then
+  case "$(uname -s)" in
+    Darwin)
+      info "Installing Xcode Command Line Tools (provides git) — accept the prompt, then wait…"
+      xcode-select --install || true
+      until command -v git &>/dev/null; do sleep 5; done
+      ;;
+    Linux)
+      info "Installing git…"
+      if   command -v apt-get &>/dev/null; then sudo apt-get update && sudo apt-get install -y git
+      elif command -v dnf     &>/dev/null; then sudo dnf install -y git
+      elif command -v yum     &>/dev/null; then sudo yum install -y git
+      elif command -v pacman  &>/dev/null; then sudo pacman -Sy --noconfirm git
+      elif command -v zypper  &>/dev/null; then sudo zypper install -y git
+      elif command -v apk     &>/dev/null; then sudo apk add git
+      else
+        echo "git is missing and no supported package manager was found — install git manually and re-run." >&2
+        exit 1
+      fi
+      ;;
+    *)
+      echo "Unsupported OS '$(uname -s)' — install git manually and re-run." >&2
+      exit 1
+      ;;
+  esac
 fi
 
-# 2. Homebrew (public install script — no repo needed)
-if ! command -v brew &>/dev/null; then
-  info "Installing Homebrew…"
-  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-fi
-# Load brew into this shell.
-if [ -x /opt/homebrew/bin/brew ]; then
-  eval "$(/opt/homebrew/bin/brew shellenv)"
-elif [ -x /usr/local/bin/brew ]; then
-  eval "$(/usr/local/bin/brew shellenv)"
-fi
-
-# 3. GitHub CLI (public formula)
-if ! command -v gh &>/dev/null; then
-  info "Installing GitHub CLI…"
-  brew install gh
-fi
-
-# 4. Authenticate via browser device-flow (skip if already logged in).
-if gh auth status &>/dev/null; then
-  info "Already authenticated with GitHub"
-else
-  info "Authenticating with GitHub — a browser window will open to authorize…"
-  gh auth login --hostname github.com --git-protocol https --web
-fi
-# Make sure git uses gh's credentials for HTTPS operations.
-gh auth setup-git
-
-# 5. Clone (or update) the dotfiles repo.
+# Clone (or update) the public repo — no auth needed.
 if [ -d "$DOTFILES_DIR/.git" ]; then
-  info "Dotfiles already present at $DOTFILES_DIR — pulling latest…"
+  info "Dotfiles already present at ${DOTFILES_DIR} — pulling latest…"
   git -C "$DOTFILES_DIR" pull --ff-only || true
 else
-  info "Cloning $REPO → $DOTFILES_DIR…"
-  gh repo clone "$REPO" "$DOTFILES_DIR"
+  info "Cloning dotfiles → ${DOTFILES_DIR}…"
+  git clone "$REPO_URL" "$DOTFILES_DIR"
 fi
 
-# 6. Link the dotfiles into $HOME.
+# Link the dotfiles into $HOME.
 cd "$DOTFILES_DIR"
 info "Linking dotfiles (install.sh)…"
 ./install.sh
 
+# Print the right provision command for this OS.
+provision_flag=""   # stays defined for any OS, so the printf below is safe under `set -u`
+case "$(uname -s)" in
+  Darwin) provision_flag="--mac" ;;
+  Linux)  provision_flag="--linux" ;;
+esac
+
 info "Bootstrap complete."
-printf '\nNext, provision the machine when you are ready:\n  cd %s && ./provision.sh --mac\n\n' "$DOTFILES_DIR"
+printf '\nNext, provision the machine when you are ready:\n  cd %s && ./provision.sh %s\n\n' "$DOTFILES_DIR" "$provision_flag"
