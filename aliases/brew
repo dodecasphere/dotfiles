@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+alias brewup='brew update && brew upgrade && brew cleanup'
+
+# Check Cask version
+function cask_version_available() {
+    brew info --cask "$1" | head -n 1 | cut -d " " -f 2
+}
+
+# Check Cask version
+function cask_version_installed() {
+    ls -1 "$(cask_staging_location)/$1" | tr '\n' ' ' | sed -e 's/ $//'
+}
+
+# Get Cask staging location
+function cask_staging_location() {
+    brew doctor | grep -A1 '==> Homebrew-Cask Staging Location:' | tail -n1
+}

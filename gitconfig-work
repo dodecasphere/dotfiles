@@ -1,0 +1,17 @@
+[user]
+	name = Mike Dulle
+	email = michael.dulle@jacquard.com
+[core]
+	autocrlf = input
+	excludesfile = ~/.gitignore
+	sshCommand = ssh -i ~/.ssh/id_rsa_work
+[color]
+	ui = true
+[filter "lfs"]
+	process = git-lfs filter-process
+	required = true
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+
+[credential]
+        helper = store

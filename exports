@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+
+# Suppress the Mac Catalina zsh as default shell warning
+export BASH_SILENCE_DEPRECATION_WARNING=1
+
+# Make vim the default editor.
+export EDITOR='nano';
+
+export CLICOLOR=1
+# already defined in .directories
+# export LSCOLORS=ExFxCxDxBxegedabagacad # light background
+# export LSCOLORS=gxBxhxDxfxhxhxhxhxcxcx # dark background
+
+export GREP_COLOR='1;35;40'
+
+# Enable persistent REPL history for `node`.
+export NODE_REPL_HISTORY=~/.node_history;
+# Allow 32³ entries; the default is 1000.
+export NODE_REPL_HISTORY_SIZE='32768';
+# Use sloppy mode by default, matching web browsers.
+export NODE_REPL_MODE='sloppy';
+
+# Make Python use UTF-8 encoding for output to stdin, stdout, and stderr.
+export PYTHONIOENCODING='UTF-8';
+
+# history handling
+export HISTCONTROL='ignoreboth'
+export HISTSIZE=500000
+export HISTFILESIZE="${HISTSIZE}"
+export AUTOFEATURE=true autotest
+
+# Prefer US English and use UTF-8
+export LANG='en_US.UTF-8'
+export LANGUAGE='en_US'
+export LC_CTYPE='en_US.UTF-8'
+export LC_ALL='en_US.UTF-8'
+
+# ICU
+export LDFLAGS="-L$(brew --prefix)/opt/icu4c/lib"
+export CPPFLAGS="-I$(brew --prefix)/opt/icu4c/include"
+export PKG_CONFIG_PATH="/opt/homebrew/opt/icu4c/lib/pkgconfig"
+export PATH="$(brew --prefix)/opt/icu4c/bin:$PATH"
+export PATH="$(brew --prefix)/opt/icu4c/sbin:$PATH"
+
+# Identify OS and Machine
+export OS=`uname -s | sed -e 's/ *//g;y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/'`
+export OSVERSION=`uname -r`; OSVERSION=`expr "$OSVERSION" : '[^0-9]*\([0-9]*\.[0-9]*\)'`
+export MACHINE=`uname -m | sed -e 's/ *//g;y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/'`
+export PLATFORM="$MACHINE-$OS-$OSVERSION"
+
+# Disabling Analytics for homebrew
+export HOMEBREW_NO_ANALYTICS=1
+export HOMEBREW_INSTALL_CLEANUP=1
+
+# Disabling some shell-check errors
+export SHELLCHECK_OPTS="-e SC1090"
+
+# Adding Support for other OSes
+export PREVIEW="less"
+[ -s /usr/bin/gloobus-preview ] && export PREVIEW="gloobus-preview"
+[ -s /Applications/Preview.app ] && export PREVIEW="/Applications/Preview.app"
+
+# Highlight section titles in manual pages.
+export LESS_TERMCAP_md="${yellow}";
+
+# Don’t clear the screen after quitting a manual page.
+export MANPAGER='less -X';

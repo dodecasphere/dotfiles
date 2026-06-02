@@ -1,0 +1,111 @@
+#!/usr/bin/env zsh
+
+# Zsh port of `bash_prompt`.
+# Shell prompt based on the Solarized Dark theme.
+# Heavily inspired by @necolas’s prompt: https://github.com/necolas/dotfiles
+# iTerm → Profiles → Text → use 13pt Monaco with 1.1 vertical spacing.
+#
+# Color variables come from `~/.colors` (sourced before this file). They hold
+# raw escape sequences, so each one is wrapped in %{ %} below to mark it as
+# zero-width — otherwise zsh miscalculates the prompt width.
+
+# Command substitution inside PROMPT requires this so prompt_git/random_emoji
+# re-run on every redraw (Bash got this for free via `\$(...)` in PS1).
+setopt PROMPT_SUBST
+
+if [[ $COLORTERM = gnome-* && $TERM = xterm ]] && infocmp gnome-256color >/dev/null 2>&1; then
+    export TERM='gnome-256color';
+elif infocmp xterm-256color >/dev/null 2>&1; then
+    export TERM='xterm-256color';
+fi;
+
+EMOJI=(🐦 🚀 🐞 🎨 🍕 🐭 👽 ☕ 💀 🐷 🐼 🐶 🐸 🐧 🐳 🍔 🍻 💰 💎 💾 🍪 🌞 🐌 🐓 🍄 )
+
+function random_emoji {
+  # zsh arrays are 1-indexed, so offset the modulo result by 1.
+  echo -n "${EMOJI[$RANDOM % ${#EMOJI[@]} + 1]}   "
+}
+
+prompt_git() {
+    local s='';
+    local branchName='';
+
+    # Check if the current directory is in a Git repository.
+    # (zsh's `[` builtin only understands `=`, not bash's `==`, so use `[[ ]]`.)
+    if [[ $(git rev-parse --is-inside-work-tree &>/dev/null; echo "${?}") == '0' ]]; then
+
+        # check if the current directory is in .git before running git checks
+        if [[ "$(git rev-parse --is-inside-git-dir 2> /dev/null)" == 'false' ]]; then
+
+            # Ensure the index is up to date.
+            git update-index --really-refresh -q &>/dev/null;
+
+            # Check for uncommitted changes in the index.
+            if ! $(git diff --quiet --ignore-submodules --cached); then
+                s+='+';
+            fi;
+
+            # Check for unstaged changes.
+            if ! $(git diff-files --quiet --ignore-submodules --); then
+                s+='!';
+            fi;
+
+            # Check for untracked files.
+            if [ -n "$(git ls-files --others --exclude-standard)" ]; then
+                s+='?';
+            fi;
+
+            # Check for stashed files.
+            if $(git rev-parse --verify refs/stash &>/dev/null); then
+                s+='$';
+            fi;
+
+        fi;
+
+        # Get the short symbolic ref.
+        # If HEAD isn’t a symbolic ref, get the short SHA for the latest commit
+        # Otherwise, just give up.
+        branchName="$(git symbolic-ref --quiet --short HEAD 2> /dev/null || \
+            git rev-parse --short HEAD 2> /dev/null || \
+            echo '(unknown)')";
+
+        [ -n "${s}" ] && s=" [${s}] ⚡";
+
+        echo -e "${1}${branchName}${2}${s}";
+    else
+        return;
+    fi;
+}
+
+# Highlight the user name when logged in as root.
+if [[ "${USER}" == "root" ]]; then
+    userStyle="${red}";
+else
+    userStyle="${cyan}";
+fi;
+
+# Highlight the hostname when connected via SSH.
+if [[ "${SSH_TTY}" ]]; then
+    remote="${bold}${blue} ==> ssh@$(dig +short myip.opendns.com @resolver1.opendns.com) ${white}: ${reset}";
+else
+    remote="";
+fi;
+
+# Set the terminal title and prompt.
+# %1~ = current dir basename (Bash \W); %n = user (\u); %m = short host (\h);
+# %~ = full working dir with ~ (\w).
+PROMPT=$'%{\e]0;%1~\a%}'                          # working directory base name in title
+PROMPT+='%{'"${remote}"'%}'
+PROMPT+='%{'"${bold}"'%}'
+PROMPT+='%{'"${userStyle}"'%}%n'                  # username
+PROMPT+='%{'"${white}"'%} @ '
+PROMPT+='%{'"${yellow}"'%}%m'                     # host
+PROMPT+='%{'"${white}"'%} in '
+PROMPT+='%{'"${green}"'%}%~'                      # working directory full path
+PROMPT+='$(prompt_git "%{'"${white}"'%} on %{'"${violet}"'%}" "%{'"${blue}"'%}")'  # Git details
+PROMPT+=$'\n'
+PROMPT+='$(random_emoji)%{'"${reset}"'%}'        # random emoji (and reset color)
+export PROMPT
+
+PROMPT2='%{'"${yellow}"'%}→ %{'"${reset}"'%}'
+export PROMPT2

@@ -1,0 +1,30 @@
+[user]
+	name = Mike Dulle
+	email = michael.dulle@gmail.com
+[core]
+	autocrlf = input
+	excludesfile = ~/.gitignore
+[color]
+	ui = true
+[filter "lfs"]
+	process = git-lfs filter-process
+	required = true
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+
+[includeIf "gitdir:~/Sites/"]
+        path = ~/.gitconfig-work
+
+[includeIf "gitdir:~/Dotfiles/"]
+        path = ~/.gitconfig-personal
+
+[credential]
+        helper = osxkeychain
+[init]
+	defaultBranch = main
+[credential "https://github.com"]
+	helper = 
+	helper = !/opt/homebrew/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper = 
+	helper = !/opt/homebrew/bin/gh auth git-credential

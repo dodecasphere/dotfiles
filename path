@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+# Add `~/bin` to the `$PATH`
+export PATH=/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH
+
+export PATH="$HOME/bin:$PATH"
+export PATH="/opt/homebrew/bin:$PATH"
+export PATH="/opt/homebrew/sbin:$PATH"
+
+# PHP
+export PATH="$(brew --prefix)/opt/php/bin:$PATH"
+
+# Ruby
+export PATH="$(brew --prefix)/opt/ruby/bin:$PATH"
+export PATH="$(brew --prefix)/lib/ruby/gems/3.0.0/bin:$PATH"
+
+# Add Composer's global binaries to PATH
+export PATH=$PATH:~/.composer/vendor/bin

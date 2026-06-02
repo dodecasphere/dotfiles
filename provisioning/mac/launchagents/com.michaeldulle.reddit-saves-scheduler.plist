@@ -1,0 +1,30 @@
+<!-- <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.michaeldulle.reddit-saves-scheduler</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Users/michaeldulle/Library/Application Support/Herd/bin//php</string>
+        <string>artisan</string>
+        <string>app:poll-for-new-reddit-saves</string>
+    </array>
+
+    <key>WorkingDirectory</key>
+    <string>/Users/michaeldulle/Sites/reddit-saves</string>
+
+    <key>StartInterval</key>
+    <integer>300</integer>
+
+    <key>StandardErrorPath</key>
+    <string>/Users/michaeldulle/Sites/reddit-saves/storage/logs/launchd-error.log</string>
+
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>Disabled</key>
+    <true/>
+</dict>
+</plist> -->

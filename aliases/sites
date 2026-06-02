@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+# Website Project shortcuts
+alias conc="cd ~/Dropbox/Sites/Concrete"
+alias dra="cd ~/Dropbox/Sites/DRA-4.0.11"
+alias dranew="cd ~/Dropbox/Sites/DRA"
+alias cl="cd ~/Dropbox/Sites/CrestLite55"
+alias sm="cd ~/Dropbox/Sites/smart-mirror"
+alias fam="cd ~/Dropbox/Sites/Family"
+alias rf="cd ~/Dropbox/Sites/Reforum2"

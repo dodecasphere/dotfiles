@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+
+alias artisan='php artisan'
+alias art='php artisan'
+alias migrate="php artisan migrate"
+alias fresh="php artisan migrate:fresh --seed"
+alias tinker='php artisan tinker'
+alias tink='php artisan tinker'
+
+alias phpunit='./vendor/bin/phpunit'
+alias pu='./vendor/bin/phpunit'
+alias pest='./vendor/bin/pest'
+
+alias pat='php artisan test'
+alias patcov='./vendor/bin/pest --coverage'
+alias patc='./vendor/bin/pest --compact'
+alias patd='./vendor/bin/pest --dirty'
+alias patp='./vendor/bin/pest --profile'
+alias patr='./vendor/bin/pest --retry'
+alias patt='./vendor/bin/pest --todos'
+
+alias routes='displayroutes'
+
+alias envoy='envoy run deploy'
+alias envoyc='envoy run deploy-only-code'
+
+function displayroutes ()
+{
+    if [ $# -eq 0 ]; then
+        php artisan route:list
+    else
+        php artisan route:list | grep ${1}
+    fi
+}
