@@ -12,7 +12,7 @@ ls -al ~/.ssh
 echo -e "Do you want to continue creating keys? [y/n]: "
 read CONTINUE
 
-if [ "$CONTINUE" == "y" ]; then
+if [ "$CONTINUE" = "y" ]; then
   echo -e "\nEnter the email address you want to use and press [ENTER], then follow instructions: "
   read USER_EMAIL
   ssh-keygen -t ed25519 -C "$USER_EMAIL"
@@ -30,10 +30,10 @@ if [ "$CONTINUE" == "y" ]; then
   # echo -e -n -e "\n\nEnter the file name you used above (just the filename, not the full path, i.e. 'id_rsa') and press [ENTER]: "
   # read FILENAME
 #   ssh-add -K $FILENAME
-  ssh-add --apple-use-keychain $FILENAME
+  ssh-add --apple-use-keychain "$FILENAME"
 
   doing "Copying the public key to the clipboard..."
-  pbcopy < $FILENAME.pub
+  pbcopy < "$FILENAME.pub"
 
   echo -e "\nCopied!."
   echo -e "\nALL DONE."

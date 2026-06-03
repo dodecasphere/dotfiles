@@ -192,10 +192,12 @@ function ask_yes_or_no {
 
 function press_key_to_continue {
   # Single-key read differs between shells (bash: read -n 1, zsh: read -k 1).
+  # Takes an optional custom prompt; defaults to the generic "press any key".
+  local prompt="${1:-Press any key to continue when this step is finished}"
   if [ -n "$ZSH_VERSION" ]; then
-    read -k 1 "?Press any key to continue when this step is finished"
+    read -k 1 "?$prompt"
   else
-    read -p "Press any key to continue when this step is finished" -n 1
+    read -p "$prompt" -n 1 -r
   fi
 }
 

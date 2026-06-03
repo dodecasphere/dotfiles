@@ -3,9 +3,10 @@
 #
 # Symlink and (re)load all LaunchAgents from this script's launchagents/ dir.
 # Resolves its own location so it works no matter the current directory.
+# BASH_SOURCE is bash-only; zsh sets $0 to the sourced file instead.
 #
 
-LAUNCHAGENTS_SRC="$(cd "$(dirname "${BASH_SOURCE[0]}")/launchagents" && pwd)"
+LAUNCHAGENTS_SRC="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")/launchagents" && pwd)"
 
 mkdir -p "$HOME/Library/LaunchAgents"
 

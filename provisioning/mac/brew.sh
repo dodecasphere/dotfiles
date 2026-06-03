@@ -29,4 +29,4 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 doing "Checking in with the brew doctor..."
 brew doctor
 
-read -p "Mind the Doctor's recommendations and make any adjustments in a different tab before continuing. Press any key to continue." -n 1 -r
+press_key_to_continue "Mind the Doctor's recommendations and make any adjustments in a different tab before continuing. Press any key to continue."

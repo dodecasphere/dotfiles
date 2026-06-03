@@ -2,17 +2,10 @@
 
 alias brewup='brew update && brew upgrade && brew cleanup'
 
-# Check Cask version
-function cask_version_available() {
-    brew info --cask "$1" | head -n 1 | cut -d " " -f 2
-}
-
-# Check Cask version
-function cask_version_installed() {
-    ls -1 "$(cask_staging_location)/$1" | tr '\n' ' ' | sed -e 's/ $//'
-}
-
-# Get Cask staging location
-function cask_staging_location() {
-    brew doctor | grep -A1 '==> Homebrew-Cask Staging Location:' | tail -n1
-}
+# The install guards and cask version helpers (cask, formula, mas_install,
+# cask_version_available, ...) live in provisioning/mac/helpers.sh — source the
+# single canonical copy so interactive shells and provisioning never drift.
+# ~/.provisioning is symlinked to the repo's provisioning/ dir by install.sh.
+# helpers.sh only defines functions, and the doing/ask_yes_or_no helpers it
+# calls are loaded from ~/.functions before the alias files.
+[ -r ~/.provisioning/mac/helpers.sh ] && source ~/.provisioning/mac/helpers.sh

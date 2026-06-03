@@ -5,15 +5,20 @@
 # installed and skips it if so, so provisioning is safe to re-run (idempotent).
 #
 # Sourced near the top of `provision.sh` (after `functions`), so every other
-# provisioning script can use these. Relies on `doing` / `ask_yes_or_no` /
-# `line` from the `functions` file.
+# provisioning script can use these. Also sourced into interactive shells by
+# `aliases/brew` (via the ~/.provisioning symlink), so `cask foo` works at the
+# prompt too. Relies on `doing` / `ask_yes_or_no` / `line` from the
+# `functions` file — loaded before this in both contexts.
 #
 
 # --- Homebrew --------------------------------------------------------------
 
 # Cask version helpers (used by `cask` below).
+# First line of `brew info --cask` looks like:
+#   ==> herd (Laravel Herd): 1.28.0 (auto_updates)
+# so take the first word after the colon.
 function cask_version_available() {
-    brew info --cask "$1" | head -n 1 | cut -d " " -f 2
+    brew info --cask "$1" | head -n 1 | sed -E 's/^[^:]*: ([^ ]+).*/\1/'
 }
 
 function cask_version_installed() {
@@ -21,7 +26,7 @@ function cask_version_installed() {
 }
 
 function cask_staging_location() {
-    brew doctor | grep -A1 '==> Homebrew Cask Staging Location:' | tail -n1
+    brew --caskroom
 }
 
 # Install a Homebrew formula, skipping it if already installed.
@@ -32,7 +37,7 @@ function formula {
   if brew list --formula "$1" &>/dev/null; then
     echo "$1 already installed — skipping"
   else
-    if [ "yes" == $(ask_yes_or_no "Continue installing $1 ?") ]; then brew install "$1"; fi
+    if [ "yes" = "$(ask_yes_or_no "Continue installing $1 ?")" ]; then brew install "$1"; fi
   fi
 }
 
@@ -43,7 +48,7 @@ function cask {
     echo "$1 ($(cask_version_installed "$1")) already installed — skipping"
   else
     aver=$(cask_version_available "$1")
-    if [ "yes" == $(ask_yes_or_no "Continue installing $1 $aver?") ]; then brew install --cask "$1"; fi
+    if [ "yes" = "$(ask_yes_or_no "Continue installing $1 $aver?")" ]; then brew install --cask "$1"; fi
   fi
 }
 
@@ -63,7 +68,7 @@ function mas_install {
   if mas list 2>/dev/null | grep -q "^${id} "; then
     echo "$name already installed — skipping"
   else
-    if [ "yes" == $(ask_yes_or_no "Continue installing $name?") ]; then mas install "$id"; fi
+    if [ "yes" = "$(ask_yes_or_no "Continue installing $name?")" ]; then mas install "$id"; fi
   fi
 }
 

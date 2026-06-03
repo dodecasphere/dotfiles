@@ -15,14 +15,13 @@ if [ $? -ne 0 ]; then
   echo "We've copied your public key to the clipboard, now add it to your Github profile"
   open "https://github.com/settings/ssh"
 
-  read -p "Finished? " -n 1 -r
+  press_key_to_continue "Finished? "
   echo ""
 
-  while [ $? -ne 0 ]; do
+  until test_github; do
     echo "Hmm ... we seem to be having trouble connecting to github.  Please double check your settings"
-    read -p "Try again? " -n 1 -r
+    press_key_to_continue "Try again? "
     echo ""
-    test_github
   done
 fi
 

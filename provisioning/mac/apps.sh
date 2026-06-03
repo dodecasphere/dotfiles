@@ -20,7 +20,7 @@ cask "bartender"
 cask "claude"
 # cask "claude-code" # using the curl installer instead
 cask "clipy"
-cask "coconutbattery"; read -p "Coconutbattery: Set menubar to display '%t  •  %r%s  •  %p%' [Press any key...]" -n 1 -r
+cask "coconutbattery"; press_key_to_continue "Coconutbattery: Set menubar to display '%t  •  %r%s  •  %p%' [Press any key...]"
 cask "dash"
 cask "dbngin"
 cask "discord"
@@ -32,7 +32,7 @@ cask "firefox"
 # cask "flux"
 cask "github"
 # cask "gitter"
-cask "google-chrome"; read -p "Chrome: Remember to remove from starting at login. [Press any key...]" -n 1 -r
+cask "google-chrome"; press_key_to_continue "Chrome: Remember to remove from starting at login. [Press any key...]"
 cask "grandperspective"
 cask "herd"
 # cask "hyper"
