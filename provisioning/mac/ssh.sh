@@ -9,10 +9,7 @@ mkdir -p ~/.ssh
 doing "Listing ~/.ssh directory contents..."
 ls -al ~/.ssh
 
-echo -e "Do you want to continue creating keys? [y/n]: "
-read CONTINUE
-
-if [ "$CONTINUE" = "y" ]; then
+if [ "yes" = "$(ask_yes_or_no "Do you want to continue creating keys?")" ]; then
   echo -e "\nEnter the email address you want to use and press [ENTER], then follow instructions: "
   read USER_EMAIL
   ssh-keygen -t ed25519 -C "$USER_EMAIL"

@@ -23,11 +23,19 @@ sudo -v
 # Computer & Host name                                                        #
 ###############################################################################
 
-# Set computer name (as done via System Settings → General → Sharing)
+# Set computer name (as done via System Settings → General → Sharing).
+# ComputerName is the friendly display name and can contain anything, but
+# HostName/LocalHostName only allow letters, digits, and hyphens (LocalHostName
+# rejects anything else with "SCPreferencesSetLocalHostName() failed: Invalid
+# argument"), so derive a sanitized variant: drop apostrophes, turn other
+# invalid runs into hyphens (e.g. "Michael's MacBook Pro" → "Michaels-MacBook-Pro").
+SAFE_NAME="$(printf '%s' "$COMPUTER_NAME" | sed -E "s/['’]//g; s/[^A-Za-z0-9-]+/-/g; s/^-+//; s/-+$//")"
 sudo scutil --set ComputerName "$COMPUTER_NAME"
-sudo scutil --set HostName "$COMPUTER_NAME"
-sudo scutil --set LocalHostName "$COMPUTER_NAME"
-sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string "$COMPUTER_NAME"
+sudo scutil --set HostName "$SAFE_NAME"
+sudo scutil --set LocalHostName "$SAFE_NAME"
+# NetBIOS names are additionally capped at 15 characters, conventionally uppercase.
+sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string "$(printf '%.15s' "$SAFE_NAME" | tr '[:lower:]' '[:upper:]')"
+echo "Computer name: $COMPUTER_NAME (hostname: $SAFE_NAME)"
 
 ###############################################################################
 # General                                                                     #
@@ -124,7 +132,7 @@ defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
 doing "Setting fast keyboard repeat rate..."
 # defaults write -g KeyRepeat -int 0
 defaults write NSGlobalDomain KeyRepeat -int 1
-defaults write NSGlobalDomain InitialKeyRepeat -int 10
+defaults write NSGlobalDomain InitialKeyRepeat -int 15
 
 # Disable press-and-hold for keys in favor of key repeat.
 doing "Disabling press-and-hold for keys in favor of key repeat..."

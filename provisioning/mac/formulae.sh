@@ -6,33 +6,33 @@
 
 doing "Installing brew applications..."
 
-formula "bash"
-formula "bash-completion@2"
-formula "zsh-completions"
-formula "zsh-autosuggestions"
-formula "zsh-syntax-highlighting"
-formula "bluetoothconnector"
-formula "ffmpeg"
-formula "fzf"
-formula "gifsicle"
-formula "git"
-formula "gh"
-formula "httpie"
-formula "jpegoptim"
-formula "libavif"
-formula "mas"
-formula "node"
-formula "optipng"
-formula "php-cs-fixer"
-formula "pngquant"
-formula "python"
-formula "speedtest-cli"
-formula "svgo"
-formula "svn"
-formula "terminal-notifier"
-formula "tree"
-formula "wget"
-formula "yarn"
+formula "bash"                    # up-to-date bash (macOS ships an ancient 3.2)
+formula "bash-completion@2"       # tab completion for bash
+formula "zsh-completions"         # extra tab completions for zsh
+formula "zsh-autosuggestions"     # inline command suggestions from history
+formula "zsh-syntax-highlighting" # colorizes commands as you type
+formula "bluetoothconnector"      # connect/disconnect Bluetooth devices from the CLI
+formula "ffmpeg"                  # audio/video converter
+formula "fzf"                     # fuzzy finder (Ctrl-R history search, etc.)
+formula "gifsicle"                # GIF optimizer/editor
+formula "git"                     # up-to-date git (newer than Apple's)
+formula "gh"                      # GitHub CLI (PRs, issues, API)
+formula "httpie"                  # friendlier curl for HTTP requests
+formula "jpegoptim"               # JPEG optimizer
+formula "libavif"                 # AVIF image encoding/decoding
+formula "mas"                     # Mac App Store CLI (used by apps.sh)
+formula "node"                    # Node.js runtime
+formula "optipng"                 # PNG optimizer (lossless)
+formula "php-cs-fixer"            # PHP code style fixer
+formula "pngquant"                # PNG compressor (lossy)
+formula "python"                  # Python 3
+formula "speedtest-cli"           # internet speed test
+formula "svgo"                    # SVG optimizer
+formula "svn"                     # Subversion (needed by some font casks)
+formula "terminal-notifier"       # send macOS notifications from scripts
+formula "tree"                    # directory listing as a tree
+formula "wget"                    # file downloader
+formula "yarn"                    # JS package manager
 
 # Modern CLI tools
 formula "eza"        # modern ls

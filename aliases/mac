@@ -1,8 +1,20 @@
 #!/usr/bin/env bash
 
 if [ "$(uname)" = "Darwin" ]; then
-  alias update="brewup; npm install npm -g; npm update -g; csu; cgu; dep self-update --upgrade; sudo softwareupdate -i -a"
-  
+  # Update everything. Note the last step (sudo softwareupdate -i -a) installs
+  # ALL pending macOS/system updates, which can include major OS upgrades and a
+  # reboot — it's listed last so you can Ctrl-C before it if you only wanted the
+  # package managers above.
+  update() {
+    brewup
+    npm update -g
+    csu                       # composer self-update
+    cgu                       # composer global update
+    dep self-update --upgrade
+    sudo softwareupdate -i -a
+  }
+
+
   alias preview='open -a $PREVIEW'
   alias safari="open -a safari"
   alias firefox="open -a firefox"
@@ -25,7 +37,19 @@ if [ "$(uname)" = "Darwin" ]; then
   # Empty the Trash on all mounted volumes and the main HDD.
   # Also, clear Apple’s System Logs to improve shell startup speed.
   # Finally, clear download history from quarantine. https://mths.be/bum
-  alias emptytrash="sudo rm -rfv /Volumes/*/.Trashes; sudo rm -rfv ~/.Trash; sudo rm -rfv /private/var/log/asl/*.asl; sqlite3 ~/Library/Preferences/com.apple.LaunchServices.QuarantineEventsV* 'delete from LSQuarantineEvent'"
+  # Guarded by a confirm because of the `sudo rm -rf /Volumes/*` blast radius.
+  emptytrash() {
+    printf "Empty Trash on all volumes + clear system logs/quarantine? [y/N] "
+    read -r reply
+    case "$reply" in
+      [yY]*) ;;
+      *) echo "Aborted."; return 1 ;;
+    esac
+    sudo rm -rfv /Volumes/*/.Trashes
+    sudo rm -rfv ~/.Trash
+    sudo rm -rfv /private/var/log/asl/*.asl
+    sqlite3 ~/Library/Preferences/com.apple.LaunchServices.QuarantineEventsV* 'delete from LSQuarantineEvent'
+  }
 
   # Hide/show all desktop icons (useful when presenting)
   alias hidedesktop="defaults write com.apple.finder CreateDesktop -bool false && killall Finder"

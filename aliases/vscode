@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
-alias c=code
+# `c` is intentionally left to composer (see aliases/composer).
 alias cc='code .'

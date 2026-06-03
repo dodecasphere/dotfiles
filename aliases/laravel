@@ -8,7 +8,7 @@ alias tinker='php artisan tinker'
 alias tink='php artisan tinker'
 
 alias phpunit='./vendor/bin/phpunit'
-alias pu='./vendor/bin/phpunit'
+alias pun='./vendor/bin/phpunit'   # `pu` is pushd (aliases/directories)
 alias pest='./vendor/bin/pest'
 
 alias pat='php artisan test'

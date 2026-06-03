@@ -179,15 +179,29 @@ function not_file_exists {
 }
 
 function ask_yes_or_no {
-    # `read -p` is bash-only; printf + plain `read` works in both bash and zsh.
+    # Single-keypress yes/no prompt: y/Y or n/N answers immediately, no Enter
+    # needed; any other key (including Enter) re-asks.
     # Prompt goes to stderr (like `read -p`) so callers using $(ask_yes_or_no …)
     # capture only the yes/no answer, not the prompt text.
-    printf '%s' "$1 ... [Y]es or [N]o: " >&2
-    read REPLY
-    case $(echo $REPLY | tr '[A-Z]' '[a-z]') in
-        y|yes) echo "yes" ;;
-        *)     echo "no" ;;
-    esac
+    # Single-key read differs between shells (bash: read -n 1, zsh: read -k 1).
+    local key
+    while true; do
+        printf '%s' "$1 ... [Y]es or [N]o: " >&2
+        # If read itself fails (EOF, no terminal in non-interactive zsh),
+        # default to "no" instead of re-asking forever.
+        if [ -n "$ZSH_VERSION" ]; then
+            read -k 1 key || { echo "no"; return; }
+        else
+            read -rn 1 key || { echo "no"; return; }
+        fi
+        # The terminal echoes the keypress but not a newline — add one, unless
+        # the key was Enter (which already moved to a new line).
+        case "$key" in ''|$'\n') ;; *) printf '\n' >&2 ;; esac
+        case "$key" in
+            y|Y) echo "yes"; return ;;
+            n|N) echo "no";  return ;;
+        esac
+    done
 }
 
 function press_key_to_continue {
@@ -202,7 +216,12 @@ function press_key_to_continue {
 }
 
 function doing {
-    echo -e "\n\n${background_green}${bold_black} ==> $1 ${reset}"
+    # Bold white on slate blue. The explicit white matters: iTerm renders
+    # bold *default-foreground* text in the profile's Bold color (which can be
+    # dark), but bold + an explicit color keeps the color.
+    # ${normal} (full SGR reset) rather than ${reset}, whose non-tput fallback
+    # only resets the foreground and would let the background bleed onward.
+    echo -e "\n\n${background_slate_blue}${bold}${solid_white} ==> $1 ${normal}"
 }
 
 function line {

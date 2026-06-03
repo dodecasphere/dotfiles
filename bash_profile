@@ -94,3 +94,7 @@ command -v zoxide &>/dev/null && eval "$(zoxide init bash)"
 # so it can override anything above. Not tracked in git.
 # ---------------------------------------------------------------------------
 [ -r ~/.shell.local ] && source ~/.shell.local
+
+
+# Herd injected PHP 8.4 configuration.
+export HERD_PHP_84_INI_SCAN_DIR="/Users/michaeldulle/Library/Application Support/Herd/config/php/84/"
