@@ -4,6 +4,30 @@ if [[ -f "colors" ]]; then
     source colors
 fi
 
+# Use the right Claude account for the job
+function claude() {
+  case "$PWD" in
+    /Users/michaeldulle/Sites | /Users/michaeldulle/Sites/*)
+      command claude "$@"
+      ;;
+    /Users/michaeldulle/Dotfiles | /Users/michaeldulle/Dotfiles/*)
+      command claude "$@"
+      ;;
+    /Users/michaeldulle/.dotfiles-secrets | /Users/michaeldulle/.dotfiles-secrets/*)
+      command claude "$@"
+      ;;
+    # /Users/michaeldulle/something-work | /Users/michaeldulle/something-work/*)
+    #   CLAUDE_CONFIG_DIR=~/.claude-work command claude "$@"
+    #   ;;
+    # /Users/michaeldulle/something-personal | /Users/michaeldulle/something-personal/*)
+    #   CLAUDE_CONFIG_DIR=~/.claude-personal command claude "$@"
+    #   ;;
+    *)
+      command claude "$@"
+      ;;
+  esac
+}
+
 # Create a new directory and enter it
 function mkd() {
     mkdir -p "$@" && cd "$_";
