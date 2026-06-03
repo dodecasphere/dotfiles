@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+#
+# Pre-commit hook: block commits that introduce secrets, using gitleaks.
+# Activated via `core.hooksPath .githooks` (set by install.sh).
+#
+
+# If gitleaks isn't installed, don't block commits — just note it.
+if ! command -v gitleaks >/dev/null 2>&1; then
+    echo "gitleaks not installed; skipping secret scan (brew install gitleaks)" >&2
+    exit 0
+fi
+
+# gitleaks renamed `protect` -> `git` in v8.18; support both.
+if gitleaks git --help >/dev/null 2>&1; then
+    gitleaks git --staged --redact --no-banner
+else
+    gitleaks protect --staged --redact --no-banner
+fi

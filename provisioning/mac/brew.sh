@@ -11,7 +11,6 @@
 doing "Installing Brew..."
 brew -v > /dev/null 2>&1
 if [[ $? -ne 0 ]]; then
-  # ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 else
   echo "Brew already installed"

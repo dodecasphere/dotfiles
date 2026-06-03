@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+
+# Docker & Docker Compose shortcuts. Compose uses the v2 plugin syntax
+# (`docker compose`, no hyphen) that ships with Docker Desktop.
+# (`d` is intentionally left alone — it's the `dirs` alias in aliases/directories.)
+
+alias dk='docker'
+alias dps='docker ps'
+alias dpsa='docker ps -a'
+alias dimg='docker images'
+alias dlog='docker logs -f'
+alias dexec='docker exec -it'
+alias dstop='docker stop $(docker ps -q)'   # stop all running containers
+
+# Docker Compose (v2)
+alias dc='docker compose'
+alias dcu='docker compose up'
+alias dcud='docker compose up -d'
+alias dcd='docker compose down'
+alias dcb='docker compose build'
+alias dcl='docker compose logs -f'
+alias dcr='docker compose run --rm'
+alias dce='docker compose exec'
+alias dcps='docker compose ps'
+alias dcrestart='docker compose restart'
+
+# lazydocker TUI
+alias lzd='lazydocker'
+
+# Prune dangling images + stopped containers (leaves named volumes alone).
+alias dprune='docker system prune -f'
+# Heavier: also remove all unused images and build cache (still keeps volumes).
+alias dprune-all='docker system prune -af'
+
+# Open a shell in a running container (prefers bash, falls back to sh).
+# Usage: dsh <container>
+function dsh() {
+    if [ $# -eq 0 ]; then
+        echo "Usage: dsh <container>"
+        return 1
+    fi
+    docker exec -it "$1" sh -c 'command -v bash >/dev/null 2>&1 && exec bash || exec sh'
+}
+
+# Safe cleanup: remove stopped containers and dangling images.
+function dclean() {
+    docker container prune -f
+    docker image prune -f
+}

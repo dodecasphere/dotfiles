@@ -85,6 +85,15 @@ zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 # Ask before listing huge result sets (inputrc: completion-query-items 200).
 LISTMAX=200
 
+# fzf-tab: render completion menus through fzf. Not a Homebrew formula, so
+# clone it on first run, then source (must come after compinit, before the
+# syntax-highlighting plugin below).
+FZF_TAB_DIR="$HOME/.zsh/fzf-tab"
+if [ ! -d "$FZF_TAB_DIR" ] && command -v git &>/dev/null; then
+    git clone --depth 1 https://github.com/Aloxaf/fzf-tab "$FZF_TAB_DIR" &>/dev/null
+fi
+[ -f "$FZF_TAB_DIR/fzf-tab.plugin.zsh" ] && source "$FZF_TAB_DIR/fzf-tab.plugin.zsh"
+
 # ---------------------------------------------------------------------------
 # Key bindings (translated from inputrc)
 # ---------------------------------------------------------------------------
@@ -116,30 +125,33 @@ if type brew &>/dev/null; then
 fi
 
 # ---------------------------------------------------------------------------
-# Tooling (fzf, RVM) — zsh equivalents of the bashrc lines
+# Tooling
 # ---------------------------------------------------------------------------
 
-# fzf (bashrc sourced ~/.fzf.bash)
+# fzf
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-# RVM: add to PATH and load as a function (bashrc / functions did this for bash)
-export PATH="$PATH:$HOME/.rvm/bin"
-[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
+# zoxide — smarter `cd` (provides `z` and `zi`).
+command -v zoxide &>/dev/null && eval "$(zoxide init zsh)"
 
 # ---------------------------------------------------------------------------
-# Herd (PHP/Node) — ported from the bash_profile block, de-duplicated.
-# Laravel Herd may re-inject its own copies below this on first run; that's fine.
+# Laravel Herd (PHP + Node/NVM). Herd may append its own block on first run;
+# keep this the single copy and delete any duplicate it adds.
 # ---------------------------------------------------------------------------
 
-# Herd injected NVM configuration
+# NVM (bundled with Herd)
 export NVM_DIR="/Users/michaeldulle/Library/Application Support/Herd/config/nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
-# Herd injected PHP binary.
+# Herd PHP binary + per-version php.ini scan dirs
 export PATH="/Users/michaeldulle/Library/Application Support/Herd/bin/":$PATH
-
-# Herd injected PHP configuration.
 export HERD_PHP_74_INI_SCAN_DIR="/Users/michaeldulle/Library/Application Support/Herd/config/php/74/"
 export HERD_PHP_82_INI_SCAN_DIR="/Users/michaeldulle/Library/Application Support/Herd/config/php/82/"
 export HERD_PHP_83_INI_SCAN_DIR="/Users/michaeldulle/Library/Application Support/Herd/config/php/83/"
 export HERD_PHP_85_INI_SCAN_DIR="/Users/michaeldulle/Library/Application Support/Herd/config/php/85/"
+
+# ---------------------------------------------------------------------------
+# Machine-specific / locally-added config (PATH, env, tool init). Sourced last
+# so it can override anything above. Not tracked in git.
+# ---------------------------------------------------------------------------
+[ -r ~/.shell.local ] && source ~/.shell.local

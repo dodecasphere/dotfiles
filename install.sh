@@ -42,5 +42,12 @@ for name in *; do
 
 done
 
+# Activate this repo's git hooks (the gitleaks secret-scan pre-commit hook).
+if [ -d "$PWD/.githooks" ] && git -C "$PWD" rev-parse --git-dir > /dev/null 2>&1; then
+  echo "Enabling git hooks (core.hooksPath = .githooks)"
+  chmod +x "$PWD/.githooks/"* 2>/dev/null
+  git -C "$PWD" config core.hooksPath .githooks
+fi
+
 echo "Run chsh -s /bin/zsh to use zsh (or chsh -s /bin/bash for bash) — both are configured"
 

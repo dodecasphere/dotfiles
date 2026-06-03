@@ -70,67 +70,27 @@ shopt -s cdspell
 # append to bash_history if Terminal.app quits
 shopt -s histappend
 
+# ---------------------------------------------------------------------------
+# Laravel Herd (PHP + Node/NVM). Herd may append its own block on first run;
+# keep this the single copy and delete any duplicate it adds.
+# ---------------------------------------------------------------------------
 
-# Herd injected NVM configuration
+# NVM (bundled with Herd)
 export NVM_DIR="/Users/michaeldulle/Library/Application Support/Herd/config/nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
-
-# Herd injected PHP 8.3 configuration.
-export HERD_PHP_83_INI_SCAN_DIR="/Users/michaeldulle/Library/Application Support/Herd/config/php/83/"
-
-
-# Herd injected PHP binary.
+# Herd PHP binary + per-version php.ini scan dirs
 export PATH="/Users/michaeldulle/Library/Application Support/Herd/bin/":$PATH
-
-
-# Herd injected PHP 7.4 configuration.
 export HERD_PHP_74_INI_SCAN_DIR="/Users/michaeldulle/Library/Application Support/Herd/config/php/74/"
-
-
-# Herd injected PHP binary.
-export PATH="/Users/michaeldulle/Library/Application Support/Herd/bin/":$PATH
-
-
-# Herd injected PHP binary.
-export PATH="/Users/michaeldulle/Library/Application Support/Herd/bin/":$PATH
-
-
-# Herd injected PHP binary.
-export PATH="/Users/michaeldulle/Library/Application Support/Herd/bin/":$PATH
-
-
-# Herd injected PHP binary.
-export PATH="/Users/michaeldulle/Library/Application Support/Herd/bin/":$PATH
-
-
-# Herd injected PHP binary.
-export PATH="/Users/michaeldulle/Library/Application Support/Herd/bin/":$PATH
-
-
-# Herd injected PHP binary.
-export PATH="/Users/michaeldulle/Library/Application Support/Herd/bin/":$PATH
-
-
-# Herd injected PHP binary.
-export PATH="/Users/michaeldulle/Library/Application Support/Herd/bin/":$PATH
-
-
-# Herd injected PHP 8.2 configuration.
 export HERD_PHP_82_INI_SCAN_DIR="/Users/michaeldulle/Library/Application Support/Herd/config/php/82/"
-
-
-# Herd injected PHP binary.
-export PATH="/Users/michaeldulle/Library/Application Support/Herd/bin/":$PATH
-
-
-# Herd injected PHP binary.
-export PATH="/Users/michaeldulle/Library/Application Support/Herd/bin/":$PATH
-
-
-# Herd injected PHP binary.
-export PATH="/Users/michaeldulle/Library/Application Support/Herd/bin/":$PATH
-
-
-# Herd injected PHP 8.5 configuration.
+export HERD_PHP_83_INI_SCAN_DIR="/Users/michaeldulle/Library/Application Support/Herd/config/php/83/"
 export HERD_PHP_85_INI_SCAN_DIR="/Users/michaeldulle/Library/Application Support/Herd/config/php/85/"
+
+# zoxide — smarter `cd` (provides `z` and `zi`).
+command -v zoxide &>/dev/null && eval "$(zoxide init bash)"
+
+# ---------------------------------------------------------------------------
+# Machine-specific / locally-added config (PATH, env, tool init). Sourced last
+# so it can override anything above. Not tracked in git.
+# ---------------------------------------------------------------------------
+[ -r ~/.shell.local ] && source ~/.shell.local

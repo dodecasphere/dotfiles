@@ -1,18 +1,30 @@
 #!/usr/bin/env bash
 
-# Add `~/bin` to the `$PATH`
-export PATH=/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH
+# Single source of truth for $PATH (and Homebrew env). Sourced early by the
+# interactive shells (zshrc / bash_profile). Machine-specific additions belong
+# in ~/.shell.local, which the shells source at the end.
 
+# In zsh, keep $PATH automatically de-duplicated, so re-sourcing this file
+# (e.g. `reload`, nested shells) never piles up duplicate entries.
+[ -n "$ZSH_VERSION" ] && typeset -U path PATH
+
+# Sane base ordering for the system directories.
+export PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
+
+# Homebrew — the one place it's configured. `shellenv` sets PATH, MANPATH,
+# INFOPATH and HOMEBREW_PREFIX for whichever install location exists.
+if [ -x /opt/homebrew/bin/brew ]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+elif [ -x /usr/local/bin/brew ]; then
+    eval "$(/usr/local/bin/brew shellenv)"
+fi
+
+# Tool/language dirs layered on top of Homebrew. (PHP comes from Herd, not brew.)
+if [ -n "${HOMEBREW_PREFIX:-}" ]; then
+    export PATH="$HOMEBREW_PREFIX/opt/icu4c/bin:$PATH"
+    export PATH="$HOMEBREW_PREFIX/opt/icu4c/sbin:$PATH"
+fi
+
+# Personal bin and Composer's global binaries.
 export PATH="$HOME/bin:$PATH"
-export PATH="/opt/homebrew/bin:$PATH"
-export PATH="/opt/homebrew/sbin:$PATH"
-
-# PHP
-export PATH="$(brew --prefix)/opt/php/bin:$PATH"
-
-# Ruby
-export PATH="$(brew --prefix)/opt/ruby/bin:$PATH"
-export PATH="$(brew --prefix)/lib/ruby/gems/3.0.0/bin:$PATH"
-
-# Add Composer's global binaries to PATH
-export PATH=$PATH:~/.composer/vendor/bin
+export PATH="$PATH:$HOME/.composer/vendor/bin"

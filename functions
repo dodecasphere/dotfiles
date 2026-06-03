@@ -224,5 +224,3 @@ function keys () {
     line "Ctrl + N    Next command from the History"
     line "Ctrl + P    previous command from the History"
 }
-
-[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*

@@ -8,18 +8,6 @@ function test_github {
   ssh -T git@github.com 2>&1 | grep --silent "You've successfully authenticated"
 }
 
-# doing "Configuring Git..."
-# echo "What is your full name?"
-# read name
-# git config --replace-all --global user.name "${name}"
-# echo "What is your email address?"
-# read email
-# git config --replace-all --global user.email "${email}"
-# echo " ...fixing line endings"
-# git config --global core.autocrlf input
-# echo " ...turning on color"
-# git config --global color.ui true
-
 test_github
 
 if [ $? -ne 0 ]; then

@@ -10,7 +10,7 @@
 On a sparkling fresh installation of macOS, grab the latest software updates:
 
 ```
-sudo softwareupdate -i -a
+sudo softwareupdate --all --install --force
 ```
 
 ### Bootstrap a fresh machine

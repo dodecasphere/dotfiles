@@ -33,7 +33,24 @@ formula "terminal-notifier"
 formula "tree"
 formula "wget"
 formula "yarn"
-formula "z"
+
+# Modern CLI tools
+formula "eza"        # modern ls
+formula "bat"        # modern cat (syntax highlighting)
+formula "fd"         # modern find
+formula "ripgrep"    # modern grep (rg)
+formula "zoxide"     # smarter cd (replaces z)
+formula "btop"       # system/process monitor
+formula "tealdeer"   # tldr cheatsheets
+formula "gitleaks"   # secret scanner (used by the pre-commit hook)
+
+# Docker helpers (Docker Desktop itself is a cask in apps.sh and bundles the
+# docker CLI, compose, and buildx — these are just ergonomics on top).
+formula "lazydocker"
+formula "dive"
+formula "ctop"
+formula "act"
+formula "mkcert"
 
 # Install fzf key bindings + completion non-interactively, without editing rc
 # files (our zshrc/bashrc already source ~/.fzf.zsh / ~/.fzf.bash).

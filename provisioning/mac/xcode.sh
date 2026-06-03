@@ -1,46 +1,16 @@
 #!/usr/bin/env bash
 
 #
-# Install XCode
+# Xcode Command Line Tools (git, compilers, etc.).
+#
+# bootstrap.sh already installs these before provisioning runs; this is just a
+# safety net so `provision.sh --mac` also works when run on its own.
 #
 
-doing "Installing XCode Command Line Utilities..."
+doing "Checking Xcode Command Line Tools..."
 if xcode-select -p &>/dev/null; then
   echo "Xcode Command Line Tools already installed — skipping"
 else
   xcode-select --install
   press_key_to_continue   # wait for the GUI installer to finish
 fi
-softwareupdate --all --install --force
-
-doing "Installing XCode..."
-
-function check_for_xcode {
-  xcode-select --print-path | grep '/Applications/Xcode.app/Contents/Developer' > /dev/null 2>&1
-  HAS_FULL_XCODE=$?
-}
-
-check_for_xcode
-
-if [ ${HAS_FULL_XCODE} -eq 0 ]; then
-  line "XCode is already installed"
-else
-  while [ ${HAS_FULL_XCODE} -ne 0 ]; do
-    line "XCode is not installed. Please install it via the GUI."
-    xcode-select --install
-    press_key_to_continue
-
-    line "Now also install the XCode command line tools via the GUI."
-    xcode-select --install
-    press_key_to_continue
-
-    line "You now need to accept the license for XCode; read ALL the"
-    line "way to the end and type 'agree' as instructed."
-    sudo xcrun cc
-    press_key_to_continue
-
-    check_for_xcode
-  done
-fi
-
-sudo xcodebuild -license

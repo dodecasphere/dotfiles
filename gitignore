@@ -30,6 +30,10 @@ node_modules
 
 **/.claude/settings.local.json
 
+# Machine-specific / locally-added shell config (sourced if present).
+shell.local
+.shell.local
+
 # Secrets — these live in the private dotfiles-secrets repo, never here.
 ssh/
 secrets.env

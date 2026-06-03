@@ -50,13 +50,20 @@ function cask {
 # --- Mac App Store ---------------------------------------------------------
 
 # Install a Mac App Store app by id, skipping it if already installed.
+# Usage: mas_install <id> [name]   e.g. mas_install 1091189122 "Bear"
+# If no name is given, it's looked up once via `mas info` (falls back to the id).
 function mas_install {
   local id="$1"
-  doing "App Store app [$id]..."
+  local name="$2"
+  if [ -z "$name" ]; then
+    name="$(mas info "$id" 2>/dev/null | head -1 | sed -E 's/ +[0-9][^ ]* +\[.*\]$//')"
+    [ -z "$name" ] && name="$id"
+  fi
+  doing "App Store app [$name]..."
   if mas list 2>/dev/null | grep -q "^${id} "; then
-    echo "App Store app $id already installed — skipping"
+    echo "$name already installed — skipping"
   else
-    mas install "$id"
+    if [ "yes" == $(ask_yes_or_no "Continue installing $name?") ]; then mas install "$id"; fi
   fi
 }
 

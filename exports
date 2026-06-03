@@ -35,12 +35,13 @@ export LANGUAGE='en_US'
 export LC_CTYPE='en_US.UTF-8'
 export LC_ALL='en_US.UTF-8'
 
-# ICU
-export LDFLAGS="-L$(brew --prefix)/opt/icu4c/lib"
-export CPPFLAGS="-I$(brew --prefix)/opt/icu4c/include"
-export PKG_CONFIG_PATH="/opt/homebrew/opt/icu4c/lib/pkgconfig"
-export PATH="$(brew --prefix)/opt/icu4c/bin:$PATH"
-export PATH="$(brew --prefix)/opt/icu4c/sbin:$PATH"
+# ICU build flags (the icu4c PATH entries live in ~/.path). HOMEBREW_PREFIX is
+# set by `brew shellenv` in ~/.path, which is sourced before this file.
+if [ -n "${HOMEBREW_PREFIX:-}" ]; then
+    export LDFLAGS="-L$HOMEBREW_PREFIX/opt/icu4c/lib"
+    export CPPFLAGS="-I$HOMEBREW_PREFIX/opt/icu4c/include"
+    export PKG_CONFIG_PATH="$HOMEBREW_PREFIX/opt/icu4c/lib/pkgconfig"
+fi
 
 # Identify OS and Machine
 export OS=`uname -s | sed -e 's/ *//g;y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/'`
@@ -63,5 +64,17 @@ export PREVIEW="less"
 # Highlight section titles in manual pages.
 export LESS_TERMCAP_md="${yellow}";
 
-# Don’t clear the screen after quitting a manual page.
-export MANPAGER='less -X';
+# Manual pager: use bat (syntax-highlighted) when available, else plain less.
+if command -v bat > /dev/null 2>&1; then
+    export MANPAGER="sh -c 'col -bx | bat --language man --plain'"
+    export MANROFFOPT="-c"   # avoid garbled output with bat as MANPAGER
+else
+    export MANPAGER='less -X';   # don't clear the screen after quitting
+fi
+
+# Make fzf use fd (respects .gitignore, includes hidden files) for its searches.
+if command -v fd > /dev/null 2>&1; then
+    export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
+    export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+    export FZF_ALT_C_COMMAND='fd --type d --hidden --follow --exclude .git'
+fi
