@@ -18,7 +18,7 @@ cask "arduino"
 cask "bartender"
 # cask "charles"
 cask "claude"
-cask "claude-code"
+# cask "claude-code" # using the curl installer instead
 cask "clipy"
 cask "coconutbattery"; read -p "Coconutbattery: Set menubar to display '%t  •  %r%s  •  %p%' [Press any key...]" -n 1 -r
 cask "dash"
