@@ -28,3 +28,6 @@ fi
 # Personal bin and Composer's global binaries.
 export PATH="$HOME/bin:$PATH"
 export PATH="$PATH:$HOME/.composer/vendor/bin"
+
+# User-local binaries (Claude Code's native installer and other tools land here).
+export PATH="$HOME/.local/bin:$PATH"

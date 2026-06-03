@@ -28,6 +28,7 @@ if [[ "$1" == "--mac" ]]; then
     source provisioning/mac/macos.sh
 
     source provisioning/mac/node.sh
+    source provisioning/mac/claude.sh
     source provisioning/mac/secrets.sh
     source provisioning/mac/ssh.sh
     source provisioning/mac/git.sh
