@@ -10,6 +10,9 @@ function claude() {
     /Users/michaeldulle/Sites | /Users/michaeldulle/Sites/*)
       command claude "$@"
       ;;
+    /Users/michaeldulle/SitesMine | /Users/michaeldulle/SitesMine/*)
+      CLAUDE_CONFIG_DIR=~/.claude-personal command claude "$@"
+      ;;
     /Users/michaeldulle/Dotfiles | /Users/michaeldulle/Dotfiles/*)
       command claude "$@"
       ;;
