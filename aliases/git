@@ -178,3 +178,8 @@ alias gwch='git whatchanged -p --abbrev-commit --pretty=medium'
 alias gwip='git add -A; git rm $(git ls-files --deleted) 2> /dev/null; git commit --no-verify -m "--wip-- [skip ci]"'
 
 alias localbranches='git for-each-ref --sort=committerdate refs/heads/ --format="%(HEAD) %(color:yellow)%(objectname:short)%(color:reset);%(color:green)%(refname:short)%(color:reset);(%(committerdate:relative));%(color:cyan)%(authorname)%(color:reset);%(contents:subject)" | column -t -s ";"'
+
+# GitHub CLI account switching (gh auth switch flips the active account globally,
+# governing gh API calls and HTTPS git auth — run ghwho before pushing if unsure).
+alias ghwho='gh auth status'
+alias ghsw='gh auth switch'
