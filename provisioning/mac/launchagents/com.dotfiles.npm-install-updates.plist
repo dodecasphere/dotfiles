@@ -3,12 +3,15 @@
 <plist version="1.0">
 <dict>
     <key>Label</key>
-    <string>com.michaeldulle.brew-cleanup</string>
+    <string>com.dotfiles.npm-install-updates</string>
 
     <key>ProgramArguments</key>
     <array>
-        <string>/opt/homebrew/bin/brew</string>
-        <string>cleanup</string>
+        <string>/opt/homebrew/bin/node</string>
+        <string>/opt/homebrew/bin/npm</string>
+        <string>install</string>
+        <string>npm</string>
+        <string>-g</string>
     </array>
 
     <key>WorkingDirectory</key>
@@ -17,9 +20,9 @@
     <key>StartCalendarInterval</key>
     <dict>
         <key>Hour</key>
-        <integer>1</integer>
+        <integer>0</integer>
         <key>Minute</key>
-        <integer>30</integer>
+        <integer>10</integer>
     </dict>
 
     <key>StandardOutPath</key>

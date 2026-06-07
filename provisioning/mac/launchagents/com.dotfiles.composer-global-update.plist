@@ -3,12 +3,14 @@
 <plist version="1.0">
 <dict>
     <key>Label</key>
-    <string>com.michaeldulle.brew-upgrade</string>
+    <string>com.dotfiles.composer-global-update</string>
 
     <key>ProgramArguments</key>
     <array>
-        <string>/opt/homebrew/bin/brew</string>
-        <string>upgrade</string>
+        <string>/Users/michaeldulle/Library/Application Support/Herd/bin//php</string>
+        <string>/Users/michaeldulle/Library/Application Support/Herd/bin//composer</string>
+        <string>global</string>
+        <string>update</string>
     </array>
 
     <key>WorkingDirectory</key>
@@ -17,7 +19,7 @@
     <key>StartCalendarInterval</key>
     <dict>
         <key>Hour</key>
-        <integer>1</integer>
+        <integer>0</integer>
         <key>Minute</key>
         <integer>5</integer>
     </dict>

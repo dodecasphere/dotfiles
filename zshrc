@@ -140,15 +140,15 @@ command -v zoxide &>/dev/null && eval "$(zoxide init zsh)"
 # ---------------------------------------------------------------------------
 
 # NVM (bundled with Herd)
-export NVM_DIR="/Users/michaeldulle/Library/Application Support/Herd/config/nvm"
+export NVM_DIR="$HOME/Library/Application Support/Herd/config/nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
 # Herd PHP binary + per-version php.ini scan dirs
-export PATH="/Users/michaeldulle/Library/Application Support/Herd/bin/":$PATH
-export HERD_PHP_74_INI_SCAN_DIR="/Users/michaeldulle/Library/Application Support/Herd/config/php/74/"
-export HERD_PHP_82_INI_SCAN_DIR="/Users/michaeldulle/Library/Application Support/Herd/config/php/82/"
-export HERD_PHP_83_INI_SCAN_DIR="/Users/michaeldulle/Library/Application Support/Herd/config/php/83/"
-export HERD_PHP_85_INI_SCAN_DIR="/Users/michaeldulle/Library/Application Support/Herd/config/php/85/"
+export PATH="$HOME/Library/Application Support/Herd/bin/":$PATH
+export HERD_PHP_74_INI_SCAN_DIR="$HOME/Library/Application Support/Herd/config/php/74/"
+export HERD_PHP_82_INI_SCAN_DIR="$HOME/Library/Application Support/Herd/config/php/82/"
+export HERD_PHP_83_INI_SCAN_DIR="$HOME/Library/Application Support/Herd/config/php/83/"
+export HERD_PHP_85_INI_SCAN_DIR="$HOME/Library/Application Support/Herd/config/php/85/"
 
 # ---------------------------------------------------------------------------
 # Machine-specific / locally-added config (PATH, env, tool init). Sourced last
@@ -158,4 +158,4 @@ export HERD_PHP_85_INI_SCAN_DIR="/Users/michaeldulle/Library/Application Support
 
 
 # Herd injected PHP 8.4 configuration.
-export HERD_PHP_84_INI_SCAN_DIR="/Users/michaeldulle/Library/Application Support/Herd/config/php/84/"
+export HERD_PHP_84_INI_SCAN_DIR="$HOME/Library/Application Support/Herd/config/php/84/"

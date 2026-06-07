@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
     <key>Label</key>
-    <string>com.michaeldulle.brew-update</string>
+    <string>com.dotfiles.brew-update</string>
 
     <key>ProgramArguments</key>
     <array>

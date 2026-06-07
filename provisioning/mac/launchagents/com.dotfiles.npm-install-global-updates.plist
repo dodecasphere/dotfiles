@@ -3,13 +3,14 @@
 <plist version="1.0">
 <dict>
     <key>Label</key>
-    <string>com.michaeldulle.composer-self-update</string>
+    <string>com.dotfiles.npm-install-global-updates</string>
 
     <key>ProgramArguments</key>
     <array>
-        <string>/Users/michaeldulle/Library/Application Support/Herd/bin//php</string>
-        <string>/Users/michaeldulle/Library/Application Support/Herd/bin//composer</string>
-        <string>self-update</string>
+        <string>/opt/homebrew/bin/node</string>
+        <string>/opt/homebrew/bin/npm</string>
+        <string>update</string>
+        <string>-g</string>
     </array>
 
     <key>WorkingDirectory</key>
@@ -20,7 +21,7 @@
         <key>Hour</key>
         <integer>0</integer>
         <key>Minute</key>
-        <integer>0</integer>
+        <integer>15</integer>
     </dict>
 
     <key>StandardOutPath</key>

@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
     <key>Label</key>
-    <string>com.michaeldulle.reddit-saves-scheduler</string>
+    <string>com.dotfiles.reddit-saves-scheduler</string>
 
     <key>ProgramArguments</key>
     <array>
