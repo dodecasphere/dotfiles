@@ -6,8 +6,8 @@
 #
 
 doing "Claude Code..."
-if command -v claude &>/dev/null; then
-  echo "Claude Code already installed ($(claude --version 2>/dev/null)) — skipping"
+if [ -x "$HOME/.local/bin/claude" ]; then
+  echo "Claude Code already installed ($("$HOME/.local/bin/claude" --version 2>/dev/null)) — skipping"
 else
   curl -fsSL https://claude.ai/install.sh | bash
 fi
