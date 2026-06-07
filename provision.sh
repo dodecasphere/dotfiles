@@ -25,6 +25,10 @@ if [[ "$1" == "--mac" ]]; then
     source provisioning/mac/apps.sh
     source provisioning/mac/fonts.sh
     source provisioning/mac/app-store-apps.sh
+
+    # Fix zsh compinit "insecure directories" warning — Homebrew leaves share/ group-writable.
+    chmod -R go-w "$(brew --prefix)/share"
+
     source provisioning/mac/macos.sh
 
     source provisioning/mac/node.sh
