@@ -230,6 +230,17 @@ function line {
 
 function pman() { man -t "$@" | open -f -a "Preview" ;}
 
+# Report which shell is currently running this session
+function shell() {
+    if [ -n "$ZSH_VERSION" ]; then
+        line "zsh $ZSH_VERSION"
+    elif [ -n "$BASH_VERSION" ]; then
+        line "bash $BASH_VERSION"
+    else
+        line "$(ps -p $$ -o comm= 2>/dev/null)"
+    fi
+}
+
 # prints the path of the front Finder window. Desktop if no window open
 function pwdf () {
     osascript <<EOS
