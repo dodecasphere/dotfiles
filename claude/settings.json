@@ -1,104 +1,113 @@
 {
-  "model": "opus",
-  "env": {
-    "CLAUDE_CODE_NO_FLICKER": "1"
-  },
-  "fastMode": true,
-  "permissions": {
-    "defaultMode": "acceptEdits",
-    "allow": [
-      "Bash(git:*)",
-      "Bash(gh:*)",
-      "Bash(php:*)",
-      "Bash(composer:*)",
-      "Bash(npm:*)",
-      "Bash(npx:*)",
-      "Bash(yarn:*)",
-      "Bash(pnpm:*)",
-      "Bash(node:*)",
-      "Bash(make:*)",
-      "Bash(docker:*)",
-      "Bash(docker-compose:*)",
-      "Bash(vendor/bin/pest:*)",
-      "Bash(vendor/bin/phpunit:*)",
-      "Bash(curl:*)",
-      "Bash(brew:*)",
-      "WebSearch",
-      "WebFetch"
-    ]
-  },
-  "statusLine": {
-    "type": "command",
-    "command": "bash $HOME/.claude/statusline-command.sh"
-  },
-  "enabledPlugins": {
-    "feature-dev@claude-plugins-official": true,
-    "code-simplifier@claude-plugins-official": true,
-    "claude-md-management@claude-plugins-official": true,
-    "remember@claude-plugins-official": true,
-    "security-guidance@claude-plugins-official": true
-  },
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash $HOME/.claude/hooks/block-dangerous-commands.sh"
-          }
+    "model": "opus",
+    "env": {
+        "CLAUDE_CODE_NO_FLICKER": "1"
+    },
+    "fastMode": true,
+    "permissions": {
+        "defaultMode": "acceptEdits",
+        "allow": [
+            "Bash(git:*)",
+            "Bash(gh:*)",
+            "Bash(php:*)",
+            "Bash(composer:*)",
+            "Bash(npm:*)",
+            "Bash(npx:*)",
+            "Bash(yarn:*)",
+            "Bash(pnpm:*)",
+            "Bash(node:*)",
+            "Bash(make:*)",
+            "Bash(docker:*)",
+            "Bash(docker-compose:*)",
+            "Bash(vendor/bin/pest:*)",
+            "Bash(vendor/bin/phpunit:*)",
+            "Bash(curl:*)",
+            "Bash(brew:*)",
+            "Bash(ls *)",
+            "WebSearch",
+            "WebFetch"
         ]
-      },
-      {
-        "matcher": "Edit|Write|MultiEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash $HOME/.claude/hooks/protect-sensitive-files.sh"
-          }
+    },
+    "statusLine": {
+        "type": "command",
+        "command": "bash $HOME/.claude/statusline-command.sh"
+    },
+    "enabledPlugins": {
+        "feature-dev@claude-plugins-official": true,
+        "code-simplifier@claude-plugins-official": true,
+        "claude-md-management@claude-plugins-official": true,
+        "remember@claude-plugins-official": true,
+        "security-guidance@claude-plugins-official": true
+    },
+    "hooks": {
+        "PreToolUse": [
+            {
+                "matcher": "Bash",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "bash $HOME/.claude/hooks/block-dangerous-commands.sh"
+                    }
+                ]
+            },
+            {
+                "matcher": "Edit|Write|MultiEdit",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "bash $HOME/.claude/hooks/protect-sensitive-files.sh"
+                    }
+                ]
+            }
+        ],
+        "PostToolUse": [
+            {
+                "matcher": "Edit|Write|MultiEdit",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "bash $HOME/.claude/hooks/auto-format.sh"
+                    }
+                ]
+            }
+        ],
+        "Stop": [
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "bash $HOME/.claude/hooks/verify-done.sh"
+                    },
+                    {
+                        "type": "command",
+                        "command": "bash $HOME/.claude/hooks/debug-scrubber.sh"
+                    }
+                ]
+            }
+        ],
+        "SessionStart": [
+            {
+                "matcher": "compact|resume",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "bash $HOME/.claude/hooks/context-recovery.sh"
+                    }
+                ]
+            },
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "bash $HOME/.claude/hooks/brain-loader.sh"
+                    }
+                ]
+            }
         ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "Edit|Write|MultiEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash $HOME/.claude/hooks/auto-format.sh"
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash $HOME/.claude/hooks/verify-done.sh"
-          },
-          {
-            "type": "command",
-            "command": "bash $HOME/.claude/hooks/debug-scrubber.sh"
-          }
-        ]
-      }
-    ],
-    "SessionStart": [
-      {
-        "matcher": "compact|resume",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash $HOME/.claude/hooks/context-recovery.sh"
-          }
-        ]
-      }
-    ]
-  },
-  "awaySummaryEnabled": false,
-  "theme": "auto",
-  "autoCompactEnabled": true,
-  "inputNeededNotifEnabled": true,
-  "agentPushNotifEnabled": true
+    },
+    "awaySummaryEnabled": false,
+    "theme": "auto",
+    "autoCompactEnabled": true,
+    "inputNeededNotifEnabled": true,
+    "agentPushNotifEnabled": true
 }

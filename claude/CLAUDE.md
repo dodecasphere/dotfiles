@@ -58,6 +58,19 @@ asked:
   acceptable. Otherwise keep me in the loop and augment my judgment rather than
   replace it.
 
+## Project brain
+Some projects keep a Project Brain: the canonical `0N-XX-*.md` files (Overview,
+Goals, Architecture, Decisions, State, Glossary, Open Questions), auto-loaded at
+session start by the brain-loader hook. When one is loaded, treat it as
+authoritative grounding for the project. As the session runs, proactively offer
+to update it at the moments that matter, without being asked:
+- a real decision is made: offer to log it to Decisions (DC)
+- something starts working or breaks: offer to update Current State (ST)
+- the stack or structure changes: update Architecture (AR), plus a DC note on why
+- an open question gets answered: move it from OQ into DC
+Suggest, do not edit the brain without my go-ahead. At session end, `/brain-sync`
+brings it current for the next session.
+
 ## Writing docs
 - Never use dashes (— or -) as punctuation in documentation or README files.
   Rephrase using periods, commas, or parentheses instead.
