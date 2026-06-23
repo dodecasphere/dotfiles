@@ -2,6 +2,12 @@
 
 A log of choices made and why. Newest at the top. Never edit old entries.
 
+## 2026-06-23: Trust the claude-usage tap before installing the cask
+**Context:** Installing `claude-usage-tracker` failed with "Refusing to load cask ... from untrusted tap hamed-elfayome/claude-usage". Newer Homebrew gates casks from third-party (non-official) taps behind an explicit `brew trust`.
+**Choice:** Ran `brew trust --cask hamed-elfayome/claude-usage/claude-usage-tracker` (stored in `~/.config/homebrew/trust.json`), installed the cask (Claude Usage.app 3.1.0), and added the trust line to `provisioning/mac/apps.sh` between the `brew tap` and the `cask` call so a fresh provision does not hit the wall. Committed in aa7dc71.
+**Why:** The statusline usage gauge depends on this app, so keeping it installed and reproducible matters. `brew trust` is idempotent, so the new provisioning line is safe to re-run.
+**Alternatives considered:** Dropping the `brew tap` line and using the fully-qualified cask name to auto-tap (rejected: the `cask` helper installs by short name and its `cask_version_installed` does `ls "$(brew --caskroom)/$1"`, which a slashed full path would break). Kept the tap -> trust -> install order.
+
 ## 2026-06-23: Refreshed CLAUDE.md to document the `claude/` config layer
 **Context:** The project CLAUDE.md predated this repo becoming a Claude Code config repo; an audit scored it B (76) with currency as the weak point.
 **Choice:** Added a "Claude Code config layer (`claude/`)" section (the 83-file subtree, how `install.sh` symlinks it individually into `~/.claude`, and the auto-loaded `brain/`), added `test.sh` to the scripts table (retitled from "Three-script workflow"), and stripped all em-dashes per the global no-dash-in-docs rule. Committed in 2438a0d.
