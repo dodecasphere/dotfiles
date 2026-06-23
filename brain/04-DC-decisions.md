@@ -2,6 +2,12 @@
 
 A log of choices made and why. Newest at the top. Never edit old entries.
 
+## 2026-06-23: Refreshed CLAUDE.md to document the `claude/` config layer
+**Context:** The project CLAUDE.md predated this repo becoming a Claude Code config repo; an audit scored it B (76) with currency as the weak point.
+**Choice:** Added a "Claude Code config layer (`claude/`)" section (the 83-file subtree, how `install.sh` symlinks it individually into `~/.claude`, and the auto-loaded `brain/`), added `test.sh` to the scripts table (retitled from "Three-script workflow"), and stripped all em-dashes per the global no-dash-in-docs rule. Committed in 2438a0d.
+**Why:** The largest, most active part of the repo was entirely undocumented, so a session editing agents/hooks/skills got no grounding from CLAUDE.md.
+**Alternatives considered:** Also tightening the `~/.provisioning` sentence (skipped as accurate enough).
+
 ## 2026-06-23: "Claude Usage app exports ANTHROPIC_API_KEY" was overstated; no active connector problem
 **Context:** Earlier this session (and the prior OQ entry) claimed the "Claude Usage" menubar app actively re-exports `ANTHROPIC_API_KEY` into launchd whenever it runs, disabling the claude.ai connectors. We tried to reproduce and classify the injected key.
 **What we actually verified:** Sampled `launchctl getenv ANTHROPIC_API_KEY` across a 60s window (3s interval), a 90s window (1s) plus a Re-sync, and a 40s window (0.2s) spanning a clean quit -> relaunch. It stayed EMPTY the entire time. The ONLY SET reading all session was the very first `launchctl getenv`, taken seconds after a manual app restart, with an unconfirmed prefix. Login shells never see the var; this Claude Code session has no key in its env and connectors (Gmail/Notion/Calendar/etc.) work right now. The app's actual integration is Keychain OAuth sync of the CLI login (an `sk-ant-oat01` token, scopes incl. `user:mcp_servers`/`user:sessions:claude_code`) - the credential that *enables* connectors. `~/.claude/.credentials.json` is absent (login lives in Keychain). The app's Settings has no key-injection toggle.
