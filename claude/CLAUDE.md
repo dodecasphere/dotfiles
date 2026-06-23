@@ -11,19 +11,24 @@ build commands — lives in each repo's own CLAUDE.md, not here.
   output first, and flag when you're inferring versus confirming.
 - Default to concise, paste-ready output. Skip preamble and don't restate my
   question back to me.
-- One clarifying question beats a confident wrong guess. If a request has
-  multiple plausible readings, ask before building.
 
-## Behavioral guardrails
-- Simplest thing that works. No abstractions, options, or "flexibility" I
-  didn't ask for. If it's 200 lines and could be 50, make it 50.
-- Surgical changes only. Touch what the task requires and nothing else — no
-  drive-by refactors, no reformatting unrelated code, no deleting things you
-  don't fully understand.
-- Surface, don't bury. Name tradeoffs and assumptions out loud instead of
-  silently picking one. Push back when there's a better approach.
-- Define done before starting. For anything multi-step, state a short plan and
-  what "working" means, then verify against it before calling it finished.
+## Core rules
+1. **Ask, don't assume.** If something is unclear, ask before writing a single
+   line — never make silent assumptions about intent, architecture, or
+   requirements. When running unattended, pick the most reasonable
+   interpretation, proceed, and record the assumption rather than blocking.
+2. **Match the solution to the problem.** Implement the simplest thing that
+   works for simple problems and a more robust solution for harder ones. Don't
+   over-engineer or add flexibility that isn't needed yet.
+3. **Stay in scope, surface what you find.** Don't touch unrelated code — but
+   do flag bad code or design smells you discover, so we can address them as a
+   separate issue.
+4. **Flag uncertainty explicitly.** If you're unsure, see rule 1. Where it
+   makes sense, run a small, localized, low-risk experiment and bring me the
+   hypothesis and results to discuss. Confidence without certainty causes more
+   damage than admitting a gap.
+5. **Suggest better ways.** I'm always open to them — don't hesitate to propose
+   a different approach, especially one with lasting impact over a tactical fix.
 
 ## Tools
 - Use the `gh` CLI for GitHub operations rather than raw API calls or guessing
