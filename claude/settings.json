@@ -48,6 +48,26 @@
             "command": "bash $HOME/.claude/hooks/block-dangerous-commands.sh"
           }
         ]
+      },
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/protect-sensitive-files.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/auto-format.sh"
+          }
+        ]
       }
     ],
     "Stop": [
@@ -56,6 +76,21 @@
           {
             "type": "command",
             "command": "bash $HOME/.claude/hooks/verify-done.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/debug-scrubber.sh"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "compact|resume",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/context-recovery.sh"
           }
         ]
       }
