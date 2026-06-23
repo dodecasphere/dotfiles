@@ -2,11 +2,11 @@
 
 A log of choices made and why. Newest at the top. Never edit old entries.
 
-## 2026-06-23: Fold /brain-sync into /wrap
-**Context:** Two end-of-session commands overlapped (/wrap routed durable learnings, /brain-sync updated the brain).
-**Choice:** Merge the brain update into /wrap and remove the standalone /brain-sync.
-**Why:** One session-closer, less redundancy; the brain is the primary home for project-specific durable items.
-**Alternatives considered:** Keeping both (rejected as redundant).
+## 2026-06-23: /wrap runs the /brain-sync workflow (both kept)
+**Context:** /wrap routes durable learnings; /brain-sync updates the brain. Wanted the brain update to always run at wrap time without losing /brain-sync as a standalone.
+**Choice:** /wrap invokes the full /brain-sync workflow as its first step; /brain-sync stays a standalone command (referenced, not duplicated).
+**Why:** One wrap does everything, and the brain update is still available on its own.
+**Alternatives considered:** Merging and deleting /brain-sync (rejected: the standalone is useful).
 
 ## 2026-06-23: Automate Project Brain instead of installing the skill
 **Context:** Wanted persistent project memory without manual effort.
