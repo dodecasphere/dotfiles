@@ -55,6 +55,11 @@ asked:
   small work.
 - **Capture repeatable work as skills.** When a workflow recurs, offer to save
   it as a skill, including a "Gotchas" section of what tripped us up.
+- **Editing under a format-on-save hook.** When a hook reformats files after
+  each edit (e.g. Pint with `no_unused_imports`), add a new `use` import and its
+  first usage in the *same* edit — otherwise the formatter strips the "unused"
+  import before a later edit references it, breaking the file. Same goes for
+  config files that reference a class only via `::class`.
 - **Automate with restraint** (this governs the rest): only fully automate
   tasks that don't require taste and where roughly 80%-good output is
   acceptable. Otherwise keep me in the loop and augment my judgment rather than
