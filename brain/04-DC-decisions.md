@@ -2,6 +2,12 @@
 
 A log of choices made and why. Newest at the top. Never edit old entries.
 
+## 2026-06-23: Round 4 - added a product-management suite
+**Context:** The owner is a 20+ year career product manager; prior rounds were all engineer-focused. They asked for PM-grade features.
+**Choice:** Added 9 framework skills (working-backwards, prd-writer, discovery-synthesis, prioritization, metrics-tree, positioning, experiment-design, strategy-narrative, okr-coach), 3 agents (product-critic, prd-reviewer, prd-to-stories), 3 commands (/prd-new, /competitor-watch, /launch-readiness), and the product-doc-lint hook. /prd-new and /competitor-watch output Markdown files (openable in Google Docs) instead of writing to Notion, to sidestep the connector dependency.
+**Why:** The owner does both PM and eng; this rounds out the PM half and bridges to the dev setup (prd-to-stories -> task-planner/test-writer).
+**Alternatives considered:** Notion-writing commands and Gmail/Calendar commands (/meeting-prep, /feedback-triage, etc.) - deferred because claude.ai connectors are currently disabled by ANTHROPIC_API_KEY.
+
 ## 2026-06-23: Round 3 - added 15 power-user features
 **Context:** Second feature brainstorm; owner approved every proposed idea except a Sentry MCP.
 **Choice:** Added 3 enforcement hooks (git-workflow-guard opt-in via .claude/git-guard.conf, focused-test-guard, env-drift), 5 agents (performance-reviewer, accessibility-reviewer, test-writer, pr-feedback-responder, docs-sync), 5 commands (/quality, /api-sync, /deps-audit, /factory, /changelog), and 2 skills (pest-patterns, postgres-performance).
