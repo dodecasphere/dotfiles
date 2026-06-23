@@ -19,7 +19,7 @@ By default review the migrations in the current diff (run `git diff` / `git diff
 - Type changes via `->change()` that truncate or coerce existing values.
 
 ### Locking / zero-downtime hazards
-- Adding an index or foreign key to a large table without an online/concurrent strategy (Postgres `CREATE INDEX CONCURRENTLY`; MySQL: mind metadata locks, consider pt-online-schema-change).
+- Adding an index to a large table without `CREATE INDEX CONCURRENTLY` (a plain `CREATE INDEX` locks the table against writes). Note Laravel runs each migration in a transaction on Postgres and `CONCURRENTLY` cannot run inside one, so it needs a dedicated migration with `Schema::withoutTransaction()` (or `$this->withinTransaction = false`).
 - Adding a `NOT NULL` column without a default to a populated table (fails or locks).
 - Long-running backfills inside the schema migration (mixing data migration with DDL). Recommend a separate, chunked data migration or a queued job.
 - Renaming columns/tables (breaks the running old code mid-deploy; recommend expand/contract: add new, backfill, switch reads/writes, drop old in a later deploy).
@@ -27,8 +27,8 @@ By default review the migrations in the current diff (run `git diff` / `git diff
 ### Correctness
 - Foreign key without a supporting index.
 - Missing `down()` for a reversible change, or non-deterministic defaults.
-- Enum/check changes that reject existing rows.
-- Charset/collation changes on large tables.
+- Enum/check-constraint changes that reject existing rows (adding a Postgres `CHECK` or enum value, tightening `NOT NULL`).
+- Type or collation changes that force a full table rewrite.
 
 ## How to report
 - Cite `file:line`. Say whether you confirmed by reading schema/models or are inferring.
