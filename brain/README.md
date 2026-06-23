@@ -2,7 +2,7 @@
 
 The canonical memory of this dotfiles repo. It is auto-loaded at the start of
 every session by the `brain-loader` hook, so it never needs pasting. As a
-session runs, Claude offers to update it; at the end, `/brain-sync` brings it
+session runs, Claude offers to update it; at the end, `/wrap` brings it
 current for next time.
 
 ## Files
