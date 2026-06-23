@@ -3,7 +3,7 @@
 The canonical memory of the **<Project Name>** project. In this setup it is
 auto-loaded at the start of every session by the `brain-loader` hook, so you
 never paste it in. As a session runs, Claude proactively offers to update it;
-at the end, `/brain-sync` brings it current for next time.
+at the end, `/wrap` brings it current for next time.
 
 ## Files
 - `01-OV-overview.md`: what this project is

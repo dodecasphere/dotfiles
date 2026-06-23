@@ -2,6 +2,12 @@
 
 A log of choices made and why. Newest at the top. Never edit old entries.
 
+## 2026-06-23: Fold /brain-sync into /wrap
+**Context:** Two end-of-session commands overlapped (/wrap routed durable learnings, /brain-sync updated the brain).
+**Choice:** Merge the brain update into /wrap and remove the standalone /brain-sync.
+**Why:** One session-closer, less redundancy; the brain is the primary home for project-specific durable items.
+**Alternatives considered:** Keeping both (rejected as redundant).
+
 ## 2026-06-23: Automate Project Brain instead of installing the skill
 **Context:** Wanted persistent project memory without manual effort.
 **Choice:** SessionStart loader hook + a CLAUDE.md nudge rule + `/brain-sync`; vendored only the templates.
