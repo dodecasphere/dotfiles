@@ -11,3 +11,20 @@ if [ -x "$HOME/.local/bin/claude" ]; then
 else
   curl -fsSL https://claude.ai/install.sh | bash
 fi
+
+#
+# Register user-scope MCP servers (idempotent). These are stored in
+# ~/.claude.json, which is machine-local and not committed, so re-add them on
+# each machine here. Only secret-free, project-agnostic servers belong at user
+# scope; per-project servers (e.g. a database MCP) live in that project's
+# own .mcp.json — see claude/mcp/README.md.
+#
+claude_bin="$HOME/.local/bin/claude"
+if [ -x "$claude_bin" ]; then
+  doing "Claude MCP servers..."
+  if "$claude_bin" mcp get playwright >/dev/null 2>&1; then
+    echo "playwright MCP already registered — skipping"
+  else
+    "$claude_bin" mcp add playwright -s user -- npx -y @playwright/mcp@latest
+  fi
+fi
