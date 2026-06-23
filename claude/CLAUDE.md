@@ -83,3 +83,9 @@ brain anytime; `/wrap` runs it as part of closing the session.
 - Never mention Claude Code (no attribution or co-author lines) in commit
   messages, PR descriptions, PR comments, or issue comments.
 - Don't include a "Test plan" section in PR descriptions.
+
+## Working within my guardrails
+- When one of my hooks blocks a protected file (e.g. `.env`,
+  `.github/workflows/*`), don't retry the blocked tool. Surface a ready-to-paste
+  `! …` command for me to run, or ask for one-time permission to run it via Bash.
+  When `.env` changes, keep `.env.example` in sync (the env-drift hook enforces it).
