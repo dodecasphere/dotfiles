@@ -97,6 +97,10 @@
                     {
                         "type": "command",
                         "command": "bash $HOME/.claude/hooks/env-drift.sh"
+                    },
+                    {
+                        "type": "command",
+                        "command": "bash $HOME/.claude/hooks/product-doc-lint.sh"
                     }
                 ]
             }
