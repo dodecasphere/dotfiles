@@ -1,20 +1,11 @@
 ---
-description: Wrap up the session - update the Project Brain and route any other durable learnings
+description: Wrap up the session - run the brain update, then route any other durable learnings
 allowed-tools: Bash(readlink:*), Bash(mkdir:*), Bash(cp:*), Bash(cat:*), Bash(ls:*), Bash(date:*), Bash(test:*), Read, Write, Edit
 ---
-Close out this session so the next one starts ready. Work only from what actually happened; never invent facts (use `(fill in)` when unknown).
+Close out this session so the next one starts ready. Work only from what actually happened; never invent facts.
 
 ## 1. Update the Project Brain
-Locate the brain (`./`, `brain/`, `.brain/`, or a `*-brain/` dir with canonical `0N-XX-*.md` files). If none exists and this is a real project, offer to create one: resolve templates with `tpl="$(dirname "$(readlink "$HOME/.claude/settings.json")")/templates/brain"`, copy them into `brain/`, pre-fill OV/AR from what you can verify, and leave `(fill in)` elsewhere.
-
-Then bring it current:
-- **Decisions (DC):** prepend a dated entry (`## YYYY-MM-DD: <title>` with Context / Choice / Why / Alternatives) for each meaningful choice. Never edit old entries.
-- **Open Questions (OQ):** move resolved ones into DC; add any new ones.
-- **Architecture (AR):** update if the stack or structure changed, with a DC note on why.
-- **Glossary (GL):** add any new project-specific terms.
-- **Current State (ST):** archive `05-ST-*.md` to `.history/ST-$(date +%Y-%m-%d-%H%M).md`, then rewrite works / in progress / broken / next 3.
-
-Apply these directly (ST is archived first); only pause when a fact is genuinely ambiguous.
+Run the full `/brain-sync` workflow (defined in `~/.claude/commands/brain-sync.md` - read it and follow its steps): locate or scaffold the brain, log decisions to DC, resolve open questions, refresh AR/GL, and archive + rewrite ST. Apply directly (ST is archived first).
 
 ## 2. Route anything that does not belong in the brain
 For durable learnings that are not project-specific state:

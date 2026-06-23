@@ -68,8 +68,8 @@ to update it at the moments that matter, without being asked:
 - something starts working or breaks: offer to update Current State (ST)
 - the stack or structure changes: update Architecture (AR), plus a DC note on why
 - an open question gets answered: move it from OQ into DC
-Suggest, do not edit the brain without my go-ahead. At session end, `/wrap`
-brings it current for the next session.
+Suggest, do not edit the brain without my go-ahead. `/brain-sync` refreshes the
+brain anytime; `/wrap` runs it as part of closing the session.
 
 ## Writing docs
 - Never use dashes (— or -) as punctuation in documentation or README files.
