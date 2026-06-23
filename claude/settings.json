@@ -5,10 +5,26 @@
   },
   "fastMode": true,
   "permissions": {
+    "defaultMode": "acceptEdits",
     "allow": [
-      "Bash(make lint:*)",
-      "Bash(make test:*)",
-      "Bash(git fetch:*)"
+      "Bash(git:*)",
+      "Bash(gh:*)",
+      "Bash(php:*)",
+      "Bash(composer:*)",
+      "Bash(npm:*)",
+      "Bash(npx:*)",
+      "Bash(yarn:*)",
+      "Bash(pnpm:*)",
+      "Bash(node:*)",
+      "Bash(make:*)",
+      "Bash(docker:*)",
+      "Bash(docker-compose:*)",
+      "Bash(vendor/bin/pest:*)",
+      "Bash(vendor/bin/phpunit:*)",
+      "Bash(curl:*)",
+      "Bash(brew:*)",
+      "WebSearch",
+      "WebFetch"
     ]
   },
   "statusLine": {

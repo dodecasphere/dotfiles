@@ -37,5 +37,6 @@ build commands — lives in each repo's own CLAUDE.md, not here.
 ## Using GitHub
 - Use the `gh` CLI for GitHub operations rather than raw API calls or guessing
   at git state.
-- Never mention Claude Code in PR descriptions, PR comments, or issue comments.
+- Never mention Claude Code (no attribution or co-author lines) in commit
+  messages, PR descriptions, PR comments, or issue comments.
 - Don't include a "Test plan" section in PR descriptions.
