@@ -30,6 +30,12 @@ build commands — lives in each repo's own CLAUDE.md, not here.
 5. **Suggest better ways.** I'm always open to them — don't hesitate to propose
    a different approach, especially one with lasting impact over a tactical fix.
 
-## Tools
+## Writing docs
+- Never use dashes (— or -) as punctuation in documentation or README files.
+  Rephrase using periods, commas, or parentheses instead.
+
+## Using GitHub
 - Use the `gh` CLI for GitHub operations rather than raw API calls or guessing
   at git state.
+- Never mention Claude Code in PR descriptions, PR comments, or issue comments.
+- Don't include a "Test plan" section in PR descriptions.
