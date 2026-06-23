@@ -2,6 +2,12 @@
 
 A log of choices made and why. Newest at the top. Never edit old entries.
 
+## 2026-06-23: Round 3 - added 15 power-user features
+**Context:** Second feature brainstorm; owner approved every proposed idea except a Sentry MCP.
+**Choice:** Added 3 enforcement hooks (git-workflow-guard opt-in via .claude/git-guard.conf, focused-test-guard, env-drift), 5 agents (performance-reviewer, accessibility-reviewer, test-writer, pr-feedback-responder, docs-sync), 5 commands (/quality, /api-sync, /deps-audit, /factory, /changelog), and 2 skills (pest-patterns, postgres-performance).
+**Why:** Each compounds with existing pieces (the TDD gates, the reviewers, the connected Postman MCP).
+**Alternatives considered:** Sentry MCP (declined: owner does not use Sentry).
+
 ## 2026-06-23: Add tier-2 test enforcement (require-tests Stop hook)
 **Context:** Wanted to guarantee the downside is caught; tier-1 (verify.sh) only gates pass + coverage where opted in.
 **Choice:** A global require-tests Stop hook blocks finishing when app code changed but no test was touched. Auto-activates only where a test setup exists (tests/ dir, Pest/PHPUnit, or Vitest).
