@@ -23,19 +23,25 @@ block() {
   exit 2
 }
 
+# Only match a dangerous command when it appears in command position: at the
+# start of the string or right after a separator (; & | ( && ||). This avoids
+# false positives when the words appear as arguments or inside quotes (e.g. a
+# commit message or echo that mentions "terraform apply").
+CMDPOS='(^|[;&|(]|&&|\|\|)[[:space:]]*'
+
 # Force pushes (rewrite remote history)
-if printf '%s' "$cmd" | grep -Eq 'git[[:space:]]+push' \
+if printf '%s' "$cmd" | grep -Eq "$CMDPOS"'git[[:space:]]+push' \
    && printf '%s' "$cmd" | grep -Eq '(--force|[[:space:]]-f([[:space:]]|$))'; then
   block "git force-push"
 fi
 
 # Catastrophic recursive deletes of root / home (allows deleting normal paths)
-if printf '%s' "$cmd" | grep -Eq 'rm[[:space:]]+-[a-zA-Z]*r[a-zA-Z]*[[:space:]]+(/|~|\$HOME)([[:space:]/;|*]|$)'; then
+if printf '%s' "$cmd" | grep -Eq "$CMDPOS"'rm[[:space:]]+-[a-zA-Z]*r[a-zA-Z]*[[:space:]]+(/|~|\$HOME)([[:space:]/;|*]|$)'; then
   block "rm -r of a root/home path"
 fi
 
 # Terraform state changes (Marco Lancini's rule: apply/destroy are yours, not the agent's)
-if printf '%s' "$cmd" | grep -Eq 'terraform[[:space:]]+(apply|destroy)'; then
+if printf '%s' "$cmd" | grep -Eq "$CMDPOS"'terraform[[:space:]]+(apply|destroy)'; then
   block "terraform apply/destroy"
 fi
 
