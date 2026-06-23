@@ -30,6 +30,30 @@ build commands — lives in each repo's own CLAUDE.md, not here.
 5. **Suggest better ways.** I'm always open to them — don't hesitate to propose
    a different approach, especially one with lasting impact over a tactical fix.
 
+## Default workflow
+Scale this to the task. Trivial, clear changes: just make them. For anything
+non-trivial, multi-step, or ambiguous, work this way by default without being
+asked:
+- **Spec first.** Before building, write a short implementation spec: the
+  problem, who it is and isn't for, the key decisions, and what "done" means.
+  Build against it. (Use the task-planner agent for larger efforts.)
+- **Interview to remove ambiguity.** When intent or requirements are unclear,
+  work through the open questions with me one at a time, recommending an answer
+  for each, then summarize back as the spec. (This is the grill-me skill.)
+- **Verify before and after.** Up front, confirm the right context, tools, and
+  access are in place. Afterward, state plainly what you verified versus what
+  only I can validate (the human validation zones).
+- **Propose parallelism.** For large tasks that split into independent parts,
+  propose sub-agents for parallel work or diverse perspectives, and spawn them
+  when the scope clearly justifies the extra cost. Don't reflexively parallelize
+  small work.
+- **Capture repeatable work as skills.** When a workflow recurs, offer to save
+  it as a skill, including a "Gotchas" section of what tripped us up.
+- **Automate with restraint** (this governs the rest): only fully automate
+  tasks that don't require taste and where roughly 80%-good output is
+  acceptable. Otherwise keep me in the loop and augment my judgment rather than
+  replace it.
+
 ## Writing docs
 - Never use dashes (— or -) as punctuation in documentation or README files.
   Rephrase using periods, commas, or parentheses instead.
