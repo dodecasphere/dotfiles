@@ -17,6 +17,7 @@ cask "bartender"
 # cask "charles"
 cask "claude"
 brew tap hamed-elfayome/claude-usage
+brew trust --cask hamed-elfayome/claude-usage/claude-usage-tracker
 cask "claude-usage-tracker"
 cask "clipy"
 cask "coconutbattery"; press_key_to_continue "Coconutbattery: Set menubar to display '%t  •  %r%s  •  %p%' [Press any key...]"
