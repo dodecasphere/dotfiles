@@ -46,7 +46,9 @@ asked:
 - **Test-first.** For non-trivial logic, write the failing test before the
   implementation (the `tdd` skill), unit and feature, PHP and JS. Never call
   work done with failing tests or below the project's coverage bar; where a
-  project ships `.claude/verify.sh`, that gate is enforced automatically.
+  project ships `.claude/verify.sh`, that gate is enforced automatically, and
+  where a test suite exists, changing app code without touching a test is
+  blocked (the require-tests hook).
 - **Propose parallelism.** For large tasks that split into independent parts,
   propose sub-agents for parallel work or diverse perspectives, and spawn them
   when the scope clearly justifies the extra cost. Don't reflexively parallelize

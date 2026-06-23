@@ -81,6 +81,10 @@
                     {
                         "type": "command",
                         "command": "bash $HOME/.claude/hooks/debug-scrubber.sh"
+                    },
+                    {
+                        "type": "command",
+                        "command": "bash $HOME/.claude/hooks/require-tests.sh"
                     }
                 ]
             }
