@@ -5,11 +5,11 @@ description: Conventions for building frontend pages with Inertia.js v3 and Vue 
 
 # Inertia v3 + Vue 3
 
-Frontend guidance for Laravel + Inertia v3 + Vue 3 (3.5 is current stable; do not rely on 3.6/Vapor until it ships). The server is the source of truth; Inertia pages are Vue components rendered from controller props. Confirm the project is on Inertia v3 (built-in HTTP client, the `@inertiajs/vite` plugin, `useLayoutProps`); if it still uses Axios and `Inertia::lazy()`, it is v2, so follow that instead.
+Frontend guidance for Laravel + Inertia v3 + Vue 3 (3.5 is current stable; do not rely on 3.6/Vapor until it ships). This stack uses plain JavaScript, not TypeScript: use runtime prop declarations and `.vue`/`.js` files, and reach for JSDoc only if editor hints are wanted. The server is the source of truth; Inertia pages are Vue components rendered from controller props. Confirm the project is on Inertia v3 (built-in HTTP client, the `@inertiajs/vite` plugin, `useLayoutProps`); if it still uses Axios and `Inertia::lazy()`, it is v2, so follow that instead.
 
 ## Vue 3 component style
 - `<script setup>` + Composition API for all new components.
-- `defineProps` / `defineEmits` with types. Never mutate a prop; emit or copy locally.
+- Declare props with runtime `defineProps({ ... })` and events with `defineEmits([...])` (plain JS, no type generics). Never mutate a prop; emit or copy locally.
 - Extract reusable logic into composables (`useX()`), not mixins.
 - `computed` for derived state; `watch` for side effects only.
 - Always key `v-for`. Never `v-html` on user-controlled content (XSS).
