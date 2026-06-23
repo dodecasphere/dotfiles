@@ -18,8 +18,9 @@ for name in *; do
 
   target="$HOME/.$name"
 
-  # ignore *.md and *.sh files
-  if [[ ${name: -3} != ".sh" && ${name: -3} != ".md" ]]; then
+  # ignore *.md and *.sh files, and the claude/ subtree (handled separately
+  # below — it links individual files into ~/.claude, not the whole dir)
+  if [[ ${name: -3} != ".sh" && ${name: -3} != ".md" && "$name" != "claude" ]]; then
     # check if file already exists
     if [ -e "$target" ]; then
       # check if file is a symlink.
@@ -41,6 +42,42 @@ for name in *; do
   fi
 
 done
+
+# --- Claude Code config (~/.claude) ---------------------------------------
+# The canonical config lives in this repo's claude/ subtree. We symlink it into
+# ~/.claude, which is otherwise full of machine-local state (plugins/, projects/,
+# caches, credentials, session/daemon files) that must stay out of git.
+# Top-level files are linked individually so that local junk is never touched;
+# the config subdirectories are ours alone and linked wholesale.
+claude_src="$PWD/claude"
+claude_dst="$HOME/.claude"
+if [ -d "$claude_src" ]; then
+  mkdir -p "$claude_dst"
+
+  link_claude() {
+    # $1 = name under claude/  (file or directory)
+    local src="$claude_src/$1"
+    local dst="$claude_dst/$1"
+    [ -e "$src" ] || return 0
+    if [ -e "$dst" ] && [ ! -L "$dst" ]; then
+      mkdir -p "$HOME/$backup_dir"
+      echo "Backing up .claude/$1 in $HOME/$backup_dir/"
+      mv "$dst" "$HOME/$backup_dir/claude-$(basename "$1")$(date +"%d-%m-%Y-%H:%M:%S")"
+    fi
+    rm -rf "$dst"
+    echo "Creating $dst"
+    ln -s "$src" "$dst"
+  }
+
+  # Individual top-level files (never link the ~/.claude dir itself).
+  for f in CLAUDE.md settings.json statusline-command.sh statusline-config.txt; do
+    link_claude "$f"
+  done
+  # Config subdirectories (ours alone; safe to link wholesale).
+  for d in agents commands hooks rules skills; do
+    link_claude "$d"
+  done
+fi
 
 # Activate this repo's git hooks (the gitleaks secret-scan pre-commit hook).
 if [ -d "$PWD/.githooks" ] && git -C "$PWD" rev-parse --git-dir > /dev/null 2>&1; then
