@@ -7,18 +7,6 @@ fi
 # Use the right Claude account for the job
 function claude() {
   case "$PWD" in
-    "$HOME/Sites" | "$HOME/Sites/"*)
-      command claude "$@"
-      ;;
-    "$HOME/SitesMine" | "$HOME/SitesMine/"*)
-      CLAUDE_CONFIG_DIR=~/.claude-personal command claude "$@"
-      ;;
-    "$HOME/Dotfiles" | "$HOME/Dotfiles/"*)
-      command claude "$@"
-      ;;
-    "$HOME/.dotfiles-secrets" | "$HOME/.dotfiles-secrets/"*)
-      command claude "$@"
-      ;;
     # "$HOME/something-work" | "$HOME/something-work/"*)
     #   CLAUDE_CONFIG_DIR=~/.claude-work command claude "$@"
     #   ;;
