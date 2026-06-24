@@ -43,6 +43,12 @@ asked:
 - **Verify before and after.** Up front, confirm the right context, tools, and
   access are in place. Afterward, state plainly what you verified versus what
   only I can validate (the human validation zones).
+- **Browser-verifying Livewire/Inertia via Playwright MCP.** The MCP
+  `browser_click` often does not fire Livewire/Inertia actions (form submits,
+  checkbox toggles, Filament row actions) — it reports success but no request
+  goes out. Use `browser_evaluate` with a native `.click()` or
+  `form.requestSubmit()` instead. The app is usually fine; it's a harness quirk,
+  so confirm via the network/DOM before declaring a real bug.
 - **Test-first.** For non-trivial logic, write the failing test before the
   implementation (the `tdd` skill), unit and feature, PHP and JS. Never call
   work done with failing tests or below the project's coverage bar; where a
@@ -58,7 +64,10 @@ asked:
 - **Editing under a format-on-save hook.** When a hook reformats files after
   each edit (e.g. Pint with `no_unused_imports`), add a new `use` import and its
   first usage in the *same* edit — otherwise the formatter strips the "unused"
-  import before a later edit references it, breaking the file. Same goes for
+  import before a later edit references it, breaking the file. The symptom can
+  be a *silent* fatal (a segfault or a test run that prints nothing) when the
+  stripped import is a trait `use` in a class or a class reference in a
+  routes/config file — not always an obvious "class not found". Same goes for
   config files that reference a class only via `::class`.
 - **Automate with restraint** (this governs the rest): only fully automate
   tasks that don't require taste and where roughly 80%-good output is

@@ -54,7 +54,8 @@
             "WebSearch",
             "WebFetch",
             "mcp__laravel-boost__*",
-            "mcp__chrome-devtools__*"
+            "mcp__chrome-devtools__*",
+            "mcp__playwright__*"
         ]
     },
     "statusLine": {
