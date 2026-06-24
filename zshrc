@@ -175,3 +175,7 @@ export HERD_PHP_83_INI_SCAN_DIR="/Users/michaeldulle/Library/Application Support
 
 # Herd injected PHP 7.4 configuration.
 export HERD_PHP_74_INI_SCAN_DIR="/Users/michaeldulle/Library/Application Support/Herd/config/php/74/"
+
+
+# Herd injected PHP 8.4 configuration.
+export HERD_PHP_84_INI_SCAN_DIR="/Users/michaeldulle/Library/Application Support/Herd/config/php/84/"
