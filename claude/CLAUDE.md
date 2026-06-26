@@ -48,7 +48,11 @@ asked:
   checkbox toggles, Filament row actions) — it reports success but no request
   goes out. Use `browser_evaluate` with a native `.click()` or
   `form.requestSubmit()` instead. The app is usually fine; it's a harness quirk,
-  so confirm via the network/DOM before declaring a real bug.
+  so confirm via the network/DOM before declaring a real bug. Also:
+  `browser_file_upload` only accepts paths inside the allowed roots (the project
+  dir / `.playwright-mcp`), not the scratchpad or `/tmp` — copy the fixture into
+  the repo (e.g. a gitignored `.playwright-mcp/`) first. Trigger the chooser with
+  a native `.click()` on the file input, then call `browser_file_upload`.
 - **Test-first.** For non-trivial logic, write the failing test before the
   implementation (the `tdd` skill), unit and feature, PHP and JS. Never call
   work done with failing tests or below the project's coverage bar; where a
@@ -103,3 +107,8 @@ brain anytime; `/wrap` runs it as part of closing the session.
   `.github/workflows/*`), don't retry the blocked tool. Surface a ready-to-paste
   `! …` command for me to run, or ask for one-time permission to run it via Bash.
   When `.env` changes, keep `.env.example` in sync (the env-drift hook enforces it).
+- **Non-blocking hook reminders are instructions, not noise.** When a hook
+  injects a checklist or reminder into context (e.g. an end-of-slice sync
+  prompt), act on it or make a conscious, stated decision to skip it — don't
+  silently ignore it repeatedly. (A reminder ignored often enough tends to get
+  promoted to a hard block.)
