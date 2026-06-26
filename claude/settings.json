@@ -1,17 +1,17 @@
 {
-  "theme" : "auto",
-  "inputNeededNotifEnabled" : true,
-  "awaySummaryEnabled" : false,
-  "permissions" : {
-    "allow" : [
+  "env": {
+    "CLAUDE_CODE_NO_FLICKER": "1"
+  },
+  "permissions": {
+    "allow": [
       "Bash(gh:*)",
       "Bash(curl:*)",
       "Bash(composer:*)",
-      "Bash(vendor\/bin\/phpunit:*)",
-      "Bash(vendor\/bin\/pest:*)",
-      "Bash(vendor\/bin\/phpstan:*)",
-      "Bash(vendor\/bin\/pint:*)",
-      "Bash(vendor\/bin\/rector:*)",
+      "Bash(vendor/bin/phpunit:*)",
+      "Bash(vendor/bin/pest:*)",
+      "Bash(vendor/bin/phpstan:*)",
+      "Bash(vendor/bin/pint:*)",
+      "Bash(vendor/bin/rector:*)",
       "Bash(git:*)",
       "Bash(php artisan:*)",
       "Bash(npm:*)",
@@ -54,110 +54,110 @@
       "mcp__chrome-devtools__*",
       "mcp__playwright__*"
     ],
-    "defaultMode" : "acceptEdits"
+    "defaultMode": "acceptEdits"
   },
-  "env" : {
-    "CLAUDE_CODE_NO_FLICKER" : "1"
-  },
-  "model" : "opus",
-  "autoCompactEnabled" : true,
-  "statusLine" : {
-    "command" : "bash \/Users\/michaeldulle\/.claude\/statusline-command.sh",
-    "type" : "command"
-  },
-  "hooks" : {
-    "SessionStart" : [
+  "model": "opus",
+  "hooks": {
+    "PreToolUse": [
       {
-        "matcher" : "compact|resume",
-        "hooks" : [
+        "matcher": "Bash",
+        "hooks": [
           {
-            "type" : "command",
-            "command" : "bash $HOME\/.claude\/hooks\/context-recovery.sh"
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/block-dangerous-commands.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/git-workflow-guard.sh"
           }
         ]
       },
       {
-        "hooks" : [
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
           {
-            "type" : "command",
-            "command" : "bash $HOME\/.claude\/hooks\/brain-loader.sh"
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/protect-sensitive-files.sh"
           }
         ]
       }
     ],
-    "PostToolUse" : [
+    "PostToolUse": [
       {
-        "matcher" : "Edit|Write|MultiEdit",
-        "hooks" : [
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
           {
-            "type" : "command",
-            "command" : "bash $HOME\/.claude\/hooks\/auto-format.sh"
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/auto-format.sh"
           }
         ]
       }
     ],
-    "PreToolUse" : [
+    "Stop": [
       {
-        "matcher" : "Bash",
-        "hooks" : [
+        "hooks": [
           {
-            "type" : "command",
-            "command" : "bash $HOME\/.claude\/hooks\/block-dangerous-commands.sh"
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/verify-done.sh"
           },
           {
-            "type" : "command",
-            "command" : "bash $HOME\/.claude\/hooks\/git-workflow-guard.sh"
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/debug-scrubber.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/require-tests.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/focused-test-guard.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/env-drift.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/product-doc-lint.sh"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "compact|resume",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/context-recovery.sh"
           }
         ]
       },
       {
-        "matcher" : "Edit|Write|MultiEdit",
-        "hooks" : [
+        "hooks": [
           {
-            "type" : "command",
-            "command" : "bash $HOME\/.claude\/hooks\/protect-sensitive-files.sh"
-          }
-        ]
-      }
-    ],
-    "Stop" : [
-      {
-        "hooks" : [
-          {
-            "type" : "command",
-            "command" : "bash $HOME\/.claude\/hooks\/verify-done.sh"
-          },
-          {
-            "type" : "command",
-            "command" : "bash $HOME\/.claude\/hooks\/debug-scrubber.sh"
-          },
-          {
-            "type" : "command",
-            "command" : "bash $HOME\/.claude\/hooks\/require-tests.sh"
-          },
-          {
-            "type" : "command",
-            "command" : "bash $HOME\/.claude\/hooks\/focused-test-guard.sh"
-          },
-          {
-            "type" : "command",
-            "command" : "bash $HOME\/.claude\/hooks\/env-drift.sh"
-          },
-          {
-            "type" : "command",
-            "command" : "bash $HOME\/.claude\/hooks\/product-doc-lint.sh"
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/brain-loader.sh"
           }
         ]
       }
     ]
   },
-  "agentPushNotifEnabled" : true,
-  "enabledPlugins" : {
-    "feature-dev@claude-plugins-official" : true,
-    "code-simplifier@claude-plugins-official" : true,
-    "security-guidance@claude-plugins-official" : true,
-    "remember@claude-plugins-official" : true,
-    "claude-md-management@claude-plugins-official" : true
+  "statusLine": {
+    "type": "command",
+    "command": "bash $HOME/.claude/statusline-command.sh"
   },
-  "fastMode" : true
+  "enabledPlugins": {
+    "feature-dev@claude-plugins-official": true,
+    "code-simplifier@claude-plugins-official": true,
+    "claude-md-management@claude-plugins-official": true,
+    "remember@claude-plugins-official": true,
+    "security-guidance@claude-plugins-official": true
+  },
+  "fastMode": true,
+  "awaySummaryEnabled": false,
+  "theme": "auto",
+  "autoCompactEnabled": true,
+  "inputNeededNotifEnabled": true,
+  "agentPushNotifEnabled": true
 }
