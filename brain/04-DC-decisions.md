@@ -2,6 +2,12 @@
 
 A log of choices made and why. Newest at the top. Never edit old entries.
 
+## 2026-06-26: Resolved git merge conflict in claude/settings.json
+**Context:** `/doctor` reported settings.json as invalid JSON. The file had unresolved git merge conflict markers (`<<<<<<<`/`=======`/`>>>>>>>`) from a merge + stash conflict, making it unparseable.
+**Choice:** Took the "Stashed changes" side as the winner. Wrote clean JSON directly to `claude/settings.json` (symlink target in the repo).
+**Why:** The stash side was the more current/intentional version: it uses `$HOME/` references (portable) and unescaped forward slashes (standard JSON) vs. the upstream's absolute paths with `\/` escaping (macOS serializer artifact). Both sides had identical hook inventory; the stash side had a cleaner hook order (PreToolUse first) matching how the hooks are actually organized.
+**Alternatives considered:** Taking the upstream side (rejected: absolute paths, escaped slashes, stale hook ordering).
+
 ## 2026-06-23: Import 15 PM skills from Product-Manager-Skills by cherry-pick + house-rewrite
 **Context:** Dean Peters' Product-Manager-Skills repo (47 skills, v0.79, distributed as a Claude Code plugin/marketplace) overlaps the owner's existing PM suite but fills real gaps (finance, market sizing, stakeholder, career/leadership, AI-PM). The owner asked what to pull in and whether to install from source instead of the prior manual-copy approach.
 **Choice:** Cherry-picked 15 net-new gap-fillers and rewrote each to house style (tight like `positioning.md`, em-dash-free, `[[wikilink]]` cross-links, CC-BY-NC-SA attribution footer), rather than installing the upstream plugin or bulk-copying. Imported: finance (finance-metrics-quickref, business-health-diagnostic, feature-investment-advisor, finance-based-pricing-advisor), sizing/macro (tam-sam-som-calculator, pestel-analysis), stakeholder (stakeholder-mapping, stakeholder-engagement-advisor), career (director-readiness-advisor, altitude-horizon-framework, product-sense-interview-answer), AI-PM (context-engineering-advisor, recommendation-canvas, pol-probe), delivery (epic-breakdown-advisor). Kept the `prd-to-stories` agent and cross-linked it to epic-breakdown-advisor rather than replacing it.
