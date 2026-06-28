@@ -2,6 +2,12 @@
 
 A log of choices made and why. Newest at the top. Never edit old entries.
 
+## 2026-06-27: Hand-port third-party Claude skills into the `claude/` tree, never run their installers
+**Context:** Brought in the `caveman` output-compression skill from JuliusBrussee/caveman. Upstream ships a `curl -fsSL ... | bash` that runs a Node installer (`bin/install.js`) writing into `~/.claude` directly, plus `.toml` command files (Codex format) and an always-on activation flag file.
+**Choice:** Hand-placed `claude/skills/caveman/SKILL.md` verbatim and translated the three usable commands into Claude markdown (`claude/commands/caveman.md`, `caveman-commit.md`, `caveman-review.md`). Skipped the Node installer, the always-on flag file, and `caveman-init` (it just shells out to the installer). Left caveman opt-in (invoke via `/caveman` or "caveman mode"), not auto-on. Committed in dfa73af. Generalizes the same call made for the PM-skills import (see 2026-06-23 cherry-pick entry).
+**Why:** Upstream installers target machine-local `~/.claude`, which does not ride the dotfiles symlink-restore and would drift from git. Hand-porting keeps everything portable, house-styled, and selective. Caveman stays opt-in because always-on compression fights the `ai-to-human`/`write` skills on anything exec- or human-facing.
+**Alternatives considered:** Running the upstream `curl | bash` (rejected: not portable, writes outside git, all-or-nothing); porting the `.toml` commands as-is (rejected: Codex format, Claude uses markdown); enabling the always-on flag (rejected: collides with the writing-voice skills).
+
 ## 2026-06-26: Resolved git merge conflict in claude/settings.json
 **Context:** `/doctor` reported settings.json as invalid JSON. The file had unresolved git merge conflict markers (`<<<<<<<`/`=======`/`>>>>>>>`) from a merge + stash conflict, making it unparseable.
 **Choice:** Took the "Stashed changes" side as the winner. Wrote clean JSON directly to `claude/settings.json` (symlink target in the repo).
