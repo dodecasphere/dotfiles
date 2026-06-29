@@ -74,9 +74,27 @@ if [ -d "$claude_src" ]; then
     link_claude "$f"
   done
   # Config subdirectories (ours alone; safe to link wholesale).
-  for d in agents commands hooks rules skills; do
+  for d in agents commands hooks rules skills memory; do
     link_claude "$d"
   done
+fi
+
+# --- Dotfiles project memory (~/.claude/projects/…/memory) ----------------
+# brain/memory/ holds project-specific Claude memories for this repo.
+# We symlink it into the path Claude Code uses for this project so memories
+# survive a machine wipe and are version-controlled alongside the brain docs.
+dotfiles_project_memory_dst="$HOME/.claude/projects/-Users-$(whoami)-Dotfiles/memory"
+dotfiles_project_memory_src="$PWD/brain/memory"
+if [ -d "$dotfiles_project_memory_src" ]; then
+  mkdir -p "$(dirname "$dotfiles_project_memory_dst")"
+  if [ -e "$dotfiles_project_memory_dst" ] && [ ! -L "$dotfiles_project_memory_dst" ]; then
+    mkdir -p "$HOME/$backup_dir"
+    echo "Backing up $dotfiles_project_memory_dst in $HOME/$backup_dir/"
+    mv "$dotfiles_project_memory_dst" "$HOME/$backup_dir/claude-project-memory-$(date +"%d-%m-%Y-%H:%M:%S")"
+  fi
+  rm -rf "$dotfiles_project_memory_dst"
+  echo "Creating $dotfiles_project_memory_dst"
+  ln -s "$dotfiles_project_memory_src" "$dotfiles_project_memory_dst"
 fi
 
 # Activate this repo's git hooks (the gitleaks secret-scan pre-commit hook).
