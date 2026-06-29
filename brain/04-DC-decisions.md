@@ -2,6 +2,18 @@
 
 A log of choices made and why. Newest at the top. Never edit old entries.
 
+## 2026-06-29: Prune 10 skills to reduce per-session context overhead
+**Context:** Sessions were filling context unusually fast. Investigated startup system-reminders: the skills list, deferred MCP tools list, brain-loader output, and `.remember` history all inject tokens before the first user message. The skills list contained 10 imported skills that were either never used, superseded (handoff → remember/brain), niche one-off (finance math, market sizing, interview prep), or broken imports (humanizer had AGENTS.md/LICENSE/README suggesting a full repo was cloned in).
+**Choice:** Deleted from `claude/skills/`: handoff, humanizer, business-health-diagnostic, finance-based-pricing-advisor, finance-metrics-quickref, pestel-analysis, tam-sam-som-calculator, ai-to-human, maintaining-context, context-engineering-advisor. Owner also cut several consumer MCP connectors (AllTrails, Audible, Resy, Spotify, StubHub, Play Sheet Music, and others) via the Claude app settings UI.
+**Why:** 1,564 lines of skill content removed; consumer connectors accounted for ~55 deferred tool entries. Combined reduction meaningfully shortens the startup injection each session.
+**Alternatives considered:** Keeping all skills as "might use someday" (rejected: context cost is paid every session whether used or not).
+
+## 2026-06-29: Version-control Claude project memories in the repo
+**Context:** Project memories in `~/.claude/projects/` are machine-local and would be lost if the machine dies. User asked how to preserve them.
+**Choice:** Established two-tier memory layout: (1) `claude/memory/` for global cross-project memories (career-product-manager, tech-stack), symlinked to `~/.claude/memory/` — added `memory` to the claude subdirs loop in `install.sh`; (2) `brain/memory/` for Dotfiles-specific project memory (claude-config-layer), symlinked to `~/.claude/projects/-Users-$(whoami)-Dotfiles/memory/` via a new block in `install.sh`. Moved cross-project memories from the Dotfiles project scope to the global scope at the same time.
+**Why:** Memories now survive a machine wipe and are restored by `install.sh` on a fresh clone. Global memories (who the user is, their stack) belong at `~/.claude/memory/` so they load in every project, not just Dotfiles sessions. Project-specific memory (claude-config-layer) stays scoped to the Dotfiles project.
+**Alternatives considered:** Storing all memories in Dotfiles (rejected: semantically wrong for non-dotfiles projects, couples unrelated repos); storing per-project memories in Dotfiles (rejected: same problem).
+
 ## 2026-06-27: Hand-port third-party Claude skills into the `claude/` tree, never run their installers
 **Context:** Brought in the `caveman` output-compression skill from JuliusBrussee/caveman. Upstream ships a `curl -fsSL ... | bash` that runs a Node installer (`bin/install.js`) writing into `~/.claude` directly, plus `.toml` command files (Codex format) and an always-on activation flag file.
 **Choice:** Hand-placed `claude/skills/caveman/SKILL.md` verbatim and translated the three usable commands into Claude markdown (`claude/commands/caveman.md`, `caveman-commit.md`, `caveman-review.md`). Skipped the Node installer, the always-on flag file, and `caveman-init` (it just shells out to the installer). Left caveman opt-in (invoke via `/caveman` or "caveman mode"), not auto-on. Committed in dfa73af. Generalizes the same call made for the PM-skills import (see 2026-06-23 cherry-pick entry).
