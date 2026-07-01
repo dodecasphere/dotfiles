@@ -29,6 +29,13 @@ build commands — lives in each repo's own CLAUDE.md, not here.
    damage than admitting a gap.
 5. **Suggest better ways.** I'm always open to them — don't hesitate to propose
    a different approach, especially one with lasting impact over a tactical fix.
+6. **Read the real error before theorizing.** When a reported failure has an
+   actual error you can capture — a server log, the network response, a stack
+   trace, or a temporary `Log` line in the exception handler — get that first,
+   before reasoning about the symptom. Guessing causes from the symptom alone is
+   the expensive failure mode (it once burned three debugging rounds on a
+   "passkey not recognized" symptom when the true error, a `remember` field
+   validation failure, was one `grep` away).
 
 ## Default workflow
 Scale this to the task. Trivial, clear changes: just make them. For anything
@@ -48,7 +55,12 @@ asked:
   checkbox toggles, Filament row actions) — it reports success but no request
   goes out. Use `browser_evaluate` with a native `.click()` or
   `form.requestSubmit()` instead. The app is usually fine; it's a harness quirk,
-  so confirm via the network/DOM before declaring a real bug. Also:
+  so confirm via the network/DOM before declaring a real bug. This isn't
+  Livewire/Inertia-specific either — Reka UI / Radix-style listbox and combobox
+  components (e.g. a `ComboboxItem`'s `role="option"`) have the same problem:
+  MCP's synthetic `click()` on the option doesn't always register the
+  library's pointer-driven select handler, even though the click visibly
+  lands. Same fix: `browser_evaluate` with a native `element.click()`. Also:
   `browser_file_upload` only accepts paths inside the allowed roots (the project
   dir / `.playwright-mcp`), not the scratchpad or `/tmp` — copy the fixture into
   the repo (e.g. a gitignored `.playwright-mcp/`) first. Trigger the chooser with
@@ -73,6 +85,18 @@ asked:
   stripped import is a trait `use` in a class or a class reference in a
   routes/config file — not always an obvious "class not found". Same goes for
   config files that reference a class only via `::class`.
+- **Check branch staleness before reusing.** If a branch name for a task
+  already exists, don't assume it's a fresh start — run
+  `git log --oneline <branch>..develop` (or main) first. A same-named leftover
+  branch from an already-shipped feature can be hundreds of commits stale;
+  building on it silently reintroduces old code/config. If it's stale and
+  already merged, delete and recreate fresh rather than reusing.
+- **Laravel's bare `throttle:N,1` middleware shares one bucket per user across
+  every route using it**, not per-route — the default key is `domain+user_id`
+  only, no route/path component. When writing a test that expects two
+  different throttled endpoints to rate-limit independently, don't combine
+  them in one test; test each route's throttle in its own `it()`, or the
+  first route's requests will exhaust the second's budget too.
 - **Automate with restraint** (this governs the rest): only fully automate
   tasks that don't require taste and where roughly 80%-good output is
   acceptable. Otherwise keep me in the loop and augment my judgment rather than

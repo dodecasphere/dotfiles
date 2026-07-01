@@ -16,8 +16,8 @@ git rev-parse --git-dir >/dev/null 2>&1 || exit 0
 docs=$( { git diff --name-only HEAD; git ls-files --others --exclude-standard; } 2>/dev/null \
   | sort -u \
   | grep -iE '\.md$' \
-  | grep -iE '(prd|spec|strategy|pr-?faq|brief|positioning|okr|roadmap|memo)' \
-  | grep -vE '^(claude/|brain/|vendor/|node_modules/)')
+  | grep -iE '(prd|spec|strategy|pr-?faq|brief|positioning|okr|roadmap|\bmemo\b)' \
+  | grep -vE '^(\.?claude/|brain/|vendor/|node_modules/)')
 [ -z "$docs" ] && exit 0
 
 weasel='\b(very|really|just|simply|easy|easily|obviously|seamless|seamlessly|robust|leverage|synergy|world-class|best-in-class|cutting-edge|game-?changing|revolutionary|delightful|intuitive|user-friendly|basically|actually|literally)\b'

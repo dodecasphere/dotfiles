@@ -21,6 +21,12 @@ fi
 verify="./.claude/verify.sh"
 [ -x "$verify" ] || exit 0   # project hasn't opted in — nothing to enforce
 
+# Skip if no app code changed — no point running tests for a docs-only turn.
+git rev-parse --git-dir >/dev/null 2>&1 && \
+  changed=$( { git diff --name-only HEAD; git ls-files --others --exclude-standard; } 2>/dev/null \
+    | grep -Ei '^(app/.*\.php|resources/js/.*\.(js|vue|jsx)|routes/.*\.php|database/.*\.php)$') && \
+  [ -z "$changed" ] && exit 0
+
 if ! out=$("$verify" 2>&1); then
   echo "Project verification failed (.claude/verify.sh) — fix before finishing:" >&2
   echo "$out" >&2

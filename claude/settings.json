@@ -56,7 +56,7 @@
     ],
     "defaultMode": "acceptEdits"
   },
-  "model": "opus",
+  "model": "sonnet",
   "hooks": {
     "PreToolUse": [
       {
@@ -99,26 +99,6 @@
           {
             "type": "command",
             "command": "bash $HOME/.claude/hooks/verify-done.sh"
-          },
-          {
-            "type": "command",
-            "command": "bash $HOME/.claude/hooks/debug-scrubber.sh"
-          },
-          {
-            "type": "command",
-            "command": "bash $HOME/.claude/hooks/require-tests.sh"
-          },
-          {
-            "type": "command",
-            "command": "bash $HOME/.claude/hooks/focused-test-guard.sh"
-          },
-          {
-            "type": "command",
-            "command": "bash $HOME/.claude/hooks/env-drift.sh"
-          },
-          {
-            "type": "command",
-            "command": "bash $HOME/.claude/hooks/product-doc-lint.sh"
           }
         ]
       }
