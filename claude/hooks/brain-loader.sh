@@ -21,7 +21,7 @@ done
 [ -n "$braindir" ] || exit 0
 
 echo "## Project Brain (auto-loaded; authoritative grounding for this project, do not restate unless asked)"
-for f in "$braindir"/[0-9]*-{OV,GO,AR,DC,ST,GL,OQ}-*.md; do
+for f in "$braindir"/[0-9]*-{OV,GO,ST,OQ}-*.md; do
   [ -f "$f" ] || continue
   echo
   echo "### $(basename "$f")"
