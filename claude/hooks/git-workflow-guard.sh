@@ -6,7 +6,19 @@
 # Conventional Commits. No config file means no-op, so repos that commit
 # straight to main (like these dotfiles) are unaffected.
 #
+# Opt-in check FIRST (cheap): no config file means no-op — skip the jq spawn
+# entirely. This hook runs on every Bash call, so startup cost matters.
+conf=".claude/git-guard.conf"
+[ -f "$conf" ] || { cat >/dev/null; exit 0; }
+
 input=$(cat)
+
+# Cheap raw-substring pre-check before paying for a jq spawn.
+case "$input" in
+  *git*) ;;
+  *) exit 0 ;;
+esac
+
 if command -v jq >/dev/null 2>&1; then
   cmd=$(printf '%s' "$input" | jq -r '.tool_input.command // empty')
 else
@@ -16,9 +28,6 @@ fi
 
 # Only relevant to git commits, in command position.
 printf '%s' "$cmd" | grep -Eq '(^|[;&|(]|&&|\|\|)[[:space:]]*git[[:space:]]+commit' || exit 0
-
-conf=".claude/git-guard.conf"
-[ -f "$conf" ] || exit 0
 
 PROTECTED_BRANCHES="main master production release"
 ENFORCE_CONVENTIONAL=0
