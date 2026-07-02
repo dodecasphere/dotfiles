@@ -35,7 +35,13 @@ build commands — lives in each repo's own CLAUDE.md, not here.
    before reasoning about the symptom. Guessing causes from the symptom alone is
    the expensive failure mode (it once burned three debugging rounds on a
    "passkey not recognized" symptom when the true error, a `remember` field
-   validation failure, was one `grep` away).
+   validation failure, was one `grep` away). A stray background process
+   masquerading as "it's just flaky" is often literally an orphan: `ps -o
+   pid,ppid,stat,lstart,command -p <pid>` — a PPID of 1 means its real parent
+   already died and it got reparented to launchd/init, so it's still fully
+   alive and holding resources (a port, a file watcher) with nobody left to
+   kill it on the next normal shutdown. Caught a week-old zombie `vite`
+   process this way instead of guessing at HMR/websocket causes.
 
 ## Default workflow
 Scale this to the task. Trivial, clear changes: just make them. For anything
@@ -65,6 +71,17 @@ asked:
   dir / `.playwright-mcp`), not the scratchpad or `/tmp` — copy the fixture into
   the repo (e.g. a gitignored `.playwright-mcp/`) first. Trigger the chooser with
   a native `.click()` on the file input, then call `browser_file_upload`.
+- **Testing Reka UI (or other Radix-style) dialogs/popovers in Vitest.** Their
+  content teleports outside the mounted component's own DOM tree via a
+  Teleport/Portal — `wrapper.findAll()` won't see it even with
+  `attachTo: document.body`. Query `document.body.querySelectorAll(...)`
+  directly instead, and prefer a native `.click()` over `.trigger('click')` on
+  a `wrapper.find()` result that will come back empty.
+- **Laravel migrations on Postgres:** `Blueprint::after('column')` for column
+  positioning is a MySQL-only feature — Laravel's Postgres grammar silently
+  ignores it (no error, no warning). A new column always lands at the end of
+  the table on Postgres regardless of `after()`. Don't trust that clause's
+  intent to hold true in a Postgres-backed project.
 - **Test-first.** For non-trivial logic, write the failing test before the
   implementation (the `tdd` skill), unit and feature, PHP and JS. Never call
   work done with failing tests or below the project's coverage bar; where a
@@ -136,3 +153,8 @@ brain anytime; `/wrap` runs it as part of closing the session.
   prompt), act on it or make a conscious, stated decision to skip it — don't
   silently ignore it repeatedly. (A reminder ignored often enough tends to get
   promoted to a hard block.)
+- **If a git commit is unexpectedly blocked by a branch-protection hook** even
+  though the branch/files look correct, check whether `git add && git commit`
+  was chained in one Bash call — some PreToolUse hooks only see the compound
+  command and refuse it outright. Split into two separate tool calls before
+  assuming the hook itself is misconfigured.
