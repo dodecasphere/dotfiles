@@ -22,10 +22,15 @@ verify="./.claude/verify.sh"
 [ -x "$verify" ] || exit 0   # project hasn't opted in — nothing to enforce
 
 # Skip if no app code changed — no point running tests for a docs-only turn.
-git rev-parse --git-dir >/dev/null 2>&1 && \
+# NOTE: this must NOT be an && chain: `grep` exits 1 on no match, which broke
+# the chain and made the skip unreachable, so verify ran on every stop
+# (including skill-only turns). Fixed 2026-07-01; pattern also gained tests/
+# and config/ since edits there can fail the suite too.
+if git rev-parse --git-dir >/dev/null 2>&1; then
   changed=$( { git diff --name-only HEAD; git ls-files --others --exclude-standard; } 2>/dev/null \
-    | grep -Ei '^(app/.*\.php|resources/js/.*\.(js|vue|jsx)|routes/.*\.php|database/.*\.php)$') && \
+    | grep -Ei '^(app/.*\.php|resources/js/.*\.(js|vue|jsx)|routes/.*\.php|database/.*\.php|config/.*\.php|tests/.*\.(php|js))$' || true)
   [ -z "$changed" ] && exit 0
+fi
 
 if ! out=$("$verify" 2>&1); then
   echo "Project verification failed (.claude/verify.sh) — fix before finishing:" >&2
