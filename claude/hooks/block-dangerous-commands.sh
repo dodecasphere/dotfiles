@@ -9,6 +9,15 @@
 #
 input=$(cat)
 
+# Cheap raw-substring pre-check (Mike-approved 2026-07-01): every block rule
+# below requires one of these words in the command, and the command appears
+# literally inside the raw JSON, so their total absence proves nothing can
+# match. A false positive just falls through to the precise checks.
+case "$input" in
+  *push*|*rm*|*terraform*) ;;
+  *) exit 0 ;;
+esac
+
 # Extract the command string. Prefer jq; fall back to the raw JSON (the
 # dangerous substrings we match appear literally either way).
 if command -v jq >/dev/null 2>&1; then

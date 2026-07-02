@@ -56,7 +56,7 @@
     ],
     "defaultMode": "acceptEdits"
   },
-  "model": "sonnet",
+  "model": "claude-fable-5[1m]",
   "hooks": {
     "PreToolUse": [
       {
@@ -131,8 +131,8 @@
     "feature-dev@claude-plugins-official": true,
     "code-simplifier@claude-plugins-official": true,
     "claude-md-management@claude-plugins-official": true,
-    "remember@claude-plugins-official": true,
-    "security-guidance@claude-plugins-official": true
+    "remember@claude-plugins-official": false,
+    "security-guidance@claude-plugins-official": false
   },
   "fastMode": true,
   "awaySummaryEnabled": false,
