@@ -64,11 +64,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash $HOME/.claude/hooks/block-dangerous-commands.sh"
-          },
-          {
-            "type": "command",
-            "command": "bash $HOME/.claude/hooks/git-workflow-guard.sh"
+            "command": "bash $HOME/.claude/hooks/bash-pretooluse-dispatcher.sh"
           }
         ]
       },
