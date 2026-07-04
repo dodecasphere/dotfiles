@@ -114,6 +114,25 @@ asked:
   different throttled endpoints to rate-limit independently, don't combine
   them in one test; test each route's throttle in its own `it()`, or the
   first route's requests will exhaust the second's budget too.
+- **A new file meant to replace/rename an old one can silently collide on
+  macOS's default case-insensitive filesystem.** `docs/backlog.md` and a new
+  `docs/BACKLOG.md` are the *same file* on a stock Mac (APFS
+  case-insensitive, case-preserving) — a `Write` to the new name overwrites
+  the old one's content in place rather than creating a second file, and
+  tools that track "have I read this file" get confused by the case
+  difference. Before renaming-by-case, delete the old file first (or verify
+  with `touch a && test -f A` in the target directory), then create the new
+  one fresh.
+- **When merging or editing PreToolUse/guardrail hook scripts, verify
+  behavioral parity via side-by-side scenario testing before deleting the
+  originals.** Feed identical simulated stdin JSON to the old script(s) and
+  the new one across every real code path (allow cases, each deny case, edge
+  cases like an opt-in config file's presence/absence) and diff the outputs.
+  This is cheap insurance against silently loosening a security/workflow
+  guardrail during a "purely mechanical" consolidation — caught zero
+  regressions this way across 20 scenarios merging 4 hooks into 2
+  dispatchers on a real project, but the point is confirming that, not
+  assuming it.
 - **Automate with restraint** (this governs the rest): only fully automate
   tasks that don't require taste and where roughly 80%-good output is
   acceptable. Otherwise keep me in the loop and augment my judgment rather than
