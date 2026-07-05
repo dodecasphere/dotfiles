@@ -26,3 +26,22 @@ Context first: ask at most 2-3 sharp questions (target user, the problem, the ou
 
 ## Output
 Offer to save the PRD as a Markdown file the user can open in Google Docs.
+
+## Hardening pass
+When asked to make a PRD "bulletproof," or before any non-trivial PRD goes to
+engineering: launch `prd-reviewer` (gap analysis) and `product-critic`
+(red-team) in parallel, and independently verify the PRD's technical claims
+against the actual code yourself at the same time.
+
+- **Verify every finding before applying it.** Both agents assert plausibly
+  but don't always check the real code - a finding can be flat wrong (e.g.
+  claiming a tool or API doesn't exist when it does).
+- **Harden around a decision the user already made deliberately; don't
+  reverse it.** A reviewer will sometimes propose undoing something the user
+  chose explicitly during an earlier interview/grill pass. Name the failure
+  mode the reviewer found and add a mitigation - don't silently revert the
+  decision.
+- **Surface strategic/portfolio-level challenges, never act on them
+  silently.** A red-team question like "should any of this ship before
+  launch?" goes to the user in the open-questions/summary, not into a
+  unilateral scope cut.

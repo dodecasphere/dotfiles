@@ -1,0 +1,85 @@
+#!/usr/bin/env bash
+# Tracked git pre-commit wall. Copy to <project>/.githooks/pre-commit,
+# chmod +x, then: git config core.hooksPath .githooks
+#
+# Backstop for the Claude PreToolUse guard (bash-pretooluse-dispatcher.sh):
+# this one catches commits made directly in a terminal, where Claude's hook
+# never runs. Enforces the same solo-dev branching policy, config-driven from
+# the project's own .claude/git-guard.conf (see templates/git-guard.conf) -
+# copy both together, they read the same file. If git-guard.conf doesn't
+# exist, this hook still runs (it's not opt-in the way the Claude hook is -
+# a real terminal commit has no other backstop), using the defaults below.
+#
+# `git merge --no-ff` auto-commits do NOT run pre-commit, so merges into
+# protected branches stay allowed.
+#
+# No brain-sync check here (deliberately): that gate needs to inspect the
+# proposed commit message BEFORE the commit runs, which `pre-commit` can't do
+# (the message isn't written yet at this hook's point in the flow - that's
+# `commit-msg`'s job, a separate hook, reading $1 as a path to the message
+# file). It only exists in the Claude-layer PreToolUse guard, which sees the
+# full proposed command text (including -m "...") pre-execution.
+
+set -euo pipefail
+
+# Defaults (overridable by .claude/git-guard.conf).
+PROTECTED_BRANCHES="main master"
+BRANCH_TYPES="feature bugfix hotfix chore refactor docs spike release"
+FAST_LANE_PATHS='docs/|brain/|scripts/|\.remember/|\.claude/|\.githooks/'
+FAST_LANE_SCRIPT_CHECK=1
+# shellcheck disable=SC1091
+[ -f .claude/git-guard.conf ] && . .claude/git-guard.conf
+
+PROTECTED_RE="^($(printf '%s' "$PROTECTED_BRANCHES" | tr ' ' '|'))\$"
+ALLOWED_RE="^($(printf '%s' "$BRANCH_TYPES" | tr ' ' '|'))/[a-z0-9]+(-[a-z0-9]+)*\$"
+# Release branches carry a version slug with dots, e.g. release/v0.2.0.
+RELEASE_VERSION_RE='^release/v?[0-9]+\.[0-9]+\.[0-9]+$'
+FAST_LANE_RE="^(${FAST_LANE_PATHS})|\\.md\$"
+
+# symbolic-ref works on an unborn branch (pre-first-commit); empty on detached HEAD.
+branch="$(git symbolic-ref --short HEAD 2>/dev/null || echo '')"
+
+if printf '%s' "$branch" | grep -Eq "$PROTECTED_RE"; then
+  staged="$(git diff --cached --name-only)"
+  fast_lane=0
+  if [ -n "$staged" ] && ! printf '%s\n' "$staged" | grep -Evq "$FAST_LANE_RE"; then
+    fast_lane=1
+    if [ "$FAST_LANE_SCRIPT_CHECK" = "1" ]; then
+      while IFS= read -r f; do
+        case "$f" in
+          .claude/*.sh|scripts/*.sh|.githooks/*)
+            # Deletions have no staged blob and are fine; existing blobs must parse.
+            if git cat-file -e ":$f" 2>/dev/null && ! git show ":$f" 2>/dev/null | bash -n 2>/dev/null; then
+              echo "pre-commit: fast lane refused: staged '$f' fails bash -n (syntax error)." >&2
+              exit 1
+            fi
+            ;;
+        esac
+      done <<< "$staged"
+    fi
+  fi
+  if [ "$fast_lane" -ne 1 ]; then
+    echo "pre-commit: commits on '$branch' are blocked (long-lived branch). Create a branch first, e.g.:" >&2
+    echo "  git switch -c feature/<slug>   (types: $(printf '%s' "$BRANCH_TYPES" | tr ' ' ', '))" >&2
+    echo "  (docs/tooling-only commits take the fast lane and are allowed here directly)" >&2
+    exit 1
+  fi
+fi
+
+if [ -n "$branch" ] \
+  && ! printf '%s' "$branch" | grep -Eq "$PROTECTED_RE" \
+  && ! printf '%s' "$branch" | grep -Eq "$ALLOWED_RE" \
+  && ! printf '%s' "$branch" | grep -Eq "$RELEASE_VERSION_RE"; then
+  echo "pre-commit: branch '$branch' violates the naming convention." >&2
+  echo "  Use <type>/<kebab-slug> (no tickets), e.g. feature/kit-bulk-add" >&2
+  echo "  types: $(printf '%s' "$BRANCH_TYPES" | tr ' ' ', ')" >&2
+  exit 1
+fi
+
+bash "$HOME/.claude/hooks/debug-scrubber.sh" || exit 1
+bash "$HOME/.claude/hooks/require-tests.sh" || exit 1
+bash "$HOME/.claude/hooks/focused-test-guard.sh" || exit 1
+bash "$HOME/.claude/hooks/env-drift.sh" || exit 1
+bash "$HOME/.claude/hooks/product-doc-lint.sh" || true
+
+exit 0

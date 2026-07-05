@@ -50,13 +50,10 @@
       "Bash(open:*)",
       "WebSearch",
       "WebFetch",
-      "mcp__laravel-boost__*",
-      "mcp__chrome-devtools__*",
       "mcp__playwright__*"
     ],
     "defaultMode": "acceptEdits"
   },
-  "model": "claude-fable-5[1m]",
   "hooks": {
     "PreToolUse": [
       {
@@ -74,6 +71,10 @@
           {
             "type": "command",
             "command": "bash $HOME/.claude/hooks/protect-sensitive-files.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/code-guidelines-gate.sh"
           }
         ]
       }
@@ -114,6 +115,16 @@
           {
             "type": "command",
             "command": "bash $HOME/.claude/hooks/brain-loader.sh"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/standing-behaviors.sh"
           }
         ]
       }
