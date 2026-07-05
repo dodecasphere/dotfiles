@@ -64,7 +64,21 @@ yet.
 If that file already exists, leave it alone. Otherwise:
 `mkdir -p docs && cp "$tpl/BACKLOG.md" docs/BACKLOG.md`.
 
-## 6. Report
+## 6. Cross-tool parity (`AGENTS.md`)
+
+So Codex/Cursor/other agents get the same conventions as Claude Code, not
+just a bootstrap script that only helps *this tool*. If `AGENTS.md` doesn't
+already exist at the repo root: `cp "$tpl/AGENTS.md" AGENTS.md`, then fill in
+its placeholder sections with this project's actual specifics (same
+"real findings, not generic advice" rule as code-guidelines.md). Then, if
+`CLAUDE.md` exists and doesn't already reference `AGENTS.md`, add `@AGENTS.md`
+as the first line after its title, with a short note that everything below it
+is Claude-Code-specific on top. (Claude Code doesn't natively read
+`AGENTS.md` - this import is the documented way to share it without
+duplicating content; expect a one-time approval dialog for the import on
+this project's next session.) If `AGENTS.md` already exists, leave it alone.
+
+## 7. Report
 
 List exactly what was installed vs. what already existed and was left alone.
 For anything installed, name the one or two things I still need to tune
