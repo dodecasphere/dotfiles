@@ -38,3 +38,12 @@ Backend guidance for a Laravel + Postgres app. Match the project's existing patt
 - Mass-assignment holes: keep `$fillable` tight; never `Model::unguard()`.
 - Raw unbound SQL (`whereRaw`/`DB::raw`) with user input.
 - Fat models, fat controllers, and logic duplicated across both.
+
+## Finishing a slice
+A slice isn't ready for the user to test locally just because the code is
+done. When it **adds/changes a migration**, run `php artisan migrate` against
+the local dev DB. When it **touches `resources/` (Vue/CSS/JS) or front-end
+deps**, run the build (`npm run build`) so the app doesn't serve stale
+assets. A `post-merge` git hook can automate this on merge, but don't rely on
+it alone - run both proactively before telling the user to verify, especially
+right after a DB/frontend-touching slice.
