@@ -55,6 +55,36 @@
     "defaultMode": "acceptEdits"
   },
   "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "compact|resume",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/context-recovery.sh"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/brain-loader.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/auto-format.sh"
+          }
+        ]
+      }
+    ],
     "PreToolUse": [
       {
         "matcher": "Bash",
@@ -79,42 +109,12 @@
         ]
       }
     ],
-    "PostToolUse": [
-      {
-        "matcher": "Edit|Write|MultiEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash $HOME/.claude/hooks/auto-format.sh"
-          }
-        ]
-      }
-    ],
     "Stop": [
       {
         "hooks": [
           {
             "type": "command",
             "command": "bash $HOME/.claude/hooks/verify-done.sh"
-          }
-        ]
-      }
-    ],
-    "SessionStart": [
-      {
-        "matcher": "compact|resume",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash $HOME/.claude/hooks/context-recovery.sh"
-          }
-        ]
-      },
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash $HOME/.claude/hooks/brain-loader.sh"
           }
         ]
       }
@@ -132,14 +132,14 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "bash $HOME/.claude/statusline-command.sh"
+    "command": "bash /Users/michaeldulle/.claude/statusline-command.sh"
   },
   "enabledPlugins": {
     "feature-dev@claude-plugins-official": true,
-    "code-simplifier@claude-plugins-official": true,
-    "claude-md-management@claude-plugins-official": true,
+    "security-guidance@claude-plugins-official": false,
     "remember@claude-plugins-official": false,
-    "security-guidance@claude-plugins-official": false
+    "code-simplifier@claude-plugins-official": true,
+    "claude-md-management@claude-plugins-official": true
   },
   "fastMode": true,
   "awaySummaryEnabled": false,

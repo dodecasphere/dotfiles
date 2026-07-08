@@ -6,6 +6,21 @@ fi
 
 # Use the right Claude account for the job
 function claude() {
+  # Default every interactive session to Remote Control, unless: it's already
+  # passed, we're in -p/--print (non-interactive) mode, or the first arg is a
+  # subcommand (agents/auth/mcp/etc.) rather than a prompt/session flag.
+  local first_arg="$1" want_remote_control=1 arg
+  case "$first_arg" in
+    agents|auth|auto-mode|doctor|gateway|install|mcp|plugin|plugins|project|setup-token|ultrareview|update|upgrade)
+      want_remote_control=0
+      ;;
+  esac
+  for arg in "$@"; do
+    case "$arg" in
+      --remote-control|-p|--print) want_remote_control=0 ;;
+    esac
+  done
+
   case "$PWD" in
     # "$HOME/something-work" | "$HOME/something-work/"*)
     #   CLAUDE_CONFIG_DIR=~/.claude-work command claude "$@"
@@ -14,7 +29,11 @@ function claude() {
     #   CLAUDE_CONFIG_DIR=~/.claude-personal command claude "$@"
     #   ;;
     *)
-      command claude "$@"
+      if [ "$want_remote_control" -eq 1 ]; then
+        command claude --remote-control "$@"
+      else
+        command claude "$@"
+      fi
       ;;
   esac
 }

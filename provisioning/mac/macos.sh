@@ -166,15 +166,19 @@ defaults write com.apple.screencapture type -string "png"
 #  10: Put display to sleep
 #  11: Launchpad
 #  12: Notification Center
-doing "Setting bottom-left hot corner to Start screen saver..."
-defaults write com.apple.dock wvous-bl-corner -int 5
+doing "Setting bottom-right hot corner to: Start screen saver..."
+defaults write com.apple.dock wvous-br-corner -int 5
+defaults write com.apple.dock wvous-br-modifier -int 0
+
+doing "Setting bottom-left hot corner to: Put display to sleep..."
+defaults write com.apple.dock wvous-bl-corner -int 10
 defaults write com.apple.dock wvous-bl-modifier -int 0
 
-doing "Setting top-left hot corner to Mission Control..."
+doing "Setting top-left hot corner to: Mission Control..."
 defaults write com.apple.dock wvous-tl-corner -int 2
 defaults write com.apple.dock wvous-tl-modifier -int 0
 
-doing "Setting top-right hot corner to Show Desktop..."
+doing "Setting top-right hot corner to: Show Desktop..."
 defaults write com.apple.dock wvous-tr-corner -int 4
 defaults write com.apple.dock wvous-tr-modifier -int 0
 
