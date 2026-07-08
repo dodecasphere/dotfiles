@@ -114,6 +114,21 @@ asked:
   touching a true global directly in a template; define a named function in
   `<script setup>` instead (normal JS closure scope, no special casing
   needed) and bind the template to that.
+- **A Vue `ref` flipped true-then-false synchronously in one tick (no
+  `await`/tick between the two assignments) never fires its `watch()`
+  callback at all** — Vue's default `flush: 'pre'` batches same-tick
+  mutations into one flush job and diffs against the value *before* the
+  first mutation in that batch, so a net-zero round-trip looks like "no
+  change" and the callback is skipped entirely. Reproduces in a bare
+  `ref`+`watch()` pair outside any component, not a Vitest- or
+  composable-specific quirk. Cost real debugging time isolating a
+  `selectMode` clear-on-toggle-off watcher that looked correct by every
+  inspection, purely because the test drove two `ref.value = x`
+  assignments back to back with no tick between them — not something a
+  real UI interaction (two separate clicks) would ever produce. When a
+  Vitest test needs a `watch()` side effect to fire on an intermediate
+  transition, `await nextTick()` between each mutation that should
+  independently trigger it.
 - **Nesting one Reka `as-child` trigger directly inside another collides
   their `data-state`/ARIA writers on the shared DOM element.** Two shapes:
   (1) a Toggle inside a Tooltip — the Tooltip's `data-state="closed"`
@@ -128,6 +143,32 @@ asked:
   disclosure-pattern semantics), span-wrapping is wrong (a real a11y
   regression) — don't nest at all; build a plain one-level trigger instead of
   reusing a component that carries its own internal Tooltip.
+- **Reka UI's `Combobox` defaults `resetSearchTermOnBlur` to `true`, and
+  `ComboboxInput.resetSearchTerm()` always takes the `displayValue(modelValue)`
+  branch whenever a `displayValue` prop is passed at all — even a caller's own
+  no-op default (`() => ''`).** In a server-search/typeahead mode where nothing
+  is ever "selected" (the caller owns the debounced fetch and just passes an
+  already-filtered `items` list), `modelValue` stays `null`, so every blur
+  silently wipes whatever the user had typed back to `''` — no error, easy to
+  misdiagnose as "the search is broken" rather than "the input got cleared."
+  Root-caused by reading Reka's own source (`ComboboxInput.vue`/
+  `ComboboxRoot.vue`), not by guessing. Fix: bind `:reset-search-term-on-blur`
+  to `false` specifically in that server-search branch (e.g.
+  `!ignoreFilter`) so a normal client-filtered, single-select Combobox
+  elsewhere in the same app keeps Reka's default (and desirable)
+  reset-to-selected-label-on-blur behavior. A minimal Vitest repro needs a real
+  two-way-bound host component (`query` prop fed back via `@update:query`) —
+  a bare `setProps()` after typing doesn't reproduce the bug, since Reka's
+  internal `useVModel` shadow-state masks it.
+- **Tailwind CSS v4 ships `animate-in`/`animate-out` plus the `fade-in`/
+  `fade-out`/`zoom-in-N`/`zoom-out-N`/`slide-in-from-*`/`slide-out-to-*`
+  modifier utilities natively** (this was a separate community
+  `tailwindcss-animate` plugin dependency in v3) — no plugin install needed
+  to add an enter/exit transition to a Reka/Radix-style overlay or dialog
+  content element via `data-[state=open]:`/`data-[state=closed]:` variants.
+  Don't assume a plugin is missing just because the utility isn't obviously
+  documented in v4's core docs; check whether it's already core before
+  reaching for `tw-animate-css` or similar.
 - **Laravel queued jobs inside `DB::transaction`:** events implementing
   `ShouldDispatchAfterCommit` defer safely, but queued JOBS don't get that
   contract — with `after_commit => false` on the connection (the default), a
@@ -146,11 +187,33 @@ asked:
   would have broken 9 tests), and a "missing" validation rule that had shipped
   days earlier. The verify-before-fix step is where those get caught; skipping
   it turns a reviewer hallucination into a regression.
+- **A backlog/round checklist item checked off as "done" can describe a fix
+  that was never actually implemented.** A prior `/feature-round` marked a
+  drag-handle-column bug fixed by describing a `data-disabled` attribute the
+  component would stamp when dragging was disabled — re-verifying the next
+  round found that attribute didn't exist anywhere in the repo; the intended
+  approach was written down but never coded. Verify a claimed fix against
+  live code (grep for the described mechanism) before treating a checkmark as
+  settled prior art — same caution as the reviewer-findings rule above, but
+  for your own team's past checkmarks too, not just automated review passes.
 - **Laravel migrations on Postgres:** `Blueprint::after('column')` for column
   positioning is a MySQL-only feature — Laravel's Postgres grammar silently
   ignores it (no error, no warning). A new column always lands at the end of
   the table on Postgres regardless of `after()`. Don't trust that clause's
   intent to hold true in a Postgres-backed project.
+- **`php artisan <command> --env=testing` does NOT guarantee isolation from
+  the real database.** Laravel only loads a separate `.env.testing` file if
+  one actually exists in the project root; if it doesn't, Artisan silently
+  falls back to plain `.env` — which normally points at the real local dev
+  database. `phpunit.xml`/Pest test runs are unaffected (they set
+  `DB_CONNECTION=sqlite`/`:memory:` as env vars directly in the XML,
+  bypassing dotenv). The danger is specifically a manual `artisan
+--env=testing` sanity check outside the real test suite. Wiped a real local
+  Postgres database this way on a project with no `.env.testing` file.
+  Before ever running `--env=testing` (or any `--env=X`), check `ls .env.X`
+  first; if it's absent, don't run the command that way — rely on the real
+  test suite instead, or point at an explicitly separate, verified
+  connection.
 - **Branch-protection hooks under git worktree isolation.** A `PreToolUse`
   hook that enforces "no commits on develop/main" by resolving the current
   branch via a fixed project-directory env var (e.g. `git -C
@@ -190,6 +253,15 @@ asked:
   foreground content gets `relative z-10`, both inside a parent that itself
   has an explicit `z-index` (or otherwise establishes its own stacking
   context).
+- **A flex row with `items-center` and no explicit height takes its height
+  from whichever child is tallest at that moment.** A conditionally-rendered
+  sibling (e.g. a clear button shown only once a search box has text) that's
+  taller than the row's baseline content (icon/text line-height) grows the
+  whole row the instant it mounts — no error, just a visible layout jump.
+  Root-caused via plain Tailwind class arithmetic (button height vs. line-
+  height), no browser needed. Give the row an explicit height matching the
+  tallest state instead of relying on implicit content-driven height whenever
+  any child's presence or size is conditional.
 - **Verify before trusting an auto-mode "SECURITY WARNING" flag on a
   subagent.** Legitimate read-only diagnostic commands (e.g. checking branch
   state across several worktrees while debugging a hook) can trip a false
@@ -262,6 +334,31 @@ asked:
   page) — don't burn a debugging session assuming a header-only fix will
   close the loop; verify in a real (non-headless) browser whether the
   permission prompt itself is the remaining blocker.
+- **Laravel `Route::prefix(x)->options(uri, action)` (or any single
+  route-registering call) chained directly as a bare statement — not
+  wrapped in `->group()` — merges an enclosing route-group's own prefix in
+  the wrong order.** Registering a lone OPTIONS route this way inside a
+  file already wrapped in an outer group (e.g. `routes/api.php`'s automatic
+  `prefix('api')` wrapper) produced `v1/bookmarklet/api/{any}` instead of
+  `api/v1/bookmarklet/{any}` — the outer prefix landed in the middle of the
+  URI, not the front. The identical prefix chain ending in
+  `->group(fn () => Route::options(...))` composed correctly. Confirmed via
+  `php artisan route:list -v` before and after, not assumed. Fix: always
+  wrap a `Route::prefix()` chain in `->group()` before registering routes
+  inside it, even for just one route — never chain a route-registering
+  method directly off `prefix()` as a bare statement.
+- **A Reka-UI Portal-based component (Dialog's `DialogPortal`, Select's
+  `SelectContent`, etc.) teleports its content to `document.body` by
+  default — inside a Vue app mounted into a Shadow DOM root (a bookmarklet
+  or embeddable widget bundle), that escapes the shadow boundary entirely
+  and loses every inlined style**, since the portaled content now lives in
+  the host page's light DOM instead of the shadow tree. No `to`-target
+  override existed on one project's own `Dialog.vue`/`SelectMenu.vue`
+  wrappers to redirect the portal into the shadow root instead. Building
+  any Vue UI meant to run standalone inside a Shadow DOM means either
+  hand-rolling that one component instead of reusing the app's normal
+  Reka-based primitives, or explicitly passing the shadow root as the
+  portal's target if the underlying library supports it.
 - **Check branch staleness before reusing.** If a branch name for a task
   already exists, don't assume it's a fresh start — run
   `git log --oneline <branch>..develop` (or main) first. A same-named leftover
@@ -343,6 +440,17 @@ asked:
   ran it. This is judicious, not wasteful: run both full suites once at the
   end of any slice that rewrites or removes a file with external references,
   even under the "be judicious about testing cost" rule above.
+- **Verify PDF/image/other binary-rendered output by actually rendering it,
+  not just code review.** A change to a dompdf view, a generated image, or
+  similar binary output can't be fully confirmed by reading the
+  Blade/CSS/template source alone. Generate a real instance with test data
+  (e.g. `php artisan tinker` calling the real `build()`/`render()` path,
+  writing the result to the scratchpad) and use the Read tool directly on
+  the output file — it renders PDFs/images natively — rather than trusting
+  the source alone. Cheap insurance for exactly the class of change code
+  review can't fully verify; caught nothing wrong doing this on a CrestLite
+  PDF-export styling pass, but that's the point — confirming instead of
+  assuming.
 - **Keep one backlog file, not several.** A deferred requirement, an
   accepted-not-fixed finding, a descoped bug, or a feature idea that isn't
   ready to build all go in one prioritized `docs/BACKLOG.md` (or equivalent),
@@ -350,6 +458,91 @@ asked:
   project-brain open-questions file. Once a backlog file exists for a
   project, default to using it rather than parking the item wherever the
   current conversation happens to be.
+- **Bash tool calls don't share shell state.** An env var exported via
+  `source ~/.zshrc` (or similar) in one Bash call is gone by the next call —
+  the harness resets shell state between invocations even though the working
+  directory persists. If the user says they just fixed/exported an env var,
+  re-source **and** run the dependent command in the *same* Bash invocation
+  (`source ~/.zshrc; npm install ...`), not two separate calls. Caught this on
+  CrestLite: a re-sourced `FONTAWESOME_PACKAGE_TOKEN` vanished before the very
+  next `npm install` call, which then failed with the same auth error as
+  before the fix, looking like the fix hadn't worked.
+- **`@sentry/vue`'s Vue integration captures whatever `app.config.errorHandler`
+  is already set before `Sentry.init()` runs, and calls through to it after
+  capturing** (confirmed by reading `errorhandler.js` in the installed
+  package, not assumed). Set a custom errorHandler *before* calling
+  `Sentry.init({ app, ... })`, or Sentry's wrapping silently replaces it
+  instead of chaining — the custom handler would still be present in code but
+  never actually invoked.
+- **In Vitest, an attribute-value DOM query
+  (`document.body.querySelector('img[src="..."]')` etc.) can silently match
+  the wrong element when the same value legitimately renders twice on one
+  page** — e.g. a list-row thumbnail and a detail-view/dialog preview sharing
+  one image `src`. Scope the query to the specific container first (e.g.
+  `'[role="dialog"] img[src="..."]'`), don't query `document.body` broadly.
+  Caught this exact false-pass on CrestLite testing a dialog's image
+  treatment: the assertion "passed" against the row thumbnail's class list,
+  not the dialog's.
+- **Tailwind CSS v4's `z-index` utility isn't capped at the classic v3 scale
+  (0/10/20/30/40/50/auto)** — a bare integer class like `z-60`/`z-70`/`z-80`
+  compiles fine (`.z-70{z-index:70}`), confirmed by inspecting real generated
+  CSS in `public/build/assets/*.css`, not assumed. No `theme.extend` or
+  arbitrary-bracket syntax (`z-[70]`) needed for a custom stacking tier —
+  useful when a design system needs more than 6 z-index tiers (e.g. a
+  confirm-dialog-over-dialog case).
+- **A rounded-corner or bordered element that is also its own native scroll
+  container (`overflow-y-auto`/`scroll` on the same element as
+  `rounded-*`/`border`) leaks a thin sliver of the page's background through
+  the corner/border during momentum/rubber-band overscroll** — a real
+  WebKit/Blink scroll-compositing artifact, not a CSS mistake in the
+  element's own styling (`border-radius`/background/`overflow` are all
+  individually correct; it only shows up during the bounce animation). Fix:
+  never let the rounded/bordered element scroll itself — wrap its content in
+  a plain, unrounded, unbordered inner `div` that owns `overflow-y-auto`,
+  while the outer element only clips via `overflow-hidden`. Any rubber-band
+  bounce inside the inner wrapper then gets clipped by the outer's boundary
+  instead of painting past it. This can't be verified via headless/automated
+  browser tools (real trackpad/touch momentum physics); needs a real device
+  to confirm the fix.
+- **A real Inertia visit (`router.post`/`.patch`/`.delete`/etc.) always sends
+  `Accept: text/html, application/xhtml+xml`, never `application/json`**
+  (confirmed in `@inertiajs/core`'s own source, not assumed) — so
+  `$request->wantsJson()` reliably distinguishes a real Inertia visit from a
+  plain `fetch()` call to the same Laravel route, useful when one route must
+  serve both a full-page Inertia flow and a modal's fetch()-based flow with
+  different response shapes (redirect+session-flash vs. real JSON).
+  Separately: once a Laravel app registers
+  `$exceptions->shouldRenderJsonWhen($callback)`, that callback becomes
+  **authoritative** for every exception app-wide — it replaces
+  `expectsJson()`'s default check entirely rather than supplementing it, so
+  a route left out of the callback never gets JSON error rendering
+  regardless of the request's actual Accept header, and a route inside it
+  needs its own `wantsJson()`-style condition if it must still serve
+  non-JSON callers correctly.
+- **A Laravel validation rule that isn't `required`/implicit (e.g. bare
+  `array`) is silently *skipped* — not run, not failed — whenever the raw
+  input value is a literal empty string, regardless of whether `nullable`
+  is also present.** Confirmed by reading
+  `Illuminate\Validation\Validator::presentOrRuleIsImplicit()`:
+  `is_string($value) && trim($value) === ''` short-circuits straight to
+  `$this->isImplicit($rule)`, which is `false` for `array` (and most other
+  type rules), so the rule never actually executes and the empty string
+  passes through unchanged into `validated()`. This does **not** reproduce
+  on a normal web route via a `FormRequest`, because Laravel's own
+  `ConvertEmptyStringsToNull` middleware — still part of the stock `web`
+  middleware group by default, even under Laravel 11+'s slim
+  `bootstrap/app.php` config style, easy to assume it's gone — converts
+  `''` to `null` before validation ever runs, and a bare `array` rule
+  *does* correctly reject `null`. The gap is real only for entry points
+  that bypass the HTTP kernel entirely: an MCP/JSON-RPC request object, a
+  queued job reading raw array input, a console command, any hand-rolled
+  `Validator::make()` call fed data that skipped the kernel. A client that
+  sends `""` for an unused array-typed field instead of omitting it (or
+  sending `[]`/`null`) will crash a downstream `array_map()`/`array_flip()`
+  with a raw `TypeError` instead of a clean validation error. Before
+  assuming a `FormRequest`-guarded route shares a bug found on a non-HTTP
+  entry point, reproduce it there directly — don't extrapolate from one
+  path to the other.
 - **Automate with restraint** (this governs the rest): only fully automate
   tasks that don't require taste and where roughly 80%-good output is
   acceptable. Otherwise keep me in the loop and augment my judgment rather than

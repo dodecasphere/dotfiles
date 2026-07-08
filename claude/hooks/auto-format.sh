@@ -21,7 +21,20 @@ done
 
 case "$file" in
   *.php)
-    [ -x "$root/vendor/bin/pint" ] && "$root/vendor/bin/pint" "$file" >/dev/null 2>&1
+    # A project can opt in to a looser autosave-only ruleset via its own
+    # pint-autosave.json (e.g. no_unused_imports off) - the per-edit tidy pass
+    # runs after every single Edit/Write, so a `use` added in one call and
+    # used in a later call gets prematurely stripped by the full ruleset,
+    # silently breaking the file between edits. The real gate (bare
+    # `vendor/bin/pint`/`--test`, /quality) always uses the project's normal
+    # pint.json, so a genuinely unused import still gets caught before merge.
+    if [ -x "$root/vendor/bin/pint" ]; then
+      if [ -f "$root/pint-autosave.json" ]; then
+        "$root/vendor/bin/pint" --config="$root/pint-autosave.json" "$file" >/dev/null 2>&1
+      else
+        "$root/vendor/bin/pint" "$file" >/dev/null 2>&1
+      fi
+    fi
     ;;
   *.vue|*.ts|*.tsx|*.js|*.jsx|*.mjs|*.css|*.scss|*.json|*.md)
     [ -x "$root/node_modules/.bin/prettier" ] && "$root/node_modules/.bin/prettier" --write "$file" >/dev/null 2>&1
