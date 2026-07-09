@@ -11,6 +11,11 @@ build commands — lives in each repo's own CLAUDE.md, not here.
   output first, and flag when you're inferring versus confirming.
 - Default to concise, paste-ready output. Skip preamble and don't restate my
   question back to me.
+- When you have questions for me and the answers form discrete choices (two to
+  four enumerable options), ask through the AskUserQuestion interface, with your
+  recommended option listed first, rather than posing the question in prose. Use
+  plain prose only for genuinely open-ended questions that cannot be enumerated
+  into options (freeform text, pasting a spec).
 
 ## Core rules
 1. **Ask, don't assume.** If something is unclear, ask before writing a single
