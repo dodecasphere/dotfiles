@@ -548,6 +548,66 @@ asked:
   assuming a `FormRequest`-guarded route shares a bug found on a non-HTTP
   entry point, reproduce it there directly — don't extrapolate from one
   path to the other.
+- **A visually "covered by something with higher z-index" symptom is often
+  actually `overflow: hidden` clipping on an ancestor, not a stacking-order
+  bug.** When an element is deliberately positioned to straddle or extend past
+  a container's boundary (e.g. a handle/badge meant to overlap an edge), check
+  whether any ancestor has `overflow-hidden` (often present for an unrelated
+  reason, like clipping content during a width/height transition) before
+  assuming z-index needs adjusting. The visual symptom — part of the element
+  silently disappearing past a boundary — looks identical to the naked eye
+  whether it's clipping or genuine stacking, but only one has a z-index fix;
+  the other requires moving the element outside the clipping ancestor (a
+  sibling wrapper) instead of nesting it inside.
+- **Verifying CSS `:hover`/`:focus-visible` behavior needs Playwright's real
+  `hover()`/keyboard actions, not synthetic JS events.** Dispatching a
+  synthetic `MouseEvent('mouseover')` via `element.dispatchEvent()` does NOT
+  trigger real CSS `:hover` (that requires the browser's actual pointer
+  state) — use Playwright's `browser_hover` (a real mouse move) instead.
+  Similarly, calling `element.focus()` programmatically doesn't reliably
+  trigger `:focus-visible` in all cases — verify with
+  `element.matches(':focus-visible')` after focusing, or drive real keyboard
+  Tab navigation, before trusting a hover/focus-only style actually applies.
+- **`document.elementFromPoint(x,y) === targetElement` gives false negatives
+  when checking for overlap/clipping bugs, if the target has its own child
+  content at that point** (e.g. an icon SVG centered inside a button) —
+  `elementFromPoint` returns the deepest element, which is legitimately a
+  child, not something external covering it. Check
+  `targetElement.contains(elementFromPoint(x, y))` instead of strict `===` to
+  correctly distinguish "my own child is on top here" (fine) from "something
+  else is covering this" (the actual bug).
+- **Playwright MCP blocks `file://` URLs entirely.** For a quick static
+  HTML/CSS layout check that doesn't need the full app (e.g. verifying a
+  Tailwind class's rendered box size before wiring it into a real component),
+  copy the throwaway HTML file into the project's own `public/` dir
+  temporarily and serve it via the local dev domain (e.g.
+  `https://project.test/tmp-check.html`) instead of `file://` — then delete
+  it afterward. Confirmed via Herd; likely applies to any local dev server.
+- **Rector's `AddArrowFunctionReturnTypeRector` can mis-infer Pest's
+  `fn () => expect(...)->toBeFalse()` (or any `expect()`-returning arrow fn)
+  as returning `Pest\Mixins\Expectation`** — an IDE-helper mixin class, not
+  the real runtime return type `Pest\Expectation`. Applying it fatals every
+  affected test with a return-type mismatch (`TypeError: ... must be of type
+  Pest\Mixins\Expectation, Pest\Expectation returned`), not a silent no-op.
+  Confirmed by re-running `vendor/bin/rector --dry-run` after manually
+  reverting the closure — it reliably re-proposes the same broken rewrite,
+  not a one-off fluke. Fix: skip `AddArrowFunctionReturnTypeRector` for the
+  specific file(s) via `rector.php`'s `withSkip()`; don't leave the type hint
+  in place or try to correct it to `Pest\Expectation` (Pest's actual return
+  type isn't guaranteed stable enough to hardcode).
+- **Larastan (`treatPhpDocTypesAsCertain`, on by default) treats a vendor
+  package's own `@property` docblock as ground truth even when the
+  property's real magic-accessor logic can return a different value.** Hit
+  with `Laravel\Passport\AccessToken`: its docblock claims
+  `oauth_access_token_id` is always a non-null `string`, but `__get()`
+  genuinely returns `null` when there's no backing `Token` row (e.g.
+  `Passport::actingAs()`'s transient mock) — confirmed by reading the vendor
+  source, not assumed. Whichever way the null-guard is written, Larastan
+  flags it (`=== null` as always-false, `is_string()` as always-true)
+  because it never considers the runtime path, only the docblock. No
+  restructuring of the check fixes this — it needs a scoped `ignoreErrors`
+  entry (or equivalent ignore mechanism) for that exact line/message, with a
+  comment citing the vendor source checked.
 - **Automate with restraint** (this governs the rest): only fully automate
   tasks that don't require taste and where roughly 80%-good output is
   acceptable. Otherwise keep me in the loop and augment my judgment rather than
