@@ -69,8 +69,8 @@ echo "## 6. Multi-file skill resolves through the directory symlink"
 echo
 echo "## 7. A restored hook actually runs (blocks a force-push)"
 printf '{"tool_name":"Bash","tool_input":{"command":"git push --force"}}' \
-  | bash "$FAKEHOME/.claude/hooks/block-dangerous-commands.sh" >/dev/null 2>&1
-[ "$?" -eq 2 ] && ok "block-dangerous-commands blocked force-push (exit 2)" \
+  | bash "$FAKEHOME/.claude/hooks/bash-pretooluse-dispatcher.sh" >/dev/null 2>&1
+[ "$?" -eq 2 ] && ok "bash-pretooluse-dispatcher blocked force-push (exit 2)" \
   || bad "hook did not block force-push"
 
 echo
