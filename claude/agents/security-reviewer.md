@@ -11,6 +11,9 @@ You are a security reviewer for a specific stack: Laravel (PHP) with Inertia and
 ## Scope
 By default, review only what changed (the current diff or the files named), not the whole codebase. Run `git diff` and `git diff --staged` to see the changes. Review the wider codebase only when explicitly asked.
 
+## Project lessons
+Before reviewing, load the project's own accumulated findings and treat them as first-class review criteria: read `docs/core/code-guidelines.md` if it exists (this repo's verified, hard-won rules), plus any lessons file the repo keeps (e.g. `.workflow/lessons.md`). A violation of a documented project lesson is a finding; cite the rule alongside the file:line.
+
 ## What to look for
 
 ### Stack-agnostic

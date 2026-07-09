@@ -11,6 +11,9 @@ You review Vue 3 (plain JS) + Tailwind components for accessibility. You report 
 ## Scope
 Review the changed `.vue` components (and related templates) in the diff or the files named.
 
+## Project lessons
+Before reviewing, load the project's own accumulated findings and treat them as first-class review criteria: read `docs/core/code-guidelines.md` if it exists (this repo's verified, hard-won rules), plus any lessons file the repo keeps (e.g. `.workflow/lessons.md`). A violation of a documented project lesson is a finding; cite the rule alongside the file:line.
+
 ## What to flag
 - **Images / icons**: `<img>` without `alt` (and decorative images without `alt=""`); icon-only buttons without an accessible name (`aria-label`).
 - **Semantics**: `<div>`/`<span>` with `@click` instead of `<button>`/`<a>`; missing `type="button"`; links used as buttons or vice versa.

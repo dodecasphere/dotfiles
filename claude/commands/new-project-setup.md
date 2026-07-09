@@ -78,7 +78,17 @@ is Claude-Code-specific on top. (Claude Code doesn't natively read
 duplicating content; expect a one-time approval dialog for the import on
 this project's next session.) If `AGENTS.md` already exists, leave it alone.
 
-## 7. Report
+## 7. Local CI mirror (optional)
+
+Ask me (AskUserQuestion) whether this project should get a `local-ci.sh`
+(worth it once the project has real GitHub Actions workflows; skip for
+brand-new repos with no CI yet). If yes:
+`cp "$tpl/local-ci.sh" local-ci.sh && chmod +x local-ci.sh`, then remind me
+the template is a skeleton - its suites must be edited to mirror
+`.github/workflows/` exactly (same tools, flags, order), and kept in sync
+whenever CI changes.
+
+## 8. Report
 
 List exactly what was installed vs. what already existed and was left alone.
 For anything installed, name the one or two things I still need to tune

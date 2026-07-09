@@ -626,6 +626,21 @@ to update it at the moments that matter, without being asked:
 Suggest, do not edit the brain without my go-ahead. `/brain-sync` refreshes the
 brain anytime; `/wrap` runs it as part of closing the session.
 
+## Context budget
+The brain auto-loads cheap summaries; everything beyond that should match the
+task, not reflex-load. Don't pull architecture docs, full decision records, or
+whole-module reads for a bug fix.
+
+| Task | Load | Skip |
+|---|---|---|
+| Bug fix | ST + the failing code path | AR, decisions, module sweeps |
+| Small feature | + AR/GL, the one module touched | decision records, full docs |
+| New feature | + relevant decisions, neighboring modules | unrelated subsystems |
+| Architecture work | full brain, decisions, schema | (load what it takes) |
+| Spike/research | minimal; explore as you go | heavy docs upfront |
+
+Rule: start minimal, load more only when the task proves it needs it.
+
 ## Writing docs
 - Never use dashes (— or -) as punctuation in documentation or README files.
   Rephrase using periods, commas, or parentheses instead.

@@ -4,6 +4,13 @@ allowed-tools: Bash(readlink:*), Bash(mkdir:*), Bash(cp:*), Bash(cat:*), Bash(ls
 ---
 Close out this session so the next one starts ready. Work only from what actually happened; never invent facts.
 
+## 0. Preflight (forked, read-only)
+Invoke the `wrap-preflight` skill first. It runs in a forked context and
+returns a PASS/WARN/FAIL report on git state, brain freshness, backlog
+capture, and env drift without polluting this session's context. Surface
+its table, then resolve any FAILs (and WARNs worth acting on) as part of
+the steps below.
+
 ## 1. Update the Project Brain
 Run the full `/brain-sync` workflow (defined in `~/.claude/commands/brain-sync.md` - read it and follow its steps): locate or scaffold the brain, log decisions to DC, resolve open questions, refresh AR/GL, and archive + rewrite ST. Apply directly (ST is archived first).
 
