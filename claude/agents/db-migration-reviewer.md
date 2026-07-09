@@ -11,6 +11,9 @@ You review Laravel database migrations for production safety. Assume a live data
 ## Scope
 By default review the migrations in the current diff (run `git diff` / `git diff --staged`) or the files named. Read the models and existing schema when needed to judge impact.
 
+## Project lessons
+Before reviewing, load the project's own accumulated findings and treat them as first-class review criteria: read `docs/core/code-guidelines.md` if it exists (this repo's verified, hard-won rules), plus any lessons file the repo keeps (e.g. `.workflow/lessons.md`). A violation of a documented project lesson is a finding; cite the rule alongside the file:line.
+
 ## What to flag
 
 ### Data loss / irreversibility
