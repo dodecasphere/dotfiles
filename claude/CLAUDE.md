@@ -305,8 +305,9 @@ asked:
   implementation (the `tdd` skill), unit and feature, PHP and JS. Never call
   work done with failing tests or below the project's coverage bar; where a
   project ships `.claude/verify.sh`, that gate is enforced automatically, and
-  where a test suite exists, changing app code without touching a test is
-  blocked (the require-tests hook).
+  in projects with the `.githooks/pre-commit` wall installed, changing app
+  code without touching a test is blocked at commit time (the require-tests
+  hook; it is NOT wired globally — elsewhere this is a norm, not a gate).
 - **Propose parallelism.** For large tasks that split into independent parts,
   propose sub-agents for parallel work or diverse perspectives, and spawn them
   when the scope clearly justifies the extra cost. Don't reflexively parallelize
@@ -671,7 +672,9 @@ Rule: start minimal, load more only when the task proves it needs it.
 - When one of my hooks blocks a protected file (e.g. `.env`,
   `.github/workflows/*`), don't retry the blocked tool. Surface a ready-to-paste
   `! …` command for me to run, or ask for one-time permission to run it via Bash.
-  When `.env` changes, keep `.env.example` in sync (the env-drift hook enforces it).
+  When `.env` changes, keep `.env.example` in sync (the env-drift hook enforces
+  this only in projects with the `.githooks/pre-commit` wall installed; elsewhere
+  do it as a matter of course).
 - **Non-blocking hook reminders are instructions, not noise.** When a hook
   injects a checklist or reminder into context (e.g. an end-of-slice sync
   prompt), act on it or make a conscious, stated decision to skip it — don't
