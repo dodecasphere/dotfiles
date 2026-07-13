@@ -220,29 +220,18 @@ asked:
   test suite instead, or point at an explicitly separate, verified
   connection.
 - **Branch-protection hooks under git worktree isolation.** A `PreToolUse`
-  hook that enforces "no commits on develop/main" by resolving the current
-  branch via a fixed project-directory env var (e.g. `git -C
-  "$CLAUDE_PROJECT_DIR" rev-parse --abbrev-ref HEAD`) will misjudge any Bash
-  call executing inside a linked git worktree — it checks whatever branch the
-  *main* checkout happens to be on, not the worktree's own branch. If a
-  background agent's `git commit` gets denied with a branch-protection
-  message despite being correctly checked out on a properly-named feature
-  branch in its own worktree, this is the first thing to check, not a sign
-  the agent did something wrong. Fix (with the project owner's explicit
-  sign-off, since it's editing a guardrail): resolve the branch against the
-  repo the git command's own `cd <path> &&` prefix targets, when present —
-  that only covers commands with an explicit textual `cd`, not ones relying
-  on a shell's persisted cwd from an earlier separate call, which remains a
-  gap worth investigating further before treating any one workaround as
-  proven. **Confirmed the gap is wider still**: even from the *main* checkout,
-  neither `cd <worktree-path> && git commit` nor `git -C <worktree-path>
-  commit` resolves correctly when that worktree is on a different branch than
-  the main checkout — the hook still checks the main checkout's own branch,
-  not the target path's. The only workaround that reliably worked: `git
-  worktree remove` the (idle) worktree, `git checkout <branch>` directly in
-  the main checkout, resolve/commit there, then merge back into
-  develop/main. Don't spend more than one retry on `cd`/`-C` variants before
-  falling back to this.
+  hook that enforces "no commits on develop/main" must resolve the branch of
+  the repo the git command actually targets — the `cd <path> &&` prefix, a
+  `git -C <path>` flag, or the call's own `cwd` — never a fixed
+  project-directory env var, or it misjudges every linked-worktree call (false
+  denies on legal feature branches, silent allows on protected ones). FIXED
+  2026-07-13 in `bash-pretooluse-dispatcher.sh` (IDEA-003 wave 5e): it now
+  parses `cd` and `git -C` targets and guards out-of-project paths when
+  `rev-parse --path-format=absolute --git-common-dir` proves they are linked
+  worktrees of the same repo. Verified by a 20-scenario side-by-side stdin
+  parity harness (16 identical, 4 intentionally corrected). If a worktree
+  commit is denied unexpectedly, check the worktree's own branch first, not
+  the main checkout's.
 - **CSS stacking contexts and negative z-index.** `position: relative` alone
   does NOT establish a new stacking context for its children — only adding an
   explicit `z-index` (or `opacity<1`/`transform`/`filter`) does. A child given
