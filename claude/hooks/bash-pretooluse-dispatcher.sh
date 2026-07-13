@@ -119,10 +119,33 @@ git_workflow_guard_global() {
     repo_dir="$cd_target"
   fi
 
+  # git -C <path> targets a repo regardless of cwd/cd; resolve it the same way
+  # (first occurrence, relative to whatever repo_dir the cd handling chose).
+  local c_target
+  c_target="$(printf '%s' "$cmd" | sed -nE 's/.*git[[:space:]]+-C[[:space:]]+([^;&|[:space:]]+).*/\1/p' | head -1)"
+  if [ -n "$c_target" ]; then
+    case "$c_target" in '~'*) c_target="${HOME}${c_target#\~}" ;; esac
+    case "$c_target" in
+      /*) : ;;
+      *) c_target="$repo_dir/$c_target" ;;
+    esac
+    repo_dir="$c_target"
+  fi
+
   resolved="$(cd "$repo_dir" 2>/dev/null && pwd || echo '')"
   case "$resolved" in
     "$proj"|"$proj"/*) repo_dir="$resolved" ;;
-    *) return 0 ;;
+    *)
+      # Outside the project dir. A linked worktree of THIS repo still gets
+      # guarded (checked against its own branch); anything else is another
+      # project and stays out of scope.
+      local common
+      common="$(git -C "$resolved" rev-parse --path-format=absolute --git-common-dir 2>/dev/null || echo '')"
+      case "$common" in
+        "$proj"/*) repo_dir="$resolved" ;;
+        *) return 0 ;;
+      esac
+      ;;
   esac
 
   current_branch="$(git -C "$repo_dir" rev-parse --abbrev-ref HEAD 2>/dev/null || echo '')"
