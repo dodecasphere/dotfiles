@@ -142,6 +142,7 @@
     "code-simplifier@claude-plugins-official": true,
     "claude-md-management@claude-plugins-official": true
   },
+  "effortLevel": "medium",
   "fastMode": true,
   "awaySummaryEnabled": false,
   "theme": "auto",
