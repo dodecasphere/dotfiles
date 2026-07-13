@@ -136,9 +136,6 @@
     "command": "bash /Users/michaeldulle/.claude/statusline-command.sh"
   },
   "enabledPlugins": {
-    "feature-dev@claude-plugins-official": true,
-    "security-guidance@claude-plugins-official": false,
-    "remember@claude-plugins-official": false,
     "code-simplifier@claude-plugins-official": true,
     "claude-md-management@claude-plugins-official": true
   },
