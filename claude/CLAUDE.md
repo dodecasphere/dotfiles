@@ -286,6 +286,21 @@ asked:
   and is easy to mistake for — a bug in the agent's own diff, when it's
   really just a missing build step. Run the project's build command in the
   worktree before trusting a wall of red test failures there.
+- **A worktree-isolated background agent's checkout can be silently stale —
+  verify its base before trusting its gates or code-reading claims.** On
+  CrestLite (2026-07-13), two agents launched with `isolation: worktree` got
+  worktrees cut from a ref 487 commits behind `develop`; their full test
+  suites ran green against that ancient tree, and one agent confidently
+  "verified" a component didn't exist in the repo — true only in the stale
+  checkout. After any worktree agent reports, run `git -C <worktree>
+  merge-base HEAD <target-branch>` and compare against the target's tip
+  BEFORE merging its branch or acting on its claims; if stale, cherry-pick
+  the agent's commits onto a fresh branch off the current target and re-run
+  every gate in the main checkout (worked cleanly). Two setup corollaries:
+  symlinking `vendor/` into a worktree breaks Pest's path resolution (do a
+  real `composer install`), and an agent running `npm install` against a
+  stale manifest mutates a shared symlinked `node_modules` — re-verify the
+  main checkout's suites afterward.
 - **Test-first.** For non-trivial logic, write the failing test before the
   implementation (the `tdd` skill), unit and feature, PHP and JS. Never call
   work done with failing tests or below the project's coverage bar; where a
