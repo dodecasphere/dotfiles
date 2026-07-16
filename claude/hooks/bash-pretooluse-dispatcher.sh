@@ -156,12 +156,19 @@ git_workflow_guard_global() {
     paths="$(git -C "$repo" diff --cached --name-only 2>/dev/null || true)"
 
     segs="$(printf '%s' "$cmd" | grep -oE 'git[[:space:]]+add[[:space:]]+[^;&|]*' | sed -E 's/^git[[:space:]]+add[[:space:]]+//' || true)"
-    for tok in $segs; do
-      case "$tok" in
-        -*|.|..*|*'*'*) return 1 ;;
-        *) paths="$paths"$'\n'"$tok" ;;
-      esac
-    done
+    if [ -n "$segs" ]; then
+      # Enumerate what the chained add would stage via --dry-run (index never
+      # mutated). Handles ., -A, globs — the cases the old token parser had to
+      # conservatively refuse. Tokens are word-split and passed as literal
+      # args, never eval'd: the hook must not execute $(...) embedded in a
+      # command it may be about to deny.
+      local prefix dry
+      prefix="$(git -C "$repo_dir" rev-parse --show-prefix 2>/dev/null || echo '')"
+      # shellcheck disable=SC2086
+      dry="$(git -C "$repo_dir" add --dry-run $segs 2>/dev/null)" || return 1
+      dry="$(printf '%s\n' "$dry" | sed -nE "s#^(add|remove) '(.*)'\$#${prefix}\2#p")"
+      paths="$paths"$'\n'"$dry"
+    fi
 
     if printf '%s' "$cmd" | grep -Eq 'git[[:space:]]+commit[[:space:]]+[^;&|]*(-a|--all|-am)([[:space:]]|$)'; then
       paths="$paths"$'\n'"$(git -C "$repo" diff --name-only 2>/dev/null || true)"
