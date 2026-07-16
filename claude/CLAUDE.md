@@ -670,7 +670,9 @@ Rule: start minimal, load more only when the task proves it needs it.
   silently ignore it repeatedly. (A reminder ignored often enough tends to get
   promoted to a hard block.)
 - **If a git commit is unexpectedly blocked by a branch-protection hook** even
-  though the branch/files look correct, check whether `git add && git commit`
-  was chained in one Bash call — some PreToolUse hooks only see the compound
-  command and refuse it outright. Split into two separate tool calls before
+  though the branch/files look correct, check what the guard actually saw.
+  Chained `git add && git commit` in one Bash call is handled since 2026-07-16
+  (the dispatcher enumerates the add via `git add --dry-run`), but a dry-run
+  that errors (bad pathspec, incompatible flags) still falls back to a
+  conservative deny — split into two separate tool calls in that case before
   assuming the hook itself is misconfigured.
