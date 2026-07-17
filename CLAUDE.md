@@ -23,7 +23,14 @@ Personal dotfiles for macOS (primary) and Linux (partial). Files are symlinked i
 
 The `claude/` subtree is the canonical, version-controlled Claude Code config (agents, commands, hooks, skills, rules, mcp, templates, plus `settings.json` and the statusline). `install.sh` handles it separately from the generic root-file loop: it symlinks the individual files into `~/.claude`, which is otherwise full of machine-local state (plugins, projects, sessions) that must stay out of git. `test.sh` verifies this restore on a simulated fresh machine.
 
-`brain/` (repo root, not symlinked) is this project's Project Brain: the `0N-XX-*.md` files auto-loaded each session by `claude/hooks/brain-loader.sh`. Treat them as authoritative project grounding.
+`project-memory/` (repo root) holds this repo's Claude project memories, symlinked by `install.sh` into `~/.claude/projects/-Users-<user>-Dotfiles/memory`. Global cross-project memories live in `claude/memory/`, symlinked to `~/.claude/memory/`. (The old `brain/` Project Brain was retired 2026-07-17, EOS IDEA-014 slice 6; durable content was distilled below, full history in git.)
+
+## Durable decisions (distilled from the retired brain)
+
+- Third-party Claude skills are always hand-ported into `claude/` (markdown, house-styled, selective), never installed via upstream `curl | bash` or `npx` installers: those write into machine-local `~/.claude` and fight the symlink-restore model. Provenance and refresh steps for vendored skills live in `claude/skills/UPSTREAM.md`.
+- The Matt Pocock skills adoption (2026-07-09) was deliberately disciplines-only: the issue-tracker delivery pipeline half (triage, to-spec, to-tickets, wayfinder, CONTEXT.md domain models) was rejected because it collides with the owner's own workflow systems. Do not re-propose adopting it wholesale.
+- Non-goals: multi-account `CLAUDE_CONFIG_DIR` switching (deliberately abandoned), TypeScript in app-code guidance (owner uses plain JS), Filament and Capacitor (not part of the stack).
+- Known fragility: the statusline usage gauge depends on the Claude Usage app (cache plus a live `sk-ant-sid02` sessionKey in the untracked `fetch-claude-usage.swift`); the cookie expires with nothing to refresh it if that app is removed.
 
 ## Shell config architecture
 
