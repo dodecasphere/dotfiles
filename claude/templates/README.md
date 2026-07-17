@@ -36,11 +36,19 @@ Two files, install together - both read the same conf:
 
 ```bash
 cp ~/Dotfiles/claude/templates/git-guard.conf .claude/git-guard.conf
-mkdir -p .githooks
+mkdir -p .githooks/lib
 cp ~/Dotfiles/claude/templates/pre-commit .githooks/pre-commit
-chmod +x .githooks/pre-commit
+cp ~/Dotfiles/claude/templates/githooks-lib/*.sh .githooks/lib/
+chmod +x .githooks/pre-commit .githooks/lib/*.sh
 git config core.hooksPath .githooks
 ```
+
+The wall scripts (debug-scrubber, require-tests, focused-test-guard,
+env-drift, product-doc-lint) are project owned: `pre-commit` calls them from
+the project's own `.githooks/lib/`, never from `~/.claude/hooks` (those
+global copies were retired 2026-07-17, EOS IDEA-014 slice 6). The
+`githooks-lib/` copies here are seeds for new projects; an adopted project's
+`.githooks/lib/` is authoritative for that project.
 
 `.claude/git-guard.conf`'s mere presence activates the global, opt-in
 `git-workflow-guard` in `bash-pretooluse-dispatcher.sh` (the Claude-layer
