@@ -19,4 +19,4 @@ Latest stable versions to target (confirmed on the web 2026-06-23):
 - **Alpine 3**
 - **Postgres 18** (19 in beta)
 
-Stack best-practice skills (`laravel-best-practices`, `inertia-vue`, `tailwind`, `alpine`) live in the dotfiles repo under `claude/skills/`. See [[claude-config-layer]]. Always re-confirm "latest" on the web before relying on a version; the user expects current releases.
+Stack best practice guidance lives in Engineering OS packs (`engineering-os/plugins/core/references/packs/`), loaded per project via the `profile:` line in `.engineering-os/STATE.md`; only the `inertia-vue` skill remains in `claude/skills/` pending the vue pack's first real load (shadowed copies of the rest: `claude/_shadow/2026-07-17/`). See [[claude-config-layer]]. Always re-confirm "latest" on the web before relying on a version; the user expects current releases.
