@@ -37,8 +37,8 @@ For each lens, name concrete failures for THIS change, not generic risks.
   webhooks/retries, N+1s that only show at production volume.
 - **Security / authz.** Missing Gate/Policy checks, IDOR on new endpoints,
   mass assignment, data exposed through Inertia props or API resources.
-  (For a deep pass, spawn the security-reviewer agent instead of redoing its
-  job here; fold its verdict in.)
+  (For a deep pass in an EOS project, run the plugin's security rubric,
+  roles/security.md, instead of redoing its job here; fold its verdict in.)
 - **Data & migrations.** Irreversible changes, missing rollback path, columns
   that need backfill, constraints that fail on real production data shapes
   that local seeds never produce (empty strings, nulls, extreme values,
