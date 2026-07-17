@@ -49,7 +49,7 @@ pending their pack's first real load.
 - **Spec first.** For non-trivial work, write a short spec (problem, key
   decisions, what done means) and build against it.
 - **Interview to remove ambiguity.** Work open questions with me one at a
-  time, recommending an answer for each (the grill-me skill).
+  time, recommending an answer for each.
 - **Verify before and after.** Confirm context and access up front; afterward
   state what you verified versus what only I can validate.
 - **Testing Reka UI (or other Radix-style) dialogs/popovers in Vitest.** Their
@@ -143,8 +143,8 @@ pending their pack's first real load.
   commit is denied unexpectedly, check the worktree's own branch first, not
   the main checkout's.
 - **Test-first.** For non-trivial logic, write the failing test before the
-  implementation (the `tdd` skill); never call work done with failing tests
-  or below the project's coverage bar.
+  implementation; never call work done with failing tests or below the
+  project's coverage bar.
 - **Propose parallelism.** For large tasks that split into independent parts,
   propose sub-agents for parallel work or diverse perspectives, and spawn them
   when the scope clearly justifies the extra cost. Don't reflexively parallelize
