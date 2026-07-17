@@ -80,11 +80,12 @@ if [ -d "$claude_src" ]; then
 fi
 
 # --- Dotfiles project memory (~/.claude/projects/…/memory) ----------------
-# brain/memory/ holds project-specific Claude memories for this repo.
-# We symlink it into the path Claude Code uses for this project so memories
-# survive a machine wipe and are version-controlled alongside the brain docs.
+# project-memory/ holds project-specific Claude memories for this repo
+# (moved out of the retired brain/ dir, 2026-07-17). We symlink it into the
+# path Claude Code uses for this project so memories survive a machine wipe
+# and stay version-controlled.
 dotfiles_project_memory_dst="$HOME/.claude/projects/-Users-$(whoami)-Dotfiles/memory"
-dotfiles_project_memory_src="$PWD/brain/memory"
+dotfiles_project_memory_src="$PWD/project-memory"
 if [ -d "$dotfiles_project_memory_src" ]; then
   mkdir -p "$(dirname "$dotfiles_project_memory_dst")"
   if [ -e "$dotfiles_project_memory_dst" ] && [ ! -L "$dotfiles_project_memory_dst" ]; then
