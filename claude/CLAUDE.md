@@ -217,30 +217,16 @@ pending their pack's first real load.
   acceptable. Otherwise keep me in the loop and augment my judgment rather than
   replace it.
 
-## Project brain
-Some projects keep a Project Brain: the canonical `0N-XX-*.md` files (Overview,
-Goals, Architecture, Decisions, State, Glossary, Open Questions), auto-loaded at
-session start by the brain-loader hook. When one is loaded, treat it as
-authoritative grounding for the project. As the session runs, proactively offer
-to update it at the moments that matter, without being asked:
-- a real decision is made: offer to log it to Decisions (DC)
-- something starts working or breaks: offer to update Current State (ST)
-- the stack or structure changes: update Architecture (AR), plus a DC note on why
-- an open question gets answered: move it from OQ into DC
-Suggest, do not edit the brain without my go-ahead. `/brain-sync` refreshes the
-brain anytime; `/wrap` runs it as part of closing the session.
-
 ## Context budget
-The brain auto-loads cheap summaries; everything beyond that should match the
-task, not reflex-load. Don't pull architecture docs, full decision records, or
-whole-module reads for a bug fix.
+Load context to match the task, not by reflex. Don't pull architecture docs,
+full decision records, or whole-module reads for a bug fix.
 
 | Task | Load | Skip |
 |---|---|---|
-| Bug fix | ST + the failing code path | AR, decisions, module sweeps |
-| Small feature | + AR/GL, the one module touched | decision records, full docs |
+| Bug fix | project state + the failing code path | architecture docs, decisions, module sweeps |
+| Small feature | + architecture/glossary, the one module touched | decision records, full docs |
 | New feature | + relevant decisions, neighboring modules | unrelated subsystems |
-| Architecture work | full brain, decisions, schema | (load what it takes) |
+| Architecture work | full project docs, decisions, schema | (load what it takes) |
 | Spike/research | minimal; explore as you go | heavy docs upfront |
 
 Rule: start minimal, load more only when the task proves it needs it.

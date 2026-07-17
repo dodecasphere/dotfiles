@@ -77,14 +77,6 @@
                         "command": "bash $HOME/.claude/hooks/context-recovery.sh"
                     }
                 ]
-            },
-            {
-                "hooks": [
-                    {
-                        "type": "command",
-                        "command": "bash $HOME/.claude/hooks/brain-loader.sh"
-                    }
-                ]
             }
         ],
         "PostToolUse": [
