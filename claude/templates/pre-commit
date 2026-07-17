@@ -76,10 +76,14 @@ if [ -n "$branch" ] \
   exit 1
 fi
 
-bash "$HOME/.claude/hooks/debug-scrubber.sh" || exit 1
-bash "$HOME/.claude/hooks/require-tests.sh" || exit 1
-bash "$HOME/.claude/hooks/focused-test-guard.sh" || exit 1
-bash "$HOME/.claude/hooks/env-drift.sh" || exit 1
-bash "$HOME/.claude/hooks/product-doc-lint.sh" || true
+# Wall scripts are project owned (moved from the global ~/.claude/hooks
+# copies during EOS adoption, IDEA-014 slice 6). Resolve them relative to
+# this hook so worktrees and clones need no machine-specific paths.
+hook_lib="$(cd "$(dirname "$0")" && pwd)/lib"
+bash "$hook_lib/debug-scrubber.sh" || exit 1
+bash "$hook_lib/require-tests.sh" || exit 1
+bash "$hook_lib/focused-test-guard.sh" || exit 1
+bash "$hook_lib/env-drift.sh" || exit 1
+bash "$hook_lib/product-doc-lint.sh" || true
 
 exit 0
