@@ -12,7 +12,11 @@ doing "Hardening sshd..."
 # Never disable password auth without a working authorized_keys — that would
 # permanently lock this user out of the box.
 if [ -s "$HOME/.ssh/authorized_keys" ]; then
-  sudo tee /etc/ssh/sshd_config.d/99-hardening.conf >/dev/null <<'EOF'
+  # Must sort BEFORE cloud-init's 50-cloud-init.conf: sshd takes the FIRST
+  # occurrence of an option, and cloud-init's file sets
+  # PasswordAuthentication yes — a 99-prefixed drop-in silently loses to it.
+  sudo rm -f /etc/ssh/sshd_config.d/99-hardening.conf   # earlier name, superseded
+  sudo tee /etc/ssh/sshd_config.d/00-hardening.conf >/dev/null <<'EOF'
 PermitRootLogin no
 PasswordAuthentication no
 KbdInteractiveAuthentication no
@@ -23,7 +27,7 @@ EOF
   else
     # Bad config must not be left in place — a later manual restart would
     # take sshd down with it.
-    sudo rm -f /etc/ssh/sshd_config.d/99-hardening.conf
+    sudo rm -f /etc/ssh/sshd_config.d/00-hardening.conf
     echo "sshd config validation failed — hardening NOT applied" >&2
   fi
 else
