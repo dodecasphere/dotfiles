@@ -44,6 +44,15 @@ if [[ "$1" == "--mac" ]]; then
     source provisioning/mac/todo.sh
 
 elif [[ "$1" == "--linux" ]]; then
+    # Must run as a normal sudo user, not root: Homebrew's installer refuses
+    # root, and everything downstream (brew, npm, crontabs, chsh) should
+    # belong to the real user. On a fresh VPS: adduser + usermod -aG sudo,
+    # ssh in as that user, then run this.
+    if [ "$(id -u)" -eq 0 ]; then
+        echo "Do not run provisioning as root — create a sudo user and re-run as them." >&2
+        exit 1
+    fi
+
     # Base system packages (also what Homebrew-on-Linux needs), then brew itself.
     source provisioning/linux/apt.sh
     source provisioning/linux/updates.sh
