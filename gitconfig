@@ -21,8 +21,10 @@
 [includeIf "gitdir:~/Dotfiles/"]
         path = ~/.gitconfig-personal
 
-[credential]
-        helper = osxkeychain
+# OS-specific config (e.g. the mac-only osxkeychain credential helper).
+# Written by provisioning; git silently skips the include when absent.
+[include]
+        path = ~/.gitconfig-os
 [init]
 	defaultBranch = main
 [push]

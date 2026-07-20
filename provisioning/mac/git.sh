@@ -4,6 +4,14 @@
 # Set up Git
 #
 
+# Machine-local, OS-specific git config — included by the shared gitconfig
+# (which git silently skips when this file is absent, e.g. on Linux).
+doing "Writing ~/.gitconfig-os (macOS credential helper)..."
+cat > "$HOME/.gitconfig-os" <<'EOF'
+[credential]
+	helper = osxkeychain
+EOF
+
 function test_github {
   ssh -T git@github.com 2>&1 | grep --silent "You've successfully authenticated"
 }
