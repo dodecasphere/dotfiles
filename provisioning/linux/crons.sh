@@ -3,21 +3,39 @@
 #
 # Create cron jobs
 #
-# Self-contained add_cron (the mac helpers.sh isn't sourced on the Linux path):
-# only appends an entry if that exact line isn't already in the crontab, so
-# re-running doesn't pile up duplicates.
+# `add_cron` comes from provisioning/mac/helpers.sh (sourced earlier on the
+# Linux path too) and only appends an entry when that exact line isn't already
+# in the crontab, so re-running provisioning doesn't pile up duplicate jobs.
+#
+# Cron runs with a minimal PATH (/usr/bin:/bin), so brew-installed tools are
+# referenced by absolute path.
+#
 
-add_cron() {
+BREW_BIN="/home/linuxbrew/.linuxbrew/bin"
+
+# Run daily during the midnight hour — tool self-updates (mirrors the mac crons)
+add_cron "0 0 * * * $BREW_BIN/composer self-update >> /dev/null 2>&1"
+add_cron "5 0 * * * $BREW_BIN/composer global update >> /dev/null 2>&1"
+add_cron "10 0 * * * $BREW_BIN/npm install npm -g >> /dev/null 2>&1"
+add_cron "15 0 * * * $BREW_BIN/npm update -g >> /dev/null 2>&1"
+add_cron "20 0 * * * $HOME/.local/bin/dep self-update >> /dev/null 2>&1"
+
+# Run daily during the 1am hour — keep brew itself fresh
+add_cron "0 1 * * * $BREW_BIN/brew update >> /dev/null 2>&1"
+add_cron "5 1 * * * $BREW_BIN/brew upgrade >> /dev/null 2>&1"
+add_cron "30 1 * * * $BREW_BIN/brew cleanup >> /dev/null 2>&1"
+
+# apt maintenance needs root — user crontab entries would silently fail, so
+# these go in root's crontab (same exact-line dedupe as add_cron).
+add_root_cron() {
   local entry="$1"
-  if crontab -l 2>/dev/null | grep -Fqx "$entry"; then
-    echo "Cron already present — skipping: $entry"
+  if sudo crontab -l 2>/dev/null | grep -Fqx "$entry"; then
+    echo "Root cron already present — skipping: $entry"
   else
-    (crontab -l 2>/dev/null; echo "$entry") | crontab -
-    echo "Cron added: $entry"
+    (sudo crontab -l 2>/dev/null; echo "$entry") | sudo crontab -
+    echo "Root cron added: $entry"
   fi
 }
 
-# Run daily during the midnight hour
-add_cron "0 0 * * * /usr/local/bin/composer self-update --1"
-add_cron "5 0 * * * apt-get -y autoremove && apt-get autoclean"
-add_cron "0 12 1 * * apt-get update && apt-get -y upgrade"
+add_root_cron "5 0 * * * apt-get -y autoremove && apt-get autoclean"
+add_root_cron "0 12 1 * * apt-get update && apt-get -y upgrade"
