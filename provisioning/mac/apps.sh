@@ -22,7 +22,7 @@ cask "claude-usage-tracker"
 cask "clipy"
 cask "coconutbattery"; press_key_to_continue "Coconutbattery: Set menubar to display '%t  •  %r%s  •  %p%' [Press any key...]"
 cask "codex"
-cask "codex-app"
+cask "chatgpt"   # replaced codex-app (discontinued upstream); Codex desktop features live in the ChatGPT app now
 cask "dash"
 cask "dbngin"
 cask "discord"
