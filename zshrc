@@ -44,6 +44,7 @@ setopt NO_CASE_GLOB       # case-insensitive globbing (bash nocaseglob)
 setopt AUTO_PUSHD         # cd pushes onto the dir stack — powers the `2`/`3`/`d` aliases
 setopt PUSHD_IGNORE_DUPS  # don't clutter the stack with duplicates
 setopt PUSHD_SILENT       # don't print the stack on every pushd/popd
+setopt INTERACTIVE_COMMENTS # allow # comments in the interactive shell (pasteable snippets)
 # (recursive globbing and window-resize tracking are automatic in zsh; the
 #  aggressive `CORRECT` autocorrect is intentionally left off to avoid surprises)
 
