@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this repo is
 
-Personal dotfiles for macOS (primary) and Linux (partial). Files are symlinked into `$HOME` as hidden files by `install.sh`. Provisioning scripts install apps and configure the machine.
+Personal dotfiles for macOS (primary) and Linux (headless Ubuntu/Debian server, CLI parity via Homebrew on Linux). Files are symlinked into `$HOME` as hidden files by `install.sh`. Provisioning scripts install apps and configure the machine.
 
 ## Scripts
 
@@ -17,7 +17,7 @@ Personal dotfiles for macOS (primary) and Linux (partial). Files are symlinked i
 
 ## Provisioning architecture
 
-`provision.sh` sources scripts from `provisioning/mac/` in order. The install guards (`formula`, `cask`, `mas_install`, `npm_global`, `pecl_install`, `composer_global`, `add_cron`) live in `provisioning/mac/helpers.sh` and skip anything already installed. That is what makes re-running safe. The helpers are also symlinked into interactive shells via `~/.provisioning`, so commands like `cask foo` work at the prompt.
+`provision.sh --mac` sources scripts from `provisioning/mac/` in order. `provision.sh --linux` sources `provisioning/linux/` (apt base packages, Homebrew on Linux, Linux ports of git/php/crons) plus the portable mac scripts directly (`helpers.sh`, `node.sh`, `claude.sh`, `secrets.sh`). The OS-agnostic formula list lives in `provisioning/shared/formulae.sh`, sourced by both platforms so the two never drift; macOS-only formulae stay in `provisioning/mac/formulae.sh`. The install guards (`formula`, `cask`, `mas_install`, `npm_global`, `pecl_install`, `composer_global`, `add_cron`) live in `provisioning/mac/helpers.sh` and skip anything already installed. That is what makes re-running safe. The helpers are also symlinked into interactive shells via `~/.provisioning`, so commands like `cask foo` work at the prompt.
 
 ## Claude Code config layer (`claude/`)
 

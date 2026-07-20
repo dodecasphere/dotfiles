@@ -44,12 +44,34 @@ if [[ "$1" == "--mac" ]]; then
     source provisioning/mac/todo.sh
 
 elif [[ "$1" == "--linux" ]]; then
-    source provisioning/linux/apt-get.sh
+    # Base system packages (also what Homebrew-on-Linux needs), then brew itself.
+    source provisioning/linux/apt.sh
+    source provisioning/linux/brew.sh
+
+    # Install guards — portable; the mac-only ones (cask/mas_install) are
+    # defined but simply never called on this path.
+    source provisioning/mac/helpers.sh
+
+    source provisioning/shared/formulae.sh
+
+    # Fix zsh compinit "insecure directories" warning — same brew quirk as macOS.
+    chmod -R go-w "$(brew --prefix)/share"
+
+    source provisioning/mac/node.sh
+    source provisioning/mac/claude.sh
+    source provisioning/mac/secrets.sh
+    source provisioning/linux/git.sh
+    source provisioning/linux/php.sh
+
+    source provisioning/linux/crons.sh
 
 fi
 
 
 
-# Default to zsh (macOS ships it and it's already in /etc/shells).
-# Bash remains fully configured — switch any time with `chsh -s /bin/bash`.
-chsh -s /bin/zsh
+# Default to zsh (macOS ships it at /bin/zsh; on Linux apt's is /usr/bin/zsh —
+# resolve whichever exists). Bash remains fully configured — switch any time
+# with `chsh -s /bin/bash`.
+if [ "$(basename "$SHELL")" != "zsh" ]; then
+    chsh -s "$(command -v zsh)"
+fi
