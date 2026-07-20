@@ -46,6 +46,7 @@ if [[ "$1" == "--mac" ]]; then
 elif [[ "$1" == "--linux" ]]; then
     # Base system packages (also what Homebrew-on-Linux needs), then brew itself.
     source provisioning/linux/apt.sh
+    source provisioning/linux/updates.sh
     source provisioning/linux/brew.sh
 
     # Install guards — portable; the mac-only ones (cask/mas_install) are
