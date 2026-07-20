@@ -11,7 +11,8 @@ export CLICOLOR=1
 # export LSCOLORS=ExFxCxDxBxegedabagacad # light background
 # export LSCOLORS=gxBxhxDxfxhxhxhxhxcxcx # dark background
 
-export GREP_COLOR='1;35;40'
+# mt = matching text. (GREP_COLOR singular is deprecated; newer grep warns.)
+export GREP_COLORS='mt=1;35;40'
 
 # Enable persistent REPL history for `node`.
 export NODE_REPL_HISTORY=~/.node_history;
