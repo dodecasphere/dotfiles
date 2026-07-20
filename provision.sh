@@ -64,6 +64,7 @@ elif [[ "$1" == "--linux" ]]; then
 
     source provisioning/mac/node.sh
     source provisioning/mac/claude.sh
+    source provisioning/linux/codex.sh
     source provisioning/mac/secrets.sh
     source provisioning/linux/git.sh
     source provisioning/linux/php.sh
