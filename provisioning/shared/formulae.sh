@@ -30,7 +30,6 @@ formula "speedtest-cli"           # internet speed test
 formula "svgo"                    # SVG optimizer
 formula "tree"                    # directory listing as a tree
 formula "wget"                    # file downloader
-formula "yarn"                    # JS package manager
 
 # Modern CLI tools
 formula "eza"        # modern ls

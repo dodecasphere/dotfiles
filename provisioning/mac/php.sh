@@ -25,12 +25,6 @@ composer_global "ergebnis/composer-normalize"
 composer_global "squizlabs/php_codesniffer"
 composer_global "beyondcode/expose"
 
-doing "Installing Mailhog (for local mail testing)..."
-formula "mailhog"
-
-doing "Starting Mailhog as a service..."
-brew services start mailhog
-
 doing "Installing Deployer..."
 if command -v dep &>/dev/null || [ -f /usr/local/bin/dep ]; then
   echo "deployer (dep) already installed — skipping"

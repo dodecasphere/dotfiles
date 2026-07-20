@@ -16,14 +16,6 @@ composer_global "ergebnis/composer-normalize"
 composer_global "squizlabs/php_codesniffer"
 composer_global "beyondcode/expose"
 
-# Mailhog for local mail testing — the `formula` guard asks before installing,
-# so skipping it on a box that doesn't need it is one "no" away.
-doing "Installing Mailhog (for local mail testing)..."
-formula "mailhog"
-if brew list --formula mailhog &>/dev/null; then
-  brew services start mailhog
-fi
-
 doing "Installing Deployer..."
 if command -v dep &>/dev/null; then
   echo "deployer (dep) already installed — skipping"
