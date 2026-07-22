@@ -371,14 +371,13 @@ if [ "$show_branch" = "1" ]; then
     if [ -n "$branch" ]; then
       branch_text="${GREEN}⎇ ${branch}${RESET}"
 
-      # Dirty/clean dot: green ● when the tree is clean, red ●N (N = changed
-      # entries) when dirty. --porcelain is the cheap, script-stable form.
+      # Dirty indicator: red [N] (N = changed entries) when the tree is dirty,
+      # nothing at all when clean (clean is the default, so no marker is noise).
+      # --porcelain is the cheap, script-stable form.
       if [ "$show_git_status" = "1" ]; then
         dirty_count=$(git status --porcelain 2>/dev/null | grep -c '^')
         if [ "${dirty_count:-0}" -gt 0 ]; then
-          branch_text="${branch_text} ${LEVEL_9}●${dirty_count}${RESET}"
-        else
-          branch_text="${branch_text} ${GREEN}●${RESET}"
+          branch_text="${branch_text} ${LEVEL_9}[${dirty_count}]${RESET}"
         fi
 
         # Ahead/behind upstream (↑ahead ↓behind). Skipped when narrow, or when the
