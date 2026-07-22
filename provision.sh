@@ -38,7 +38,6 @@ if [[ "$1" == "--mac" ]]; then
     source provisioning/mac/git.sh
     source provisioning/mac/php.sh
 
-    source provisioning/mac/crons.sh
     source provisioning/mac/launchagents.sh
 
     source provisioning/mac/todo.sh
