@@ -28,5 +28,11 @@ add_cron "0 1 * * * $CRON_ENV brew update >> /dev/null 2>&1"
 add_cron "5 1 * * * $CRON_ENV brew upgrade >> /dev/null 2>&1"
 add_cron "30 1 * * * $CRON_ENV brew cleanup >> /dev/null 2>&1"
 
+# Daily dotfiles pull + relink (install.sh only — see autoupdate.sh for why
+# provision.sh isn't run unattended). Scheduled at 23:45, ahead of the midnight
+# and 1am tool-update crons above, so a relinked ~/.claude/settings.json etc.
+# is in place before anything else runs.
+add_cron "45 23 * * * $HOME/Dotfiles/autoupdate.sh"
+
 # No apt crons here: system package updates, autoremove, and autoclean are
 # handled by unattended-upgrades (see provisioning/linux/updates.sh).
