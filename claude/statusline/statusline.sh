@@ -1,8 +1,39 @@
 #!/bin/bash
-config_file="$HOME/.claude/statusline-config.txt"
+# Portable Claude Code statusline (macOS + headless Linux).
+# Renderer only: usage/weekly numbers come from a cache written by fetch-usage.sh
+# (this file's sibling), which is refreshed non-blocking on staleness below.
+# Secrets never live here or in the repo — see README.md.
+
+# Resolve this script's own directory so config + fetcher are found regardless of
+# where it's symlinked from (~/.claude/statusline -> Dotfiles/claude/statusline).
+SL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Portable date helpers. macOS ships BSD date; Linux ships GNU date; their flags
+# for "parse an ISO string to epoch" and "format an epoch" are mutually
+# incompatible, so branch once here and call the helpers everywhere below.
+if date --version >/dev/null 2>&1; then
+  # GNU date (Linux). Accepts ISO 8601 (incl. trailing Z) directly.
+  iso_to_epoch() { date -d "$1" +%s 2>/dev/null; }
+  epoch_to_fmt() { date -d "@$1" +"$2" 2>/dev/null; }
+else
+  # BSD date (macOS). strptime stops at the format's end, so a trailing Z is
+  # harmlessly ignored — matches how the original app-generated script parsed.
+  iso_to_epoch() { date -ju -f "%Y-%m-%dT%H:%M:%S" "$1" "+%s" 2>/dev/null; }
+  epoch_to_fmt() { date -r "$1" +"$2" 2>/dev/null; }
+fi
+
+config_file="${CLAUDE_STATUSLINE_CONFIG:-$SL_DIR/statusline-config.txt}"
 if [ -f "$config_file" ]; then
   source "$config_file"
   show_model=$SHOW_MODEL
+  show_effort=${SHOW_EFFORT:-1}   # default on for configs predating this key
+  # Newer optional segments — all default on, tolerant of older config files.
+  show_git_status=${SHOW_GIT_STATUS:-1}   # dirty count + ahead/behind on the branch
+  show_cost=${SHOW_COST:-1}               # session $ cost
+  show_lines=${SHOW_LINES:-1}             # +added/-removed
+  show_duration=${SHOW_DURATION:-1}       # session wall-clock
+  show_thinking=${SHOW_THINKING:-1}       # extended-thinking dot
+  responsive=${RESPONSIVE:-1}             # collapse segments on narrow terminals
   show_dir=$SHOW_DIRECTORY
   show_branch=$SHOW_BRANCH
   show_context=$SHOW_CONTEXT
@@ -38,6 +69,13 @@ if [ -f "$config_file" ]; then
   element_color_extra=$ELEMENT_COLOR_EXTRA
 else
   show_model=1
+  show_effort=1
+  show_git_status=1
+  show_cost=1
+  show_lines=1
+  show_duration=1
+  show_thinking=1
+  responsive=1
   show_dir=1
   show_branch=1
   show_context=1
@@ -74,9 +112,46 @@ else
 fi
 
 input=$(cat)
-current_dir_path=$(echo "$input" | grep -o '"current_dir":"[^"]*"' | sed 's/"current_dir":"//;s/"$//')
+current_dir_path=$(echo "$input" | grep -o '"current_dir":"[^"]*"' | head -1 | sed 's/"current_dir":"//;s/"$//')
 current_dir=$(basename "$current_dir_path")
-model=$(echo "$input" | grep -o '"display_name":"[^"]*"' | sed 's/"display_name":"//;s/"$//')
+model=$(echo "$input" | grep -o '"display_name":"[^"]*"' | head -1 | sed 's/"display_name":"//;s/"$//')
+# Reasoning effort (low/medium/high/xhigh/max). Nested under "effort":{"level":...}
+# and absent when the model has no effort parameter, so scope the match to the
+# effort object rather than a bare "level" that could collide with a future field.
+effort=$(echo "$input" | grep -o '"effort":[[:space:]]*{[^}]*}' | grep -o '"level":"[^"]*"' | head -1 | sed 's/.*:"//;s/"//')
+# Session metrics from the cost object, plus two boolean flags. All optional —
+# each is empty/absent early in a session, and every consumer below guards for it.
+cost_usd=$(echo "$input" | grep -o '"total_cost_usd":[0-9.]*' | head -1 | sed 's/.*://')
+lines_added=$(echo "$input" | grep -o '"total_lines_added":[0-9]*' | head -1 | sed 's/.*://')
+lines_removed=$(echo "$input" | grep -o '"total_lines_removed":[0-9]*' | head -1 | sed 's/.*://')
+duration_ms=$(echo "$input" | grep -o '"total_duration_ms":[0-9]*' | head -1 | sed 's/.*://')
+# thinking.enabled — scope to the thinking object so "enabled" can't collide.
+thinking_enabled=$(echo "$input" | grep -o '"thinking":[[:space:]]*{[^}]*}' | grep -o '"enabled":[a-z]*' | head -1 | sed 's/.*://')
+
+# Identity resolution (all git-derived, so it is stable across cd and worktrees):
+#   project_name  — the main repo name, ALWAYS shown, unchanged by subdir/worktree
+#   subdir_suffix — path within the tree when you cd below the root (purple accent)
+#   worktree_name — set only inside a LINKED worktree (magenta section, own icon)
+# Git commands run in the process cwd, which Claude Code sets to workspace.current_dir
+# (same place the branch lookup below already relies on). Non-git dirs fall back to
+# the plain current-dir basename with no suffix and no worktree.
+project_name=""
+subdir_suffix=""
+worktree_name=""
+if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  common_dir=$(git rev-parse --path-format=absolute --git-common-dir 2>/dev/null)
+  this_git_dir=$(git rev-parse --path-format=absolute --git-dir 2>/dev/null)
+  project_name=$(basename "$(dirname "$common_dir")")
+  subdir_suffix=$(git rev-parse --show-prefix 2>/dev/null)
+  subdir_suffix=${subdir_suffix%/}   # strip trailing slash
+  # In a linked worktree, --git-dir points at .git/worktrees/<name> while
+  # --git-common-dir points at the main .git; equal means we are in the main tree.
+  if [ -n "$this_git_dir" ] && [ "$this_git_dir" != "$common_dir" ]; then
+    worktree_name=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)")
+  fi
+else
+  project_name="$current_dir"
+fi
 
 # Function to convert hex color to ANSI escape code
 hex_to_ansi() {
@@ -234,23 +309,113 @@ if [ "$pace_marker_step_colors" != "0" ] && [ "$color_mode" != "monochrome" ]; t
   PACE_RUNAWAY=$'\033[38;5;135m'
 fi
 
+# Purple accent for the subdirectory suffix (distinct from the worktree MAGENTA).
+# Honors the same color modes as everything else.
+case "$color_mode" in
+  monochrome)  PURPLE="" ;;
+  singleColor) PURPLE="$MAGENTA" ;;   # single-color mode already collapsed MAGENTA to the chosen color
+  *)           PURPLE=$'\033[38;5;141m' ;;
+esac
+
+# Responsive collapse. Claude Code exports COLUMNS to the width available to the
+# statusline. Two tiers: below 90 cols we drop the secondary line-2 metrics
+# (cost/lines/duration) and the branch's ahead-behind; below 65 we also strip the
+# heavy visuals by reusing the existing toggles (bars, pace markers, reset times,
+# and the whole weekly segment). sl_compact gates the new secondary segments.
+sl_compact=0
+cols=${COLUMNS:-999}
+case "$cols" in ''|*[!0-9]*) cols=999 ;; esac
+if [ "$responsive" = "1" ]; then
+  if [ "$cols" -lt 65 ]; then
+    show_bar=0; show_pace_marker=0; show_reset=0; show_weekly=0
+    sl_compact=1
+  elif [ "$cols" -lt 90 ]; then
+    sl_compact=1
+  fi
+fi
+
+# Format a millisecond duration as a compact human string (12s / 45m / 1h23m).
+fmt_dur() {
+  local s=$(( ${1:-0} / 1000 ))
+  if   [ "$s" -lt 60 ];   then printf '%ds' "$s"
+  elif [ "$s" -lt 3600 ]; then printf '%dm' "$((s / 60))"
+  else printf '%dh%dm' "$((s / 3600))" "$(((s % 3600) / 60))"
+  fi
+}
+
 # Build components (without separators)
+# Directory: project name (always, blue) + optional purple "/subdir" suffix.
 dir_text=""
-if [ "$show_dir" = "1" ]; then
-  dir_text="${BLUE}${current_dir}${RESET}"
+if [ "$show_dir" = "1" ] && [ -n "$project_name" ]; then
+  dir_text="${BLUE}${project_name}${RESET}"
+  [ -n "$subdir_suffix" ] && dir_text="${dir_text}${PURPLE}/${subdir_suffix}${RESET}"
+fi
+
+# Worktree: only inside a linked worktree. Magenta, tree/fork icon on the left.
+worktree_text=""
+if [ -n "$worktree_name" ]; then
+  worktree_text="${MAGENTA}⑂ ${worktree_name}${RESET}"
 fi
 
 branch_text=""
 if [ "$show_branch" = "1" ]; then
   if git rev-parse --git-dir > /dev/null 2>&1; then
     branch=$(git branch --show-current 2>/dev/null)
-    [ -n "$branch" ] && branch_text="${GREEN}⎇ ${branch}${RESET}"
+    if [ -n "$branch" ]; then
+      branch_text="${GREEN}⎇ ${branch}${RESET}"
+
+      # Dirty/clean dot: green ● when the tree is clean, red ●N (N = changed
+      # entries) when dirty. --porcelain is the cheap, script-stable form.
+      if [ "$show_git_status" = "1" ]; then
+        dirty_count=$(git status --porcelain 2>/dev/null | grep -c '^')
+        if [ "${dirty_count:-0}" -gt 0 ]; then
+          branch_text="${branch_text} ${LEVEL_9}●${dirty_count}${RESET}"
+        else
+          branch_text="${branch_text} ${GREEN}●${RESET}"
+        fi
+
+        # Ahead/behind upstream (↑ahead ↓behind). Skipped when narrow, or when the
+        # branch has no upstream (rev-list fails and both stay empty).
+        if [ "$sl_compact" = "0" ]; then
+          ab=$(git rev-list --left-right --count '@{upstream}...HEAD' 2>/dev/null)
+          if [ -n "$ab" ]; then
+            behind=$(printf '%s' "$ab" | awk '{print $1}')
+            ahead=$(printf '%s' "$ab" | awk '{print $2}')
+            [ "${ahead:-0}" -gt 0 ] && branch_text="${branch_text} ${GRAY}↑${ahead}${RESET}"
+            [ "${behind:-0}" -gt 0 ] && branch_text="${branch_text} ${GRAY}↓${behind}${RESET}"
+          fi
+        fi
+      fi
+    fi
   fi
 fi
 
 model_text=""
 if [ "$show_model" = "1" ] && [ -n "$model" ]; then
   model_text="${YELLOW}${model}${RESET}"
+  # Reasoning effort sits directly to the right of the model as a sub-label (not
+  # its own bulleted section). Colored to mirror Claude Code's /effort palette:
+  # low=gold, medium=green, high=blue, xhigh=purple, max=coral (ultracode reports
+  # as xhigh). Honors monochrome/single-color modes like every other color.
+  if [ "$show_effort" = "1" ] && [ -n "$effort" ]; then
+    effort_color="$GRAY"
+    if [ "$color_mode" = "singleColor" ]; then
+      effort_color="$MAGENTA"
+    elif [ "$color_mode" != "monochrome" ]; then
+      case "$effort" in
+        low)    effort_color=$'\033[38;5;220m' ;;  # gold
+        medium) effort_color=$'\033[38;5;41m'  ;;  # green
+        high)   effort_color=$'\033[38;5;75m'  ;;  # periwinkle blue
+        xhigh)  effort_color=$'\033[38;5;99m'  ;;  # violet
+        max)    effort_color=$'\033[38;5;209m' ;;  # coral
+      esac
+    fi
+    model_text="${model_text} ${effort_color}${effort}${RESET}"
+  fi
+  # Extended-thinking indicator: a small dot when thinking is enabled this session.
+  if [ "$show_thinking" = "1" ] && [ "$thinking_enabled" = "true" ]; then
+    model_text="${model_text} ${CYAN}✳${RESET}"
+  fi
 fi
 
 profile_text=""
@@ -323,12 +488,30 @@ if [ "$show_usage" = "1" ]; then
     fi
   fi
 
-  # Fall back to swift script if cache is stale or missing
+  # Cache stale or missing: refresh via the portable fetcher (curl-impersonate).
+  # There's no menubar app doing this in the background here, so the statusline
+  # is the only thing that can keep the cache warm.
   if [ -z "$swift_result" ]; then
-    swift_result=$(swift "$HOME/.claude/fetch-claude-usage.swift" 2>/dev/null)
+    fetcher="$SL_DIR/fetch-usage.sh"
+    if [ -f "$cache_file" ] && [ -x "$fetcher" ]; then
+      # Have a (stale) cache: kick a detached refresh for NEXT render and show
+      # the stale numbers now, so the statusline never blocks on the network.
+      ( setsid "$fetcher" >/dev/null 2>&1 & ) 2>/dev/null || ( "$fetcher" >/dev/null 2>&1 & )
+      stale_util=$(grep "^UTILIZATION=" "$cache_file" 2>/dev/null | cut -d= -f2)
+      stale_reset=$(grep "^RESETS_AT=" "$cache_file" 2>/dev/null | cut -d= -f2)
+      [ -n "$stale_util" ] && swift_result="${stale_util}|${stale_reset}"
+    elif [ -x "$fetcher" ]; then
+      # Cold start (no cache at all): one blocking fetch so we show data now.
+      "$fetcher" >/dev/null 2>&1
+      if [ -f "$cache_file" ]; then
+        stale_util=$(grep "^UTILIZATION=" "$cache_file" 2>/dev/null | cut -d= -f2)
+        stale_reset=$(grep "^RESETS_AT=" "$cache_file" 2>/dev/null | cut -d= -f2)
+        [ -n "$stale_util" ] && swift_result="${stale_util}|${stale_reset}"
+      fi
+    fi
   fi
 
-  if [ $? -eq 0 ] && [ -n "$swift_result" ]; then
+  if [ -n "$swift_result" ]; then
     utilization=$(echo "$swift_result" | cut -d'|' -f1)
     resets_at=$(echo "$swift_result" | cut -d'|' -f2)
 
@@ -336,7 +519,7 @@ if [ "$show_usage" = "1" ]; then
       reset_epoch=""
       if [ -n "$resets_at" ] && [ "$resets_at" != "null" ]; then
         iso_time=$(echo "$resets_at" | sed 's/\.[0-9]*Z$//')
-        reset_epoch=$(date -ju -f "%Y-%m-%dT%H:%M:%S" "$iso_time" "+%s" 2>/dev/null)
+        reset_epoch=$(iso_to_epoch "$iso_time")
       fi
 
     if [ -n "$utilization" ] && [ "$utilization" != "ERROR" ]; then
@@ -442,10 +625,10 @@ if [ "$show_usage" = "1" ]; then
           # Use user's time format preference from config
           if [ "$use_24h" = "1" ]; then
             # 24-hour format
-            reset_time=$(date -r "$epoch" "+%H:%M" 2>/dev/null)
+            reset_time=$(epoch_to_fmt "$epoch" "%H:%M")
           else
             # 12-hour format (default)
-            reset_time=$(date -r "$epoch" "+%I:%M %p" 2>/dev/null)
+            reset_time=$(epoch_to_fmt "$epoch" "%I:%M %p")
           fi
           if [ "$show_reset_label" = "1" ]; then
             [ -n "$reset_time" ] && reset_time_display=$(printf " → Reset: %s" "$reset_time")
@@ -550,7 +733,7 @@ if [ "$show_weekly" = "1" ] && [ "$show_usage" = "1" ]; then
 
     if [ "$show_weekly_pace_marker" = "1" ] && [ "$show_weekly_bar" = "1" ] && [ -n "$weekly_reset" ] && [ "$weekly_reset" != "null" ]; then
       w_iso=$(echo "$weekly_reset" | sed 's/\.[0-9]*Z$//')
-      w_reset_epoch=$(date -ju -f "%Y-%m-%dT%H:%M:%S" "$w_iso" "+%s" 2>/dev/null)
+      w_reset_epoch=$(iso_to_epoch "$w_iso")
       if [ -n "$w_reset_epoch" ]; then
         now_epoch=$(date +%s)
         w_remaining=$((w_reset_epoch - now_epoch))
@@ -589,7 +772,7 @@ if [ "$show_weekly" = "1" ] && [ "$show_usage" = "1" ]; then
     weekly_reset_display=""
     if [ "$show_weekly_reset" = "1" ] && [ -n "$weekly_reset" ] && [ "$weekly_reset" != "null" ]; then
       w_iso=$(echo "$weekly_reset" | sed 's/\.[0-9]*Z$//')
-      w_reset_epoch=$(date -ju -f "%Y-%m-%dT%H:%M:%S" "$w_iso" "+%s" 2>/dev/null)
+      w_reset_epoch=$(iso_to_epoch "$w_iso")
       if [ -n "$w_reset_epoch" ]; then
         seconds_part=$((w_reset_epoch % 60))
         if [ "$seconds_part" -ge 30 ]; then
@@ -598,9 +781,9 @@ if [ "$show_weekly" = "1" ] && [ "$show_usage" = "1" ]; then
           w_reset_epoch=$((w_reset_epoch - seconds_part))
         fi
         if [ "$use_24h" = "1" ]; then
-          w_reset_time=$(date -r "$w_reset_epoch" "+%a %H:%M" 2>/dev/null)
+          w_reset_time=$(epoch_to_fmt "$w_reset_epoch" "%a %H:%M")
         else
-          w_reset_time=$(date -r "$w_reset_epoch" "+%a %I:%M %p" 2>/dev/null)
+          w_reset_time=$(epoch_to_fmt "$w_reset_epoch" "%a %I:%M %p")
         fi
         [ -n "$w_reset_time" ] && weekly_reset_display=$(printf " → %s" "$w_reset_time")
       fi
@@ -664,53 +847,58 @@ if [ "$show_extra_usage" = "1" ] && [ "$show_usage" = "1" ]; then
   fi
 fi
 
-output=""
-separator="${GRAY} │ ${RESET}"
-
-# New order: Directory → Branch → Model → Context → Usage
-# Directory comes first
-[ -n "$dir_text" ] && output="${dir_text}"
-
-# Then branch
-if [ -n "$branch_text" ]; then
-  [ -n "$output" ] && output="${output}${separator}"
-  output="${output}${branch_text}"
+# Secondary line-2 metrics: session cost, lines changed, wall-clock. Each is
+# hidden when the terminal is narrow (sl_compact), toggled off, or the value is
+# absent/zero (early in a session).
+cost_text=""
+if [ "$show_cost" = "1" ] && [ "$sl_compact" = "0" ] && [ -n "$cost_usd" ]; then
+  case "$cost_usd" in
+    0|0.0|0.00|0.000|0.0000) ;;   # skip a pure-zero cost
+    *) cost_text="${GRAY}\$$(printf '%.2f' "$cost_usd")${RESET}" ;;
+  esac
 fi
 
-# Then model
-if [ -n "$model_text" ]; then
-  [ -n "$output" ] && output="${output}${separator}"
-  output="${output}${model_text}"
+lines_text=""
+if [ "$show_lines" = "1" ] && [ "$sl_compact" = "0" ]; then
+  la=${lines_added:-0}; lr=${lines_removed:-0}
+  if [ "$la" -gt 0 ] || [ "$lr" -gt 0 ]; then
+    lines_text="${GREEN}+${la}${RESET}${GRAY}/${RESET}${LEVEL_9}-${lr}${RESET}"
+  fi
 fi
 
-# Then profile
-if [ -n "$profile_text" ]; then
-  [ -n "$output" ] && output="${output}${separator}"
-  output="${output}${profile_text}"
+duration_text=""
+if [ "$show_duration" = "1" ] && [ "$sl_compact" = "0" ] && [ -n "$duration_ms" ] && [ "$duration_ms" -gt 0 ]; then
+  duration_text="${GRAY}$(fmt_dur "$duration_ms")${RESET}"
 fi
 
-# Then context
-if [ -n "$context_text" ]; then
-  [ -n "$output" ] && output="${output}${separator}"
-  output="${output}${context_text}"
-fi
+separator="${GRAY} • ${RESET}"
 
-# Finally usage
-if [ -n "$usage_text" ]; then
-  [ -n "$output" ] && output="${output}${separator}"
-  output="${output}${usage_text}"
-fi
+# Two lines (Claude Code renders each printed line as its own status row):
+#   Line 1 — identity:  Directory(+subdir) → Worktree → Branch → Lines → Model → Duration → Profile
+#   Line 2 — usage:      Context → Usage → Weekly → Extra → Cost
+# add_seg appends "$2" to the line named by $1, inserting the separator only when
+# the line already has content (bash 3.2 on macOS has no namerefs, so use eval).
+add_seg() {
+  local cur; eval "cur=\$$1"
+  [ -z "$2" ] && return
+  if [ -n "$cur" ]; then eval "$1=\"\$cur\${separator}\$2\""; else eval "$1=\"\$2\""; fi
+}
 
-# Then weekly usage
-if [ -n "$weekly_text" ]; then
-  [ -n "$output" ] && output="${output}${separator}"
-  output="${output}${weekly_text}"
-fi
+line1=""
+add_seg line1 "$dir_text"
+add_seg line1 "$worktree_text"
+add_seg line1 "$branch_text"
+add_seg line1 "$lines_text"
+add_seg line1 "$model_text"
+add_seg line1 "$duration_text"
+add_seg line1 "$profile_text"
 
-# Then extra usage
-if [ -n "$extra_usage_text" ]; then
-  [ -n "$output" ] && output="${output}${separator}"
-  output="${output}${extra_usage_text}"
-fi
+line2=""
+add_seg line2 "$context_text"
+add_seg line2 "$usage_text"
+add_seg line2 "$weekly_text"
+add_seg line2 "$extra_usage_text"
+add_seg line2 "$cost_text"
 
-printf "%s\n" "$output"
+printf "%s\n" "$line1"
+[ -n "$line2" ] && printf "%s\n" "$line2"

@@ -1,2 +1,9 @@
 .DS_Store
 .playwright-mcp/
+
+# Claude statusline secrets: the canonical location is ~/.config, outside this
+# public repo, but guard against a cookie/credentials file ever being committed
+# if one is dropped into the statusline dir by mistake.
+claude/statusline/credentials
+**/*.session-key
+**/sessionKey
