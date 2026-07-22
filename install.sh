@@ -70,11 +70,15 @@ if [ -d "$claude_src" ]; then
   }
 
   # Individual top-level files (never link the ~/.claude dir itself).
-  for f in CLAUDE.md settings.json statusline-command.sh statusline-config.txt; do
+  # NB: the old app-generated statusline-command.sh / statusline-config.txt are
+  # deliberately NOT linked — the Claude Usage app overwrites those top-level
+  # files in place. Our portable statusline lives in the statusline/ subdir
+  # below (a path the app never touches) and settings.json points at it.
+  for f in CLAUDE.md settings.json; do
     link_claude "$f"
   done
   # Config subdirectories (ours alone; safe to link wholesale).
-  for d in agents commands hooks rules skills memory; do
+  for d in agents commands hooks rules skills memory statusline; do
     link_claude "$d"
   done
 fi
