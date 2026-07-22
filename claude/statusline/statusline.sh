@@ -1,25 +1,20 @@
 #!/bin/bash
 # Portable Claude Code statusline (macOS + headless Linux).
-# Renderer only: usage/weekly numbers come from a cache written by fetch-usage.sh
-# (this file's sibling), which is refreshed non-blocking on staleness below.
-# Secrets never live here or in the repo — see README.md.
+# Fully self-contained: every value comes from the JSON payload Claude Code pipes
+# in on stdin — including subscription usage, which Claude Code exposes as
+# `rate_limits` for Claude.ai Pro/Max sessions. No cache, no network, no cookie.
 
-# Resolve this script's own directory so config + fetcher are found regardless of
+# Resolve this script's own directory so the config file is found regardless of
 # where it's symlinked from (~/.claude/statusline -> Dotfiles/claude/statusline).
 SL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# Portable date helpers. macOS ships BSD date; Linux ships GNU date; their flags
-# for "parse an ISO string to epoch" and "format an epoch" are mutually
-# incompatible, so branch once here and call the helpers everywhere below.
+# Portable date helper. macOS ships BSD date; Linux ships GNU date; their flags
+# for "format an epoch" are incompatible, so branch once here. All reset times
+# arrive as epoch seconds on stdin, so only the epoch->string direction is needed.
 if date --version >/dev/null 2>&1; then
-  # GNU date (Linux). Accepts ISO 8601 (incl. trailing Z) directly.
-  iso_to_epoch() { date -d "$1" +%s 2>/dev/null; }
-  epoch_to_fmt() { date -d "@$1" +"$2" 2>/dev/null; }
+  epoch_to_fmt() { date -d "@$1" +"$2" 2>/dev/null; }   # GNU date (Linux)
 else
-  # BSD date (macOS). strptime stops at the format's end, so a trailing Z is
-  # harmlessly ignored — matches how the original app-generated script parsed.
-  iso_to_epoch() { date -ju -f "%Y-%m-%dT%H:%M:%S" "$1" "+%s" 2>/dev/null; }
-  epoch_to_fmt() { date -r "$1" +"$2" 2>/dev/null; }
+  epoch_to_fmt() { date -r "$1" +"$2" 2>/dev/null; }    # BSD date (macOS)
 fi
 
 config_file="${CLAUDE_STATUSLINE_CONFIG:-$SL_DIR/statusline-config.txt}"
@@ -56,7 +51,6 @@ if [ -f "$config_file" ]; then
   show_weekly_pace_marker=$SHOW_WEEKLY_PACE_MARKER
   show_weekly_reset=$SHOW_WEEKLY_RESET_TIME
   show_weekly_label=$SHOW_WEEKLY_LABEL
-  show_extra_usage=$SHOW_EXTRA_USAGE
   element_color_dir=$ELEMENT_COLOR_DIR
   element_color_branch=$ELEMENT_COLOR_BRANCH
   element_color_model=$ELEMENT_COLOR_MODEL
@@ -66,7 +60,6 @@ if [ -f "$config_file" ]; then
   element_color_usage=$ELEMENT_COLOR_USAGE
   element_color_pace=$ELEMENT_COLOR_PACE
   element_color_weekly=$ELEMENT_COLOR_WEEKLY
-  element_color_extra=$ELEMENT_COLOR_EXTRA
 else
   show_model=1
   show_effort=1
@@ -98,7 +91,6 @@ else
   show_weekly_pace_marker=1
   show_weekly_reset=1
   show_weekly_label=1
-  show_extra_usage=0
   element_color_dir="#0000EE"
   element_color_branch="#00BB00"
   element_color_model="#BBBB00"
@@ -108,7 +100,6 @@ else
   element_color_usage=""
   element_color_pace=""
   element_color_weekly=""
-  element_color_extra=""
 fi
 
 input=$(cat)
@@ -127,6 +118,22 @@ lines_removed=$(echo "$input" | grep -o '"total_lines_removed":[0-9]*' | head -1
 duration_ms=$(echo "$input" | grep -o '"total_duration_ms":[0-9]*' | head -1 | sed 's/.*://')
 # thinking.enabled — scope to the thinking object so "enabled" can't collide.
 thinking_enabled=$(echo "$input" | grep -o '"thinking":[[:space:]]*{[^}]*}' | grep -o '"enabled":[a-z]*' | head -1 | sed 's/.*://')
+
+# Subscription usage — Claude Code provides this directly on stdin under
+# "rate_limits" for Claude.ai Pro/Max sessions, after the first API response.
+# Each window (five_hour, seven_day) may be independently absent (empty early in
+# a session, or on non-subscription auth); every consumer below guards for that.
+# Scope the extraction to each window's own object so used_percentage/resets_at
+# can't cross-match. used_percentage is 0-100 (may be fractional — round for the
+# integer comparisons downstream); resets_at is Unix epoch seconds.
+rl_five=$(echo "$input" | grep -o '"five_hour":[[:space:]]*{[^}]*}' | head -1)
+rl_week=$(echo "$input" | grep -o '"seven_day":[[:space:]]*{[^}]*}' | head -1)
+usage_util=$(echo "$rl_five" | grep -o '"used_percentage":[0-9.]*' | head -1 | sed 's/.*://')
+usage_reset=$(echo "$rl_five" | grep -o '"resets_at":[0-9]*' | head -1 | sed 's/.*://')
+weekly_util=$(echo "$rl_week" | grep -o '"used_percentage":[0-9.]*' | head -1 | sed 's/.*://')
+weekly_reset=$(echo "$rl_week" | grep -o '"resets_at":[0-9]*' | head -1 | sed 's/.*://')
+[ -n "$usage_util" ]  && usage_util=$(awk "BEGIN{printf \"%d\", $usage_util + 0.5}")
+[ -n "$weekly_util" ] && weekly_util=$(awk "BEGIN{printf \"%d\", $weekly_util + 0.5}")
 
 # Identity resolution (all git-derived, so it is stable across cd and worktrees):
 #   project_name  — the main repo name, ALWAYS shown, unchanged by subdir/worktree
@@ -470,59 +477,14 @@ fi
 
 usage_text=""
 if [ "$show_usage" = "1" ]; then
-  # Try reading from cache first (written by Claude Usage app on each refresh)
-  cache_file="$HOME/.claude/.statusline-usage-cache"
-  swift_result=""
-  if [ -f "$cache_file" ]; then
-    cache_ts=$(grep "^TIMESTAMP=" "$cache_file" 2>/dev/null | cut -d= -f2)
-    now_ts=$(date +%s)
-    if [ -n "$cache_ts" ]; then
-      cache_age=$((now_ts - cache_ts))
-      if [ "$cache_age" -lt 300 ]; then
-        cache_util=$(grep "^UTILIZATION=" "$cache_file" | cut -d= -f2)
-        cache_reset=$(grep "^RESETS_AT=" "$cache_file" | cut -d= -f2)
-        if [ -n "$cache_util" ]; then
-          swift_result="${cache_util}|${cache_reset}"
-        fi
-      fi
-    fi
-  fi
+  # utilization + reset come straight from stdin's rate_limits.five_hour (parsed
+  # near the top). resets_at is already epoch seconds, so no ISO conversion.
+  if [ -n "$usage_util" ]; then
+    utilization=$usage_util
+    reset_epoch=""
+    [ -n "$usage_reset" ] && [ "$usage_reset" != "null" ] && reset_epoch=$usage_reset
 
-  # Cache stale or missing: refresh via the portable fetcher (curl-impersonate).
-  # There's no menubar app doing this in the background here, so the statusline
-  # is the only thing that can keep the cache warm.
-  if [ -z "$swift_result" ]; then
-    fetcher="$SL_DIR/fetch-usage.sh"
-    if [ -f "$cache_file" ] && [ -x "$fetcher" ]; then
-      # Have a (stale) cache: kick a detached refresh for NEXT render and show
-      # the stale numbers now, so the statusline never blocks on the network.
-      ( setsid "$fetcher" >/dev/null 2>&1 & ) 2>/dev/null || ( "$fetcher" >/dev/null 2>&1 & )
-      stale_util=$(grep "^UTILIZATION=" "$cache_file" 2>/dev/null | cut -d= -f2)
-      stale_reset=$(grep "^RESETS_AT=" "$cache_file" 2>/dev/null | cut -d= -f2)
-      [ -n "$stale_util" ] && swift_result="${stale_util}|${stale_reset}"
-    elif [ -x "$fetcher" ]; then
-      # Cold start (no cache at all): one blocking fetch so we show data now.
-      "$fetcher" >/dev/null 2>&1
-      if [ -f "$cache_file" ]; then
-        stale_util=$(grep "^UTILIZATION=" "$cache_file" 2>/dev/null | cut -d= -f2)
-        stale_reset=$(grep "^RESETS_AT=" "$cache_file" 2>/dev/null | cut -d= -f2)
-        [ -n "$stale_util" ] && swift_result="${stale_util}|${stale_reset}"
-      fi
-    fi
-  fi
-
-  if [ -n "$swift_result" ]; then
-    utilization=$(echo "$swift_result" | cut -d'|' -f1)
-    resets_at=$(echo "$swift_result" | cut -d'|' -f2)
-
-    # Parse reset epoch once for shared use by pace marker and reset time display
-      reset_epoch=""
-      if [ -n "$resets_at" ] && [ "$resets_at" != "null" ]; then
-        iso_time=$(echo "$resets_at" | sed 's/\.[0-9]*Z$//')
-        reset_epoch=$(iso_to_epoch "$iso_time")
-      fi
-
-    if [ -n "$utilization" ] && [ "$utilization" != "ERROR" ]; then
+    if [ -n "$utilization" ]; then
       if [ "$utilization" -le 10 ]; then
         usage_color="$LEVEL_1"
       elif [ "$utilization" -le 20 ]; then
@@ -643,12 +605,6 @@ if [ "$show_usage" = "1" ]; then
       else
         usage_text="${usage_color}${utilization}%${progress_bar}${reset_time_display}${RESET}"
       fi
-    else
-      if [ "$show_usage_label" = "1" ]; then
-        usage_text="${YELLOW}Usage: ~${RESET}"
-      else
-        usage_text="${YELLOW}~${RESET}"
-      fi
     fi
   else
     if [ "$show_usage_label" = "1" ]; then
@@ -661,21 +617,8 @@ fi
 
 weekly_text=""
 if [ "$show_weekly" = "1" ] && [ "$show_usage" = "1" ]; then
-  cache_file="$HOME/.claude/.statusline-usage-cache"
-  weekly_util=""
-  weekly_reset=""
-  if [ -f "$cache_file" ]; then
-    cache_ts=$(grep "^TIMESTAMP=" "$cache_file" 2>/dev/null | cut -d= -f2)
-    now_ts=$(date +%s)
-    if [ -n "$cache_ts" ]; then
-      cache_age=$((now_ts - cache_ts))
-      if [ "$cache_age" -lt 300 ]; then
-        weekly_util=$(grep "^WEEKLY_UTILIZATION=" "$cache_file" | cut -d= -f2)
-        weekly_reset=$(grep "^WEEKLY_RESETS_AT=" "$cache_file" | cut -d= -f2)
-      fi
-    fi
-  fi
-
+  # weekly_util + weekly_reset come from stdin's rate_limits.seven_day (parsed
+  # near the top). weekly_reset is epoch seconds.
   if [ -n "$weekly_util" ]; then
     if [ "$weekly_util" -le 10 ]; then
       weekly_color="$LEVEL_1"
@@ -732,8 +675,7 @@ if [ "$show_weekly" = "1" ] && [ "$show_usage" = "1" ]; then
     fi
 
     if [ "$show_weekly_pace_marker" = "1" ] && [ "$show_weekly_bar" = "1" ] && [ -n "$weekly_reset" ] && [ "$weekly_reset" != "null" ]; then
-      w_iso=$(echo "$weekly_reset" | sed 's/\.[0-9]*Z$//')
-      w_reset_epoch=$(iso_to_epoch "$w_iso")
+      w_reset_epoch=$weekly_reset
       if [ -n "$w_reset_epoch" ]; then
         now_epoch=$(date +%s)
         w_remaining=$((w_reset_epoch - now_epoch))
@@ -771,8 +713,7 @@ if [ "$show_weekly" = "1" ] && [ "$show_usage" = "1" ]; then
 
     weekly_reset_display=""
     if [ "$show_weekly_reset" = "1" ] && [ -n "$weekly_reset" ] && [ "$weekly_reset" != "null" ]; then
-      w_iso=$(echo "$weekly_reset" | sed 's/\.[0-9]*Z$//')
-      w_reset_epoch=$(iso_to_epoch "$w_iso")
+      w_reset_epoch=$weekly_reset
       if [ -n "$w_reset_epoch" ]; then
         seconds_part=$((w_reset_epoch % 60))
         if [ "$seconds_part" -ge 30 ]; then
@@ -794,56 +735,6 @@ if [ "$show_weekly" = "1" ] && [ "$show_usage" = "1" ]; then
     else
       weekly_text="${weekly_color}${weekly_util}%${weekly_bar}${weekly_reset_display}${RESET}"
     fi
-  fi
-fi
-
-extra_usage_text=""
-if [ "$show_extra_usage" = "1" ] && [ "$show_usage" = "1" ]; then
-  cache_file="$HOME/.claude/.statusline-usage-cache"
-  cost_used=""
-  cost_limit=""
-  cost_currency=""
-  if [ -f "$cache_file" ]; then
-    cache_ts=$(grep "^TIMESTAMP=" "$cache_file" 2>/dev/null | cut -d= -f2)
-    now_ts=$(date +%s)
-    if [ -n "$cache_ts" ]; then
-      cache_age=$((now_ts - cache_ts))
-      if [ "$cache_age" -lt 300 ]; then
-        cost_used=$(grep "^COST_USED=" "$cache_file" | cut -d= -f2)
-        cost_limit=$(grep "^COST_LIMIT=" "$cache_file" | cut -d= -f2)
-        cost_currency=$(grep "^COST_CURRENCY=" "$cache_file" | cut -d= -f2)
-      fi
-    fi
-  fi
-
-  if [ -n "$cost_used" ] && [ -n "$cost_limit" ] && [ -n "$cost_currency" ]; then
-    cost_pct=$(awk "BEGIN { p = int($cost_used / $cost_limit * 100); if (p > 100) p = 100; if (p < 0) p = 0; print p }")
-    if [ "$cost_pct" -le 10 ]; then
-      cost_color="$LEVEL_1"
-    elif [ "$cost_pct" -le 20 ]; then
-      cost_color="$LEVEL_2"
-    elif [ "$cost_pct" -le 30 ]; then
-      cost_color="$LEVEL_3"
-    elif [ "$cost_pct" -le 40 ]; then
-      cost_color="$LEVEL_4"
-    elif [ "$cost_pct" -le 50 ]; then
-      cost_color="$LEVEL_5"
-    elif [ "$cost_pct" -le 60 ]; then
-      cost_color="$LEVEL_6"
-    elif [ "$cost_pct" -le 70 ]; then
-      cost_color="$LEVEL_7"
-    elif [ "$cost_pct" -le 80 ]; then
-      cost_color="$LEVEL_8"
-    elif [ "$cost_pct" -le 90 ]; then
-      cost_color="$LEVEL_9"
-    else
-      cost_color="$LEVEL_10"
-    fi
-    # Per-element override: extra usage gets its own fixed color when set
-    if [ "$color_mode" = "perElement" ] && [ -n "$element_color_extra" ]; then
-      cost_color=$(hex_to_ansi "$element_color_extra")
-    fi
-    extra_usage_text="${cost_color}${cost_used} ${cost_currency}${RESET}"
   fi
 fi
 
@@ -875,7 +766,7 @@ separator="${GRAY} • ${RESET}"
 
 # Two lines (Claude Code renders each printed line as its own status row):
 #   Line 1 — identity:  Directory(+subdir) → Worktree → Branch → Lines → Model → Duration → Profile
-#   Line 2 — usage:      Context → Usage → Weekly → Extra → Cost
+#   Line 2 — usage:      Context → Usage → Weekly → Cost
 # add_seg appends "$2" to the line named by $1, inserting the separator only when
 # the line already has content (bash 3.2 on macOS has no namerefs, so use eval).
 add_seg() {
@@ -897,7 +788,6 @@ line2=""
 add_seg line2 "$context_text"
 add_seg line2 "$usage_text"
 add_seg line2 "$weekly_text"
-add_seg line2 "$extra_usage_text"
 add_seg line2 "$cost_text"
 
 printf "%s\n" "$line1"

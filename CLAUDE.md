@@ -30,7 +30,7 @@ The `claude/` subtree is the canonical, version-controlled Claude Code config (a
 - Third-party Claude skills are always hand-ported into `claude/` (markdown, house-styled, selective), never installed via upstream `curl | bash` or `npx` installers: those write into machine-local `~/.claude` and fight the symlink-restore model. Provenance and refresh steps for vendored skills live in `claude/skills/UPSTREAM.md`.
 - The Matt Pocock skills adoption (2026-07-09) was deliberately disciplines-only: the issue-tracker delivery pipeline half (triage, to-spec, to-tickets, wayfinder, CONTEXT.md domain models) was rejected because it collides with the owner's own workflow systems. Do not re-propose adopting it wholesale.
 - Non-goals: multi-account `CLAUDE_CONFIG_DIR` switching (deliberately abandoned), TypeScript in app-code guidance (owner uses plain JS), Filament and Capacitor (not part of the stack).
-- Known fragility: the statusline usage gauge depends on the Claude Usage app (cache plus a live `sk-ant-sid02` sessionKey in the untracked `fetch-claude-usage.swift`); the cookie expires with nothing to refresh it if that app is removed.
+- The statusline usage gauge reads `rate_limits` straight from the JSON Claude Code pipes to it on stdin (no cookie, no cache, no `curl-impersonate`, no Claude Usage app). It follows whatever account Claude Code is logged into, so switching accounts needs nothing. The numbers are absent until the first API response of a session and on non-subscription auth, where the gauge shows `~`. This replaced the old cookie-scraping approach (retired 2026-07-21).
 
 ## Shell config architecture
 
