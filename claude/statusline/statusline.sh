@@ -371,13 +371,30 @@ if [ "$show_branch" = "1" ]; then
     if [ -n "$branch" ]; then
       branch_text="${GREEN}⎇ ${branch}${RESET}"
 
-      # Dirty indicator: red [N] (N = changed entries) when the tree is dirty,
-      # nothing at all when clean (clean is the default, so no marker is noise).
-      # --porcelain is the cheap, script-stable form.
+      # Dirty indicator: [+N-N~N] (new/deleted/modified entries), color-coded
+      # per bucket, gray brackets. Nothing at all when clean (clean is the
+      # default, so no marker is noise). --porcelain is the cheap,
+      # script-stable form; classify each line by its XY status codes:
+      # "??" or an 'A' in either column = new, a 'D' in either column =
+      # deleted, anything else (M/R/C/U/T) = modified.
       if [ "$show_git_status" = "1" ]; then
-        dirty_count=$(git status --porcelain 2>/dev/null | grep -c '^')
-        if [ "${dirty_count:-0}" -gt 0 ]; then
-          branch_text="${branch_text} ${LEVEL_9}[${dirty_count}]${RESET}"
+        porcelain=$(git status --porcelain 2>/dev/null)
+        if [ -n "$porcelain" ]; then
+          new_count=0; deleted_count=0; modified_count=0
+          while IFS= read -r line; do
+            xy=${line:0:2}
+            case "$xy" in
+              '??'|'A'*|'?A'|*A) new_count=$((new_count + 1)) ;;
+              *D*) deleted_count=$((deleted_count + 1)) ;;
+              *) modified_count=$((modified_count + 1)) ;;
+            esac
+          done <<< "$porcelain"
+
+          dirty_summary=""
+          [ "$new_count" -gt 0 ] && dirty_summary="${dirty_summary}${GREEN}+${new_count}${RESET}"
+          [ "$deleted_count" -gt 0 ] && dirty_summary="${dirty_summary}${LEVEL_9}-${deleted_count}${RESET}"
+          [ "$modified_count" -gt 0 ] && dirty_summary="${dirty_summary}${YELLOW}~${modified_count}${RESET}"
+          branch_text="${branch_text} ${GRAY}[${RESET}${dirty_summary}${GRAY}]${RESET}"
         fi
 
         # Ahead/behind upstream (↑ahead ↓behind). Skipped when narrow, or when the
