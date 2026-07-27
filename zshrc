@@ -70,6 +70,8 @@ if type brew &>/dev/null; then
     FPATH="$(brew --prefix)/share/zsh/site-functions:$FPATH"
     # zsh-completions, if installed via brew, ships extra completion functions.
     [ -d "$(brew --prefix)/share/zsh-completions" ] && FPATH="$(brew --prefix)/share/zsh-completions:$FPATH"
+    # zsh-abbr completions (for the `abbr` command itself).
+    [ -d "$(brew --prefix)/share/zsh-abbr" ] && FPATH="$(brew --prefix)/share/zsh-abbr:$FPATH"
 fi
 
 autoload -Uz compinit && compinit
@@ -131,6 +133,20 @@ fi
 
 # fzf
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# zsh-abbr — inline-expanding command abbreviations
+if type brew &>/dev/null; then
+    _abbr_script="$(brew --prefix)/share/zsh-abbr/zsh-abbr.zsh"
+    [ -f "$_abbr_script" ] && source "$_abbr_script"
+    unset _abbr_script
+fi
+
+if type abbr &>/dev/null; then
+    abbr add -g -q --force clh="claude --model haiku"
+    abbr add -g -q --force cls="claude --model sonnet"
+    abbr add -g -q --force clo="claude --model opus"
+    abbr add -g -q --force clf="claude --model fable"
+fi
 
 # zoxide — smarter `cd` (provides `z` and `zi`).
 command -v zoxide &>/dev/null && eval "$(zoxide init zsh)"

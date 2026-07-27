@@ -13,6 +13,8 @@ formula "bash-completion@2"       # tab completion for bash
 formula "zsh-completions"         # extra tab completions for zsh
 formula "zsh-autosuggestions"     # inline command suggestions from history
 formula "zsh-syntax-highlighting" # colorizes commands as you type
+brew tap olets/tap
+formula "zsh-abbr"                 # inline-expanding command abbreviations (clo -> claude --model opus, etc.)
 formula "ffmpeg"                  # audio/video converter
 formula "fzf"                     # fuzzy finder (Ctrl-R history search, etc.)
 formula "gifsicle"                # GIF optimizer/editor
