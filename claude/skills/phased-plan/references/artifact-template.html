@@ -1,0 +1,133 @@
+<title>PLAN TITLE — Progress</title>
+<!--
+CONTRACT (do not restructure): header → banner → progress bar → PLAN OVERVIEW card
+→ one .phase card per phase (detail + chip + mocks + notes) → deferred card.
+MOCKUPS: real rendered HTML/CSS mini-mockups using the .m-* primitives below —
+NEVER ASCII sketches in <pre>. Animate motion (dots/pulse/shimmer) with CSS.
+Every phase with a visible change gets a before/after mock.
+-->
+<style>
+  :root {
+    --maroon: #7A004B; --maroon-dark: #540037; --pink: #FF7AE9; --coral: #FF6051;
+    --yellow: #FFE661; --gold: #E0C797; --pale: #F6EFE0; --ink: #15020C;
+    --card: #FFFFFF; --line: rgba(21,2,12,.12); --muted: rgba(21,2,12,.62);
+    /* app-mock tokens (stay constant across themes) */
+    --m-bg: #FBF9F4; --m-tint: #F4F0E7; --m-ink: #1d1a16; --m-mut: #6f6a62;
+    --m-green: #3f9d6d; --m-line: #e5dfd2;
+  }
+  @media (prefers-color-scheme: dark) { :root { --pale:#1c1016; --card:#2a1a22; --ink:#F6EFE0; --line:rgba(246,239,224,.16); --muted:rgba(246,239,224,.65); } }
+  :root[data-theme="dark"] { --pale:#1c1016; --card:#2a1a22; --ink:#F6EFE0; --line:rgba(246,239,224,.16); --muted:rgba(246,239,224,.65); }
+  :root[data-theme="light"] { --pale:#F6EFE0; --card:#FFFFFF; --ink:#15020C; --line:rgba(21,2,12,.12); --muted:rgba(21,2,12,.62); }
+  body { background: var(--pale); color: var(--ink); font-family: Outfit, Arial, sans-serif; margin: 0; padding: 2rem 1.25rem 4rem; }
+  .wrap { max-width: 920px; margin: 0 auto; }
+  h1 { font-family: "Bodoni 72", Didot, serif; font-weight: 600; font-size: 2rem; margin: 0 0 .25rem; text-wrap: balance; }
+  .sub { color: var(--muted); margin-bottom: 1.5rem; }
+  .banner { display:inline-block; background: var(--maroon); color:#fff; border-radius: 999px; padding: .3rem .9rem; font-size:.85rem; margin-bottom: 1.25rem; }
+  .barbox { background: var(--card); border:1px solid var(--line); border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 2rem; }
+  .barlabel { display:flex; justify-content:space-between; font-size:.85rem; color:var(--muted); margin-bottom:.5rem; }
+  .bar { height: 14px; background: var(--line); border-radius: 999px; overflow: hidden; }
+  .bar > div { height:100%; width:0%; background: linear-gradient(90deg, var(--maroon), var(--pink)); border-radius:999px; transition: width .4s; }
+  .phase { background: var(--card); border:1px solid var(--line); border-radius: 12px; padding: 1.1rem 1.25rem; margin-bottom: 1rem; }
+  .phase.overview { border-left:4px solid var(--maroon); }
+  .phead { display:flex; align-items:center; gap:.75rem; }
+  .phead h2 { font-family:"Bodoni 72", Didot, serif; font-size:1.15rem; margin:0; flex:1; }
+  .chip { border-radius: 999px; padding:.2rem .7rem; font-size:.75rem; font-weight:600; white-space:nowrap; }
+  .chip.pending { background: var(--gold); color:#15020C; }
+  .chip.progress { background: var(--yellow); color:#15020C; }
+  .chip.review { background: var(--pink); color:#15020C; }
+  .chip.done { background: var(--maroon); color:#fff; }
+  .chip.blocked { background: var(--coral); color:#15020C; }
+  .pbody { margin-top:.75rem; font-size:.95rem; line-height:1.55; }
+  .pbody ul { margin:.4rem 0 .6rem 1.2rem; padding:0; }
+  .pbody li { margin-bottom:.25rem; }
+  .mock { display:grid; grid-template-columns:1fr 1fr; gap:.75rem; margin:.9rem 0; }
+  .mock.single { grid-template-columns:1fr; }
+  .mock figure { margin:0; border:1px solid var(--line); border-radius:10px; padding:.7rem; overflow-x:auto; background:var(--m-bg); color:var(--m-ink); }
+  .mock figcaption { font-size:.72rem; color:#8a8378; text-transform:uppercase; letter-spacing:.06em; margin-bottom:.55rem; }
+  .notes { border-top:1px dashed var(--line); margin-top:.75rem; padding-top:.6rem; font-size:.88rem; color:var(--muted); }
+  .notes strong { color: var(--ink); }
+  .meta { font-size:.8rem; color:var(--muted); }
+  .deferred { background:transparent; border:1px dashed var(--line); }
+  @media (max-width:680px){ .mock{grid-template-columns:1fr;} }
+
+  /* ---------- app-mock primitives: compose real mini-mockups from these ---------- */
+  .m { font-size:.82rem; min-width: 280px; }
+  .m-tint { background: var(--m-tint); border-radius:10px; padding:.65rem .8rem; }        /* tinted block */
+  .m-row { display:flex; gap:.55rem; padding:.3rem 0; color:var(--m-ink); }               /* timeline row */
+  .m-row.centered { align-items:center; }
+  .m-t { font-weight:600; }                                                               /* row title */
+  .m-s { color:var(--m-mut); }                                                            /* secondary text */
+  .m-sp { flex:1; }                                                                       /* spacer */
+  .m-dot { width:7px; height:7px; border-radius:50%; background:var(--m-green); flex:none; }
+  .m-chev { color:var(--m-mut); flex:none; font-size:.8rem; line-height:1; }
+  .m-dots { display:inline-flex; gap:4px; align-items:center; }                           /* typing dots */
+  .m-dots i { width:6px; height:6px; border-radius:50%; background:var(--m-mut); animation: dotpulse 1.2s infinite ease-in-out; }
+  .m-dots i:nth-child(2){ animation-delay:.2s } .m-dots i:nth-child(3){ animation-delay:.4s }
+  @keyframes dotpulse { 0%,80%,100%{opacity:.25; transform:translateY(0)} 40%{opacity:1; transform:translateY(-2px)} }
+  .m-pill { display:inline-flex; align-items:center; gap:.35rem; border:1px solid var(--m-line); border-radius:999px; padding:.28rem .7rem; color:var(--m-mut); font-size:.78rem; }
+  .m-pill.hov { border-color: var(--maroon); color: var(--maroon); background:#fff; box-shadow: 0 1px 3px rgba(122,0,75,.12); }
+  .m-composer { border:1px solid var(--m-line); border-radius:12px; padding:.55rem .8rem; background:#fff; color:var(--m-mut); }
+  .m-composer.flash { animation: cflash 1.6s ease-out infinite; border-color: var(--maroon); color:var(--m-ink); }
+  @keyframes cflash { 0%{ box-shadow:0 0 0 4px rgba(255,122,233,.45);} 60%,100%{ box-shadow:0 0 0 0 rgba(255,122,233,0);} }
+  .m-layout { display:flex; gap:4px; height:110px; }                                      /* shell layout mock */
+  .m-nav { width:26px; background:var(--m-tint); border-radius:6px; flex:none; }
+  .m-chat { background:#fff; border:1px solid var(--m-line); border-radius:6px; padding:.4rem .5rem; font-size:.68rem; color:var(--m-mut); }
+  .m-pane { background:var(--m-tint); border-radius:6px; padding:.4rem .5rem; font-size:.68rem; color:var(--m-mut); }
+  .m-rail { width:22px; background:var(--m-tint); border-radius:6px; flex:none; display:flex; align-items:flex-start; justify-content:center; padding-top:6px; }
+  .m-badge { width:8px; height:8px; border-radius:50%; background:var(--coral); animation: dotpulse 1.4s infinite; }
+  .m-tabs { display:flex; gap:.4rem; margin-bottom:.5rem; }
+  .m-tab { border:1px solid var(--m-line); border-bottom:none; border-radius:8px 8px 0 0; padding:.3rem .7rem; font-size:.74rem; color:var(--m-mut); background:var(--m-tint); display:inline-flex; align-items:center; gap:.35rem; }
+  .m-tab.active { background:#fff; color:var(--m-ink); font-weight:600; }
+  .m-pulse { width:7px; height:7px; border-radius:50%; background:var(--m-green); animation: dotpulse 1.2s infinite; }
+  .m-shimbar { height:3px; border-radius:2px; background: linear-gradient(90deg, var(--m-line) 25%, var(--maroon) 50%, var(--m-line) 75%); background-size:200% 100%; animation: shim 1.4s linear infinite; }
+  @keyframes shim { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+  .m-flashcard { border:1px solid var(--m-line); border-radius:8px; padding:.5rem .7rem; background:#fff; animation: eflash 2.2s ease-out infinite; font-size:.78rem; color:var(--m-ink); }
+  @keyframes eflash { 0%{ background:#fdeef9; border-color:var(--pink);} 70%,100%{ background:#fff; border-color:var(--m-line);} }
+  @media (prefers-reduced-motion: reduce) { .m-dots i,.m-badge,.m-pulse,.m-composer.flash,.m-flashcard,.m-shimbar { animation:none; } }
+</style>
+<div class="wrap">
+  <h1>PLAN TITLE</h1>
+  <div class="sub">Phoenix · plan doc: <code>.workflow/plans/SLUG.md</code> · updated TIMESTAMP · <em>mockups illustrative — final styling follows the design system</em></div>
+  <div class="banner">Awaiting approval</div> <!-- Awaiting approval / Approved — awaiting execution / Executing / Complete -->
+
+  <div class="barbox">
+    <div class="barlabel"><span>Overall progress</span><span>0 / N phases</span></div>
+    <div class="bar"><div style="width:0%"></div></div>
+  </div>
+
+  <!-- PLAN OVERVIEW (required): what/why in 2-3 sentences, one line per phase,
+       branch/PR/review-protocol line, out-of-scope note. -->
+  <div class="phase overview">
+    <div class="phead"><h2>Plan overview</h2></div>
+    <div class="pbody">
+      <p>WHAT THIS PLAN DOES AND WHY, 2–3 sentences.</p>
+      <ul>
+        <li><strong>1. PHASE TITLE</strong> — one-line summary</li>
+      </ul>
+      <p class="meta">Stacked branches <code>feat/SLUG-phase-N</code> · one PR at the end on explicit go · per-phase: Sonnet builds → Fable review → fixes → re-verify. Out of scope: …</p>
+    </div>
+  </div>
+
+  <!-- One .phase block per phase. Chips: pending | progress | review | done | blocked -->
+  <div class="phase">
+    <div class="phead"><h2>Phase 1 — TITLE</h2><span class="chip pending">Pending</span></div>
+    <div class="pbody">
+      <p>WHAT THIS PHASE DOES, plain language, files/areas touched.</p>
+      <div class="mock">
+        <figure><figcaption>Before — caption states the problem</figcaption>
+          <div class="m"><!-- rendered mini-mockup built from .m-* primitives — NEVER ASCII in <pre> --></div>
+        </figure>
+        <figure><figcaption>After — caption states the fix</figcaption>
+          <div class="m"><!-- rendered mini-mockup; animate motion with CSS --></div>
+        </figure>
+      </div>
+      <div class="meta">Branch <code>feat/SLUG-phase-1</code> · key files</div>
+      <div class="notes"><strong>Done / noticed:</strong> — <!-- filled during execution --></div>
+    </div>
+  </div>
+
+  <div class="phase deferred">
+    <div class="phead"><h2>Deferred (tracked, not in this plan)</h2><span class="chip pending">Backlog</span></div>
+    <div class="pbody"><ul><li>…</li></ul></div>
+  </div>
+</div>
