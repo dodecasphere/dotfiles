@@ -53,12 +53,9 @@ global copies were retired 2026-07-17, EOS IDEA-014 slice 6). The
 `.claude/git-guard.conf`'s mere presence activates the global, opt-in
 `git-workflow-guard` in `bash-pretooluse-dispatcher.sh` (the Claude-layer
 check, runs before a `Bash` tool call) - branch protection, a fast lane for
-docs/tooling-only commits on a protected branch, branch-naming convention,
-and (opt-in via `BRAIN_SYNC_ENFORCE`) a nudge to sync the Project Brain
-alongside app-code commits. `.githooks/pre-commit` is the same policy at the
-git level (catches commits made directly in a terminal, where Claude's hook
-never runs) - it has no brain-sync check, since that needs to see the commit
-message before the commit runs, which `pre-commit` structurally can't do.
+docs/tooling-only commits on a protected branch, and branch-naming convention.
+`.githooks/pre-commit` is the same policy at the git level (catches commits
+made directly in a terminal, where Claude's hook never runs).
 
 Tune the values in the copied `git-guard.conf` for this project (protected
 branch names, allowed branch-name types, what counts as "fast lane").

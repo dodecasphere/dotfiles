@@ -13,13 +13,6 @@
 # `git merge --no-ff` auto-commits do NOT run pre-commit, so merges into
 # protected branches stay allowed.
 #
-# No brain-sync check here (deliberately): that gate needs to inspect the
-# proposed commit message BEFORE the commit runs, which `pre-commit` can't do
-# (the message isn't written yet at this hook's point in the flow - that's
-# `commit-msg`'s job, a separate hook, reading $1 as a path to the message
-# file). It only exists in the Claude-layer PreToolUse guard, which sees the
-# full proposed command text (including -m "...") pre-execution.
-
 set -euo pipefail
 
 # Defaults (overridable by .claude/git-guard.conf).
