@@ -10,10 +10,6 @@
 #      .claude/git-guard.conf): branch protection, fast-lane docs/tooling
 #      commits, branch-naming convention, staged-script syntax check,
 #      optional Conventional Commits enforcement.
-#   3. brain-sync gate (opt-in, same conf): blocks a commit that stages app
-#      code with no corresponding Project Brain update and no [no-brain]
-#      opt-out. Only meaningful in a project using the Project Brain
-#      convention (see templates/brain/).
 input=$(cat)
 
 # Cheap raw-substring pre-check before paying for a jq spawn. Every rule in
@@ -90,8 +86,6 @@ git_workflow_guard_global() {
   local FAST_LANE_PATHS='docs/|brain/|scripts/|\.remember/|\.claude/|\.githooks/'
   local FAST_LANE_SCRIPT_CHECK=1
   local ENFORCE_CONVENTIONAL=0
-  local BRAIN_SYNC_ENFORCE=0
-  local BRAIN_CODE_PATHS=""
   # shellcheck disable=SC1090
   . "$conf" 2>/dev/null
 
@@ -228,26 +222,6 @@ git_workflow_guard_global() {
        && ! printf '%s' "$new_branch" | grep -Eq "$BRANCH_TYPES_RE"; then
       deny "Branch '$new_branch' violates the naming convention. Use <type>/<kebab-slug> where type is one of: $(printf '%s' "$BRANCH_TYPES" | tr ' ' ', ') (e.g. feature/kit-bulk-add). No tickets, lowercase kebab-case slug."
     fi
-  fi
-
-  # --- Rule 3: brain-sync gate (opt-in, needs BRAIN_CODE_PATHS configured) --
-  if [ "$BRAIN_SYNC_ENFORCE" = "1" ] && [ -n "$BRAIN_CODE_PATHS" ]; then
-    case "$cmd" in
-      *"git commit"*)
-        local staged app_code brain
-        staged=$(git -C "$repo_dir" diff --cached --name-only 2>/dev/null) || staged=""
-        if [ -n "$staged" ]; then
-          app_code=$(printf '%s\n' "$staged" | grep -E "$BRAIN_CODE_PATHS" || true)
-          brain=$(printf '%s\n' "$staged" | grep -E '^brain/' || true)
-          if [ -n "$app_code" ] && [ -z "$brain" ]; then
-            case "$cmd" in
-              *"[no-brain]"*) ;;
-              *) deny $'Blocked: app/feature code is staged but no brain/ change is in this commit, and the message has no [no-brain] opt-out. Before committing, either sync the Project Brain (brain/04-DC-decisions.md, brain/05-ST-state.md) and stage it with the commit, or add the literal token [no-brain] to the commit message to opt out consciously.' ;;
-            esac
-          fi
-        fi
-        ;;
-    esac
   fi
 
   return 0
