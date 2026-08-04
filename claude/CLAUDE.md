@@ -40,36 +40,24 @@ Scale this to the task. Trivial, clear changes: just make them. For anything
 non-trivial, multi-step, or ambiguous, work this way by default without being
 asked:
 
-Note (2026-08-01): stack specific gotchas (Laravel, Inertia, Postgres, Pest,
-Tailwind, CSS, browser testing, and as of today the Vue/Vue-testing/Reka
-family) now live in Engineering OS packs
+Stack-specific gotchas live in Engineering OS packs
 (`engineering-os/plugins/core/references/packs/`), loaded per project via the
-`profile:` line in `.engineering-os/STATE.md`, not in this always-loaded
-file. The Vue entries were removed from here on 2026-08-01 after verifying
-each one is present in `vue.md`, `vue-testing.md`, or `vue-reka.md`; a
-project only gets them if its `profile:` names the matching pack, so add
-`vue-testing` / `vue-reka` there rather than re-adding gotchas here. What
-stays below is deliberately stack-agnostic: harness, git, and workflow
-lessons that apply everywhere.
+`profile:` line in `.engineering-os/STATE.md`. EOS covers app-development
+repos only, so what stays in this file is deliberately stack-agnostic and
+applies to every repo, including non-app ones that will never adopt EOS. Add a
+pack entry rather than re-adding a stack gotcha here.
 - **Spec first.** For non-trivial work, write a short spec (problem, key
   decisions, what done means) and build against it.
 - **Interview to remove ambiguity.** Work open questions with me one at a
   time, recommending an answer for each.
 - **Verify before and after.** Confirm context and access up front; afterward
   state what you verified versus what only I can validate.
-- **Branch-protection hooks under git worktree isolation.** A `PreToolUse`
-  hook that enforces "no commits on develop/main" must resolve the branch of
-  the repo the git command actually targets — the `cd <path> &&` prefix, a
-  `git -C <path>` flag, or the call's own `cwd` — never a fixed
-  project-directory env var, or it misjudges every linked-worktree call (false
-  denies on legal feature branches, silent allows on protected ones). FIXED
-  2026-07-13 in `bash-pretooluse-dispatcher.sh` (IDEA-003 wave 5e): it now
-  parses `cd` and `git -C` targets and guards out-of-project paths when
-  `rev-parse --path-format=absolute --git-common-dir` proves they are linked
-  worktrees of the same repo. Verified by a 20-scenario side-by-side stdin
-  parity harness (16 identical, 4 intentionally corrected). If a worktree
-  commit is denied unexpectedly, check the worktree's own branch first, not
-  the main checkout's.
+- **Branch-protection hooks under git worktree isolation.** Fixed 2026-07-13
+  in `bash-pretooluse-dispatcher.sh`, which resolves the branch of the repo a
+  git command actually targets (`cd` prefix, `git -C`, or the call's own
+  `cwd`) rather than a fixed project-directory env var. If a worktree commit
+  is denied unexpectedly, check the worktree's own branch first, not the main
+  checkout's.
 - **Test-first.** For non-trivial logic, write the failing test before the
   implementation; never call work done with failing tests or below the
   project's coverage bar.
@@ -79,17 +67,10 @@ lessons that apply everywhere.
   small work.
 - **Capture repeatable work as skills.** When a workflow recurs, offer to save
   it as a skill, including a "Gotchas" section of what tripped us up.
-- **Editing under a format-on-save hook (Pint autosave).** The general
-  strip-before-use race rule (a formatter removing a just-added import before
-  the edit that uses it) lives in the EOS engineering rubric. The structural
-  fix used on Laravel projects with Pint plus the auto-format hook: a
-  project-root `pint-autosave.json` (the project's normal preset with
-  `no_unused_imports` set to `false`) that `~/Dotfiles/claude/hooks/
-  auto-format.sh`'s per-edit PHP pass prefers when present, falling back to
-  the project's real `pint.json`. The real gate (bare `vendor/bin/pint`,
-  `--test`, `/quality`) always uses the normal config, so a genuinely unused
-  import still fails before merge. Set up proactively on any Laravel project
-  using Pint with this hook.
+- **Editing under a format-on-save hook.** A formatter can strip a just-added
+  import before the edit that uses it. Land the import and its first usage in
+  the same edit, or reference fully qualified. The Laravel/Pint structural fix
+  lives in the EOS `laravel` pack.
 - **When merging or editing PreToolUse/guardrail hook scripts, verify
   behavioral parity via side-by-side scenario testing before deleting the
   originals.** Feed identical simulated stdin JSON to the old script(s) and
@@ -101,8 +82,8 @@ lessons that apply everywhere.
   dispatchers on a real project, but the point is confirming that, not
   assuming it.
 - **Commit every slice, unprompted.** Before committing, sync whatever the
-  slice touched first (Project Brain, docs, CLAUDE.md, agent memory), then
-  commit with a conventional message. Don't wait to be asked, and don't batch
+  slice touched first (project state records, docs, CLAUDE.md, agent memory),
+  then commit with a conventional message. Don't wait to be asked, and don't batch
   multiple slices into one commit — a granular, reviewable history with a
   green checkpoint after each slice is the point.
 - **Keep one backlog file, not several.** A deferred requirement, an
