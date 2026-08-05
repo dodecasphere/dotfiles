@@ -116,6 +116,22 @@ Rule: start minimal, load more only when the task proves it needs it.
 - Never use dashes (— or -) as punctuation in documentation or README files.
   Rephrase using periods, commas, or parentheses instead.
 
+## Writing emails and personal prose (my voice)
+Learned from my edits to drafted emails (2026-08-05). When drafting email or
+personal prose for me:
+- Direct sincerity over performed insight. Cut clever callbacks and flattery
+  built from the recipient's own ideas or theses; one plain sincere sentence
+  beats a crafted echo of their worldview.
+- Warmth comes from personal specifics, not adjectives (a birthday that falls
+  on a start date, "two months ago to the day", a concrete upcoming meetup).
+- In group emails, thank or address each person individually by name with
+  their own specific contribution, never one blended tribute.
+- Close with a concrete forward-looking hook (a real next step or plan), never
+  a poetic flourish.
+- Mechanics: "Hi Mark & Mel" greeting style, parenthetical asides, free use of
+  exclamation points, emoji OK in subject lines for warm relationships,
+  sign-offs like "With gratitude" or "With real gratitude".
+
 ## Using GitHub
 - Use the `gh` CLI for GitHub operations rather than raw API calls or guessing
   at git state.
