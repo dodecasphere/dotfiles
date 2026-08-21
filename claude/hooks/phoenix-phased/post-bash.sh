@@ -7,7 +7,7 @@ source "$HOME/.claude/hooks/phoenix-phased/state-lib.sh"
 INPUT=$(cat)
 CWD=$(echo "$INPUT" | jq -r '.cwd // empty')
 case "$CWD" in
-  /Users/michaeldulle/Sites/phoenix*) ;;
+  "$HOME"/Sites/phoenix*) ;;
   *) exit 0 ;;
 esac
 CMD=$(echo "$INPUT" | jq -r '.tool_input.command // empty')
