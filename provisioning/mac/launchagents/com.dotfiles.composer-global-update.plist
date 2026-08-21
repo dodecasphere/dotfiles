@@ -7,14 +7,14 @@
 
     <key>ProgramArguments</key>
     <array>
-        <string>/Users/michaeldulle/Library/Application Support/Herd/bin//php</string>
-        <string>/Users/michaeldulle/Library/Application Support/Herd/bin//composer</string>
+        <string>/Users/__USER__/Library/Application Support/Herd/bin//php</string>
+        <string>/Users/__USER__/Library/Application Support/Herd/bin//composer</string>
         <string>global</string>
         <string>update</string>
     </array>
 
     <key>WorkingDirectory</key>
-    <string>/Users/michaeldulle</string>
+    <string>/Users/__USER__</string>
 
     <key>StartCalendarInterval</key>
     <dict>
@@ -25,10 +25,10 @@
     </dict>
 
     <key>StandardOutPath</key>
-    <string>/Users/michaeldulle/Documents/launchd-output.log</string>
+    <string>/Users/__USER__/Documents/launchd-output.log</string>
 
     <key>StandardErrorPath</key>
-    <string>/Users/michaeldulle/Documents/launchd-error.log</string>
+    <string>/Users/__USER__/Documents/launchd-error.log</string>
 
     <key>RunAtLoad</key>
     <true/>
