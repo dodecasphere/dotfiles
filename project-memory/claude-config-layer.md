@@ -33,5 +33,5 @@ repo's own CLAUDE.md. dumbometer (third-party plugin) was removed.
 Memory architecture: global cross-project memories (career-product-manager,
 tech-stack) live in `claude/memory/` → symlinked to `~/.claude/memory/`.
 Dotfiles-specific project memory lives in `brain/memory/` → symlinked to
-`~/.claude/projects/-Users-michaeldulle-Dotfiles/memory/`. Both wired by
+`~/.claude/projects/-Users-<user>-Dotfiles/memory/`. Both wired by
 `install.sh`.
