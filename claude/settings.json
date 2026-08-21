@@ -66,7 +66,17 @@
     ],
     "defaultMode": "auto"
   },
-  "model": "opus",
+  "model": "opus[1m]",
+  "skillOverrides": {
+    "agent-capability-tiers": "off",
+    "diagnosing-bugs": "off",
+    "inertia-vue": "off",
+    "pre-mortem": "off",
+    "prioritization": "off",
+    "prototype": "off",
+    "working-backwards": "off",
+    "writing-great-skills": "off"
+  },
   "hooks": {
     "SessionStart": [
       {
@@ -86,6 +96,15 @@
           {
             "type": "command",
             "command": "bash $HOME/.claude/hooks/auto-format.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/phoenix-phased/post-bash.sh"
           }
         ]
       }
@@ -110,6 +129,15 @@
           {
             "type": "command",
             "command": "bash $HOME/.claude/hooks/code-guidelines-gate.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash|Edit|Write|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/phoenix-phased/guard.sh"
           }
         ]
       }
@@ -151,15 +179,5 @@
   "autoCompactEnabled": true,
   "remoteControlAtStartup": true,
   "inputNeededNotifEnabled": true,
-  "agentPushNotifEnabled": true,
-  "skillOverrides": {
-    "agent-capability-tiers": "off",
-    "diagnosing-bugs": "off",
-    "inertia-vue": "off",
-    "pre-mortem": "off",
-    "prioritization": "off",
-    "prototype": "off",
-    "working-backwards": "off",
-    "writing-great-skills": "off"
-  }
+  "agentPushNotifEnabled": true
 }
