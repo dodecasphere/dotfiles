@@ -7,22 +7,22 @@
 
     <key>ProgramArguments</key>
     <array>
-        <string>/Users/michaeldulle/Library/Application Support/Herd/bin/php</string>
+        <string>/Users/__USER__/Library/Application Support/Herd/bin/php</string>
         <string>artisan</string>
         <string>schedule:run</string>
     </array>
 
     <key>WorkingDirectory</key>
-    <string>/Users/michaeldulle/Dropbox/Sites/family</string>
+    <string>/Users/__USER__/Dropbox/Sites/family</string>
 
     <key>StartInterval</key>
     <integer>60</integer>
 
     <key>StandardOutPath</key>
-    <string>/Users/michaeldulle/Documents/launchd-output.log</string>
+    <string>/Users/__USER__/Documents/launchd-output.log</string>
 
     <key>StandardErrorPath</key>
-    <string>/Users/michaeldulle/Documents/launchd-error.log</string>
+    <string>/Users/__USER__/Documents/launchd-error.log</string>
 
     <key>RunAtLoad</key>
     <true/>
