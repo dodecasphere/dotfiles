@@ -14,6 +14,7 @@ formula "zsh-completions"         # extra tab completions for zsh
 formula "zsh-autosuggestions"     # inline command suggestions from history
 formula "zsh-syntax-highlighting" # colorizes commands as you type
 brew tap olets/tap
+brew trust --tap olets/tap        # Homebrew 6+ refuses to load non-official-tap formulae until trusted
 formula "zsh-abbr"                 # inline-expanding command abbreviations (clo -> claude --model opus, etc.)
 formula "ffmpeg"                  # audio/video converter
 formula "fzf"                     # fuzzy finder (Ctrl-R history search, etc.)
