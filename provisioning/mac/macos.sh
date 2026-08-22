@@ -276,14 +276,14 @@ doing "Showing the /Volumes library in Finder..."
 sudo chflags nohidden /Volumes
 
 # Symlink ~/Sites to dropbox (safely — never blow away a real directory)
-doing "Linking ~/Sites to Dropbox..."
-if [ -L ~/Sites ]; then
-  ln -sfn ~/Dropbox/Sites ~/Sites   # already a symlink: (re)point it
-elif [ -e ~/Sites ]; then
-  echo "~/Sites exists and is not a symlink — leaving it alone"
-else
-  ln -s ~/Dropbox/Sites ~/Sites
-fi
+# doing "Linking ~/Sites to Dropbox..."
+# if [ -L ~/Sites ]; then
+#   ln -sfn ~/Dropbox/Sites ~/Sites   # already a symlink: (re)point it
+# elif [ -e ~/Sites ]; then
+#   echo "~/Sites exists and is not a symlink — leaving it alone"
+# else
+#   ln -s ~/Dropbox/Sites ~/Sites
+# fi
 
 # Symlink ~/Library/Fonts to dropbox
 # doing "Linking ~/Library/Fonts to Dropbox..."
@@ -336,6 +336,9 @@ defaults write com.apple.dock largesize -int 80
 doing "Setting the dock to autohide..."
 defaults write com.apple.dock autohide -bool true
 
+doing "Hiding suggested and recent apps in the Dock..."
+defaults write com.apple.dock show-recents -bool false
+
 # Wipe all (default) app icons from the Dock
 # This is only really useful when setting up a new Mac, or if you don’t use
 # the Dock to launch apps.
@@ -350,7 +353,6 @@ doing "Adding Folders to the Dock..."
 defaults write com.apple.dock persistent-others -array-add "<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>${HOME}</string><key>_CFURLStringType</key><integer>0</integer></dict><key>displayas</key><integer>1</integer><key>showas</key><integer>0</integer></dict><key>tile-type</key><string>directory-tile</string></dict>"
 defaults write com.apple.dock persistent-others -array-add "<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>${HOME}/Documents</string><key>_CFURLStringType</key><integer>0</integer></dict><key>displayas</key><integer>1</integer><key>showas</key><integer>0</integer></dict><key>tile-type</key><string>directory-tile</string></dict>"
 defaults write com.apple.dock persistent-others -array-add "<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>${HOME}/Downloads</string><key>_CFURLStringType</key><integer>0</integer></dict><key>displayas</key><integer>1</integer><key>showas</key><integer>1</integer><key>arrangement</key><integer>3</integer></dict><key>tile-type</key><string>directory-tile</string></dict>"
-defaults write com.apple.dock persistent-others -array-add "<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>${HOME}/Dropbox</string><key>_CFURLStringType</key><integer>0</integer></dict><key>displayas</key><integer>1</integer><key>showas</key><integer>0</integer></dict><key>tile-type</key><string>directory-tile</string></dict>"
 defaults write com.apple.dock persistent-others -array-add "<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications</string><key>_CFURLStringType</key><integer>0</integer></dict><key>displayas</key><integer>1</integer><key>showas</key><integer>0</integer></dict><key>tile-type</key><string>directory-tile</string></dict>"
 
 ###############################################################################
