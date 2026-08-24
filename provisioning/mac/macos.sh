@@ -1,5 +1,27 @@
 #!/usr/bin/env bash
 
+cat <<'EOF'
+Some settings this script applies (e.g. the Ctrl-scroll zoom toggle, which
+lives under com.apple.universalaccess) are silently blocked by macOS's
+`defaults` CLI ("Could not write domain com.apple.universalaccess; exiting")
+unless your terminal app has Full Disk Access. Sudo doesn't help, and
+Accessibility access alone doesn't either. Grant it now:
+
+  System Settings > Privacy & Security > Full Disk Access > enable your
+  terminal app (Terminal, iTerm, etc.) > restart the terminal so the grant
+  takes effect for this process.
+
+Separately, this script quits System Settings via AppleScript, which may
+trigger a one-time macOS Automation permission popup asking to let your
+terminal control System Settings. Click Allow if you see it.
+EOF
+read -p "Granted Full Disk Access to your terminal and restarted it? [y] " -n 1 -r
+echo
+if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+    echo "Aborting: grant Full Disk Access and re-run provision.sh --mac."
+    exit 1
+fi
+
 # Ask for the computer name, defaulting to whatever it's currently set to.
 DEFAULT_COMPUTER_NAME="$(scutil --get ComputerName 2>/dev/null || echo "MacBook")"
 printf '%s' "Computer name [${DEFAULT_COMPUTER_NAME}]: "
@@ -193,11 +215,12 @@ defaults write com.apple.AppleMultitouchTrackpad Clicking -int 1
 defaults -currentHost write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
 defaults write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
 
-# macOS (Tahoe, 26.x) hard-blocks `defaults write` on com.apple.universalaccess
-# ("Could not write domain com.apple.universalaccess; exiting") regardless of
-# sudo or Accessibility TCC grants. No CLI workaround exists. Set by hand:
-# System Settings > Accessibility > Zoom > "Use scroll gesture with modifier
-# keys to zoom" (Ctrl), and "Follow the keyboard focus" while zoomed in.
+# Use scroll gesture with the Ctrl (^) modifier key to zoom
+doing "Using scroll gesture with the Ctrl (^) modifier key to zoom..."
+defaults write com.apple.universalaccess closeViewScrollWheelToggle -bool true
+defaults write com.apple.universalaccess HIDScrollZoomModifierMask -int 262144
+# Follow the keyboard focus while zoomed in
+defaults write com.apple.universalaccess closeViewZoomFollowsFocus -bool true
 
 ###############################################################################
 # Finder                                                                      #
