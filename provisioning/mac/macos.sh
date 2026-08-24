@@ -193,12 +193,11 @@ defaults write com.apple.AppleMultitouchTrackpad Clicking -int 1
 defaults -currentHost write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
 defaults write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
 
-# Use scroll gesture with the Ctrl (^) modifier key to zoom
-doing "Using scroll gesture with the Ctrl (^) modifier key to zoom..."
-sudo defaults write com.apple.universalaccess closeViewScrollWheelToggle -bool true
-sudo defaults write com.apple.universalaccess HIDScrollZoomModifierMask -int 262144
-# Follow the keyboard focus while zoomed in
-sudo defaults write com.apple.universalaccess closeViewZoomFollowsFocus -bool true
+# macOS (Tahoe, 26.x) hard-blocks `defaults write` on com.apple.universalaccess
+# ("Could not write domain com.apple.universalaccess; exiting") regardless of
+# sudo or Accessibility TCC grants. No CLI workaround exists. Set by hand:
+# System Settings > Accessibility > Zoom > "Use scroll gesture with modifier
+# keys to zoom" (Ctrl), and "Follow the keyboard focus" while zoomed in.
 
 ###############################################################################
 # Finder                                                                      #
