@@ -182,6 +182,10 @@ doing "Setting top-right hot corner to: Show Desktop..."
 defaults write com.apple.dock wvous-tr-corner -int 4
 defaults write com.apple.dock wvous-tr-modifier -int 0
 
+# Disable clicking the desktop to reveal it (Stage Manager click-to-show-desktop)
+doing "Disabling click-on-desktop-to-reveal-desktop..."
+defaults write com.apple.WindowManager EnableStandardClickToShowDesktop -bool false
+
 # Trackpad: enable tap to click for this user and for the login screen
 doing "Enabling tap to click for this user and for the login screen..."
 defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -int 1 # -bool true ??
@@ -306,9 +310,9 @@ sudo pmset -a autorestart 1
 doing "Enabling restart automatically if computer freezes ..."
 sudo systemsetup -setrestartfreeze on
 
-# Sleep the display after 15 minutes
-doing "Enabling display sleep after 15 minutes ..."
-sudo pmset -a displaysleep 15
+# Never sleep the display, on power or battery
+doing "Disabling display sleep ..."
+sudo pmset -a displaysleep 0
 
 # Disable machine sleep while charging
 doing "Disabling sleep while charging ..."
