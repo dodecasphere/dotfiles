@@ -178,8 +178,7 @@
       "source": {
         "source": "github",
         "repo": "dodecasphere/personal-skills"
-      },
-      "autoUpdate": true
+      }
     }
   },
   "effortLevel": "medium",
