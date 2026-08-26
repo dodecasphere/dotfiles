@@ -68,14 +68,14 @@
   },
   "model": "opus[1m]",
   "skillOverrides": {
-    "agent-capability-tiers": "off",
-    "diagnosing-bugs": "off",
+    "engineering:diagnosing-bugs": "off",
+    "engineering:prototype": "off",
     "inertia-vue": "off",
-    "pre-mortem": "off",
-    "prioritization": "off",
-    "prototype": "off",
-    "working-backwards": "off",
-    "writing-great-skills": "off"
+    "product-discovery:agent-capability-tiers": "off",
+    "product-discovery:pre-mortem": "off",
+    "product-discovery:prioritization": "off",
+    "product-discovery:working-backwards": "off",
+    "writing:writing-great-skills": "off"
   },
   "hooks": {
     "SessionStart": [
@@ -170,7 +170,19 @@
   },
   "enabledPlugins": {
     "code-simplifier@claude-plugins-official": false,
-    "claude-md-management@claude-plugins-official": false
+    "claude-md-management@claude-plugins-official": false,
+    "product-discovery@personal-skills": true,
+    "engineering@personal-skills": true,
+    "writing@personal-skills": true,
+    "workflow@personal-skills": true
+  },
+  "extraKnownMarketplaces": {
+    "personal-skills": {
+      "source": {
+        "source": "github",
+        "repo": "dodecasphere/personal-skills"
+      }
+    }
   },
   "effortLevel": "medium",
   "fastMode": true,
