@@ -10,9 +10,15 @@ metadata:
 
 The global Claude Code config is version-controlled in the Dotfiles repo under
 `claude/` and symlinked into `~/.claude` by a dedicated block in `install.sh`
-(top-level files linked individually; agents/commands/hooks/rules/skills linked
+(top-level files linked individually; agents/hooks/rules/memory/statusline linked
 wholesale). Machine-local state (plugins/, projects/, caches, credentials,
 session/daemon files) is deliberately left out of git.
+
+**Skills and commands left Dotfiles on 2026-08-26** for the private plugin store
+`dodecasphere/personal-skills` (see [[personal-skills-store]]), which installs
+into both Claude Code and Codex. `claude/skills/` and `claude/commands/` no
+longer exist; `link_claude` skips a missing or empty source and clears the stale
+symlink, so both stay in install.sh's loop for machine-local experiments.
 
 **Statusline usage (reworked 2026-07-21):** the usage gauge now reads
 `rate_limits` (five_hour + seven_day, each used_percentage + resets_at epoch)
