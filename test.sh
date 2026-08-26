@@ -49,8 +49,21 @@ chk_link() {
     bad "link $1 (got: $(readlink "$p" 2>/dev/null || echo missing))"
   fi
 }
-for f in CLAUDE.md settings.json statusline-command.sh statusline-config.txt; do chk_link "$f"; done
-for d in agents commands hooks rules skills; do chk_link "$d"; done
+# NB: statusline-command.sh / statusline-config.txt are deliberately NOT linked
+# (the Claude Usage app overwrites those top-level files in place; our portable
+# statusline lives in the statusline/ subdir). Asserting them was a stale test.
+for f in CLAUDE.md settings.json; do chk_link "$f"; done
+for d in agents hooks rules memory statusline; do chk_link "$d"; done
+
+# skills/ and commands/ are no longer in this repo; they ship from the
+# personal-skills plugin store. Assert install.sh leaves no dangling link.
+for d in skills commands; do
+  if [ -e "$FAKEHOME/.claude/$d" ] || [ -L "$FAKEHOME/.claude/$d" ]; then
+    bad "$d should not be linked (it comes from the plugin store)"
+  else
+    ok "$d correctly absent (plugin store supplies it)"
+  fi
+done
 
 echo
 echo "## 5. settings.json valid with hooks + permissions"
@@ -61,10 +74,21 @@ else
 fi
 
 echo
-echo "## 6. Multi-file skill resolves through the directory symlink"
-[ -f "$FAKEHOME/.claude/skills/diagnosing-bugs/SKILL.md" ] \
-  && ok "skills/diagnosing-bugs/SKILL.md reachable" \
-  || bad "multi-file skill not reachable"
+echo "## 6. The plugin store is declared so a fresh machine self-installs"
+if jq -e '.extraKnownMarketplaces["personal-skills"].source.repo == "dodecasphere/personal-skills"' \
+     "$FAKEHOME/.claude/settings.json" >/dev/null 2>&1; then
+  ok "personal-skills marketplace declared"
+else
+  bad "personal-skills marketplace missing from settings.json"
+fi
+for p in product-discovery engineering writing workflow; do
+  if jq -e --arg k "$p@personal-skills" '.enabledPlugins[$k] == true' \
+       "$FAKEHOME/.claude/settings.json" >/dev/null 2>&1; then
+    ok "plugin $p enabled"
+  else
+    bad "plugin $p not enabled in settings.json"
+  fi
+done
 
 echo
 echo "## 7. A restored hook actually runs (blocks a force-push)"

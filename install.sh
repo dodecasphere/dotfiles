@@ -58,7 +58,17 @@ if [ -d "$claude_src" ]; then
     # $1 = name under claude/  (file or directory)
     local src="$claude_src/$1"
     local dst="$claude_dst/$1"
-    [ -e "$src" ] || return 0
+    # Skills and commands now ship from the personal-skills plugin store, so
+    # claude/skills and claude/commands are normally absent here. Skip a
+    # missing or empty source, and clear any stale symlink left from when the
+    # dir did exist, so ~/.claude never keeps a dangling link.
+    if [ ! -e "$src" ] || { [ -d "$src" ] && [ -z "$(ls -A "$src" 2>/dev/null)" ]; }; then
+      if [ -L "$dst" ] && readlink "$dst" | grep -qF "$claude_src/"; then
+        echo "Removing stale link $dst (no longer in repo)"
+        rm -f "$dst"
+      fi
+      return 0
+    fi
     if [ -e "$dst" ] && [ ! -L "$dst" ]; then
       mkdir -p "$HOME/$backup_dir"
       echo "Backing up .claude/$1 in $HOME/$backup_dir/"
@@ -78,6 +88,9 @@ if [ -d "$claude_src" ]; then
     link_claude "$f"
   done
   # Config subdirectories (ours alone; safe to link wholesale).
+  # skills and commands are listed so a machine-local or experimental one can be
+  # dropped into claude/ and picked up without editing this script; both are
+  # normally empty because they ship from the personal-skills plugin store.
   for d in agents commands hooks rules skills memory statusline; do
     link_claude "$d"
   done
