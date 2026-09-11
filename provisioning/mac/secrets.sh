@@ -27,25 +27,12 @@ fi
 
 # Install SSH keys/config by symlinking them from the secrets repo into ~/.ssh,
 # so the repo stays the single source of truth (edit once, both reflect it).
-# ssh follows the symlinks and enforces perms on the *target* file, so we set
-# the modes on the repo copies — git only tracks the +x bit, so this won't dirty
-# the repo. ~/.ssh itself must be 700, and keys must not be world-readable.
-if [ -d "$SECRETS_DIR/ssh" ]; then
+# The link logic lives in the secrets repo itself (link-ssh-keys.sh) since
+# that's where the keys live — this just invokes it. Also what to (re-)run
+# there after adding or regenerating a key.
+if [ -x "$SECRETS_DIR/link-ssh-keys.sh" ]; then
   doing "Linking SSH keys into ~/.ssh…"
-  mkdir -p "$HOME/.ssh"
-  chmod 700 "$HOME/.ssh"
-  chmod 600 "$SECRETS_DIR"/ssh/id_* 2>/dev/null   # private + (briefly) public keys
-  chmod 644 "$SECRETS_DIR"/ssh/*.pub 2>/dev/null  # restore public keys to 644
-
-  for src in "$SECRETS_DIR"/ssh/*; do
-    [ -e "$src" ] || continue
-    target="$HOME/.ssh/$(basename "$src")"
-    # Replace any prior copy or stale link so re-runs converge on the symlink.
-    # known_hosts is symlinked too: ssh appends new host keys straight into the
-    # tracked repo file (the pull above uses --autostash to tolerate that).
-    if [ -L "$target" ] || [ -e "$target" ]; then rm -f "$target"; fi
-    ln -s "$src" "$target"
-  done
+  "$SECRETS_DIR/link-ssh-keys.sh"
 fi
 
 # secrets.env (FONTAWESOME_NPM_TOKEN, EXPOSE_TOKEN, …) is sourced by the shells
