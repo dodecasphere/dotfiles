@@ -178,10 +178,11 @@
       "source": {
         "source": "github",
         "repo": "dodecasphere/personal-skills"
-      }
+      },
+      "autoUpdate": true
     }
   },
-  "effortLevel": "medium",
+  "effortLevel": "high",
   "fastMode": true,
   "awaySummaryEnabled": false,
   "theme": "auto",
