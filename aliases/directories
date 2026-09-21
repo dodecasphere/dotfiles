@@ -19,14 +19,15 @@ alias ~="cd ~"
 alias db="cd ~/Dropbox"
 alias dl="cd ~/Downloads"
 alias dt="cd ~/Desktop"
-alias s="cd ~/Sites"
+# alias s="cd ~/Sites"
+alias proj="cd ~/Projects"
 alias dots="cd ~/Dotfiles"
 
 # Ephemeral
-alias et="cd ~/Ephemeral"
-alias dash="cd ~/Ephemeral/dashboard"
-alias dashl="cd ~/Ephemeral/dashboard-laravel"
-alias site="cd ~/Ephemeral/website"
+# alias et="cd ~/Ephemeral"
+# alias dash="cd ~/Ephemeral/dashboard"
+# alias dashl="cd ~/Ephemeral/dashboard-laravel"
+# alias site="cd ~/Ephemeral/website"
 
 alias ..='cd ..'
 alias ...='cd ../..'
