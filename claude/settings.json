@@ -104,7 +104,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash $HOME/.claude/hooks/phoenix-phased/post-bash.sh"
+            "command": "bash $HOME/.claude/hooks/phased-workflow/post-bash.sh"
           }
         ]
       }
@@ -137,7 +137,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash $HOME/.claude/hooks/phoenix-phased/guard.sh"
+            "command": "bash $HOME/.claude/hooks/phased-workflow/guard.sh"
           }
         ]
       }
