@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+# Claude Code aliases
+
+alias clcon='claude --continue'
+alias clres='claude --resume'
+alias clup='claude update'
