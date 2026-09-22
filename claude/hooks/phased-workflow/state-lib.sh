@@ -5,7 +5,7 @@
 # a repo that's never touched it) don't collide or get gated by accident.
 
 repo_root() { # repo_root [start_dir]
-  git -C "${1:-.}" rev-parse --show-toplevel 2>/dev/null
+  git -C "${1:-.}" rev-parse --show-toplevel 2>/dev/null || true
 }
 
 state_file() { # state_file [repo_root]
