@@ -9,8 +9,10 @@ statusline. It renders across two lines:
   appears only inside a linked git worktree, the git branch with a clean/dirty
   dot (green when clean, red `●N` with the changed-file count when dirty) and an
   optional `↑ahead ↓behind` versus upstream, then lines changed
-  (`+added/-removed`), then the model with its reasoning effort and an
-  extended-thinking dot when enabled, then session wall-clock time.
+  (`+added/-removed`), then the model (a mascot emoji and a per model hue family: 🦄 Fable purples,
+  🎭 Opus warm reds, 🪶 Sonnet blues, 🌸 Haiku greens, ported from
+  Gui-Gou/claude-statusline-burnrate) with its reasoning effort (grey low, blue
+  medium, amber high, red xhigh/max) and an extended-thinking dot when enabled, then session wall-clock time.
 * **Line 2 (usage)**: context percentage, your Claude subscription usage (5 hour
   and weekly) with progress bars, pace markers, and reset times, then session
   cost.

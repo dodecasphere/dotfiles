@@ -415,22 +415,40 @@ fi
 
 model_text=""
 if [ "$show_model" = "1" ] && [ -n "$model" ]; then
-  model_text="${YELLOW}${model}${RESET}"
+  # Model mascot + per-model hue family, ported from Gui-Gou/claude-statusline-burnrate:
+  # Opus = warm reds/golds, Sonnet = blues, Fable = purples, Haiku = greens.
+  # Each character takes the next hue (static; upstream drifts it per render).
+  case "$(printf '%s' "$model" | tr '[:upper:]' '[:lower:]')" in
+    *opus*)   model_hues="196 202 208 214 220 226 214 208"; model_emoji="🎭" ;;
+    *sonnet*) model_hues="21 27 33 39 45 51 45 39";         model_emoji="🪶" ;;
+    *fable*)  model_hues="93 99 135 141 177 201 171 135";   model_emoji="🦄" ;;
+    *haiku*)  model_hues="22 28 34 40 46 82 118 46";        model_emoji="🌸" ;;
+    *)        model_hues="196 208 226 46 51 33 201 129";    model_emoji="🤖" ;;
+  esac
+  if [ "$color_mode" = "colored" ]; then
+    read -r -a hues <<< "$model_hues"
+    model_text=""
+    for (( i=0; i<${#model}; i++ )); do
+      model_text="${model_text}"$'\033[38;5;'"${hues[$(( i % ${#hues[@]} ))]}m${model:$i:1}"
+    done
+    model_text="${model_emoji} ${model_text}${RESET}"
+  else
+    model_text="${model_emoji} ${YELLOW}${model}${RESET}"
+  fi
   # Reasoning effort sits directly to the right of the model as a sub-label (not
-  # its own bulleted section). Colored to mirror Claude Code's /effort palette:
-  # low=gold, medium=green, high=blue, xhigh=purple, max=coral (ultracode reports
-  # as xhigh). Honors monochrome/single-color modes like every other color.
+  # its own bulleted section). Cool to hot, matching the same upstream:
+  # low=grey, medium=blue, high=amber, xhigh/max=red (ultracode reports as
+  # xhigh). Honors monochrome/single-color modes like every other color.
   if [ "$show_effort" = "1" ] && [ -n "$effort" ]; then
     effort_color="$GRAY"
     if [ "$color_mode" = "singleColor" ]; then
       effort_color="$MAGENTA"
     elif [ "$color_mode" != "monochrome" ]; then
       case "$effort" in
-        low)    effort_color=$'\033[38;5;220m' ;;  # gold
-        medium) effort_color=$'\033[38;5;41m'  ;;  # green
-        high)   effort_color=$'\033[38;5;75m'  ;;  # periwinkle blue
-        xhigh)  effort_color=$'\033[38;5;99m'  ;;  # violet
-        max)    effort_color=$'\033[38;5;209m' ;;  # coral
+        low)       effort_color=$'\033[38;5;245m' ;;  # grey
+        medium)    effort_color=$'\033[38;5;39m'  ;;  # blue
+        high)      effort_color=$'\033[38;5;214m' ;;  # amber
+        xhigh|max) effort_color=$'\033[38;5;196m' ;;  # red
       esac
     fi
     model_text="${model_text} ${effort_color}${effort}${RESET}"
