@@ -1,11 +1,11 @@
 {
   "cleanupPeriodDays": 365,
   "env": {
+    "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "75",
+    "CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY": "1",
     "CLAUDE_CODE_NO_FLICKER": "1",
     "DISABLE_ERROR_REPORTING": "1",
-    "DISABLE_NON_ESSENTIAL_MODEL_CALLS": "1",
-    "CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY": "1",
-    "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "75"
+    "DISABLE_NON_ESSENTIAL_MODEL_CALLS": "1"
   },
   "attribution": {
     "commit": "",
@@ -69,22 +69,31 @@
   "model": "opus[1m]",
   "skillOverrides": {
     "inertia-vue": "off",
-    "my:diagnosing-bugs": "off",
-    "my:prototype": "off",
     "my:agent-capability-tiers": "off",
+    "my:diagnosing-bugs": "off",
     "my:pre-mortem": "off",
     "my:prioritization": "off",
+    "my:prototype": "off",
     "my:working-backwards": "off",
     "my:writing-great-skills": "off"
   },
   "hooks": {
-    "SessionStart": [
+    "Notification": [
       {
-        "matcher": "compact|resume",
         "hooks": [
           {
             "type": "command",
-            "command": "bash $HOME/.claude/hooks/context-recovery.sh"
+            "command": "[ -x \"$HOME/.config/iterm2/cc-status\" ] && \"$HOME/.config/iterm2/cc-status\" || true"
+          }
+        ]
+      }
+    ],
+    "PermissionRequest": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "[ -x \"$HOME/.config/iterm2/cc-status\" ] && \"$HOME/.config/iterm2/cc-status\" || true"
           }
         ]
       }
@@ -105,6 +114,14 @@
           {
             "type": "command",
             "command": "bash $HOME/.claude/hooks/phased-workflow/post-bash.sh"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "[ -x \"$HOME/.config/iterm2/cc-status\" ] && \"$HOME/.config/iterm2/cc-status\" || true"
           }
         ]
       }
@@ -140,6 +157,43 @@
             "command": "bash $HOME/.claude/hooks/phased-workflow/guard.sh"
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "[ -x \"$HOME/.config/iterm2/cc-status\" ] && \"$HOME/.config/iterm2/cc-status\" || true"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "[ -x \"$HOME/.config/iterm2/cc-status\" ] && \"$HOME/.config/iterm2/cc-status\" || true"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "compact|resume",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/context-recovery.sh"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "[ -x \"$HOME/.config/iterm2/cc-status\" ] && \"$HOME/.config/iterm2/cc-status\" || true"
+          }
+        ]
       }
     ],
     "Stop": [
@@ -149,6 +203,34 @@
             "type": "command",
             "command": "bash $HOME/.claude/hooks/verify-done.sh",
             "timeout": 180
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "[ -x \"$HOME/.config/iterm2/cc-status\" ] && \"$HOME/.config/iterm2/cc-status\" || true"
+          }
+        ]
+      }
+    ],
+    "StopFailure": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "[ -x \"$HOME/.config/iterm2/cc-status\" ] && \"$HOME/.config/iterm2/cc-status\" || true"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "[ -x \"$HOME/.config/iterm2/cc-status\" ] && \"$HOME/.config/iterm2/cc-status\" || true"
           }
         ]
       }
@@ -161,6 +243,14 @@
             "command": "bash $HOME/.claude/hooks/standing-behaviors.sh"
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "[ -x \"$HOME/.config/iterm2/cc-status\" ] && \"$HOME/.config/iterm2/cc-status\" || true"
+          }
+        ]
       }
     ]
   },
@@ -170,9 +260,10 @@
     "refreshInterval": 1
   },
   "enabledPlugins": {
-    "code-simplifier@claude-plugins-official": false,
     "claude-md-management@claude-plugins-official": false,
-    "my@personal-skills": true
+    "code-simplifier@claude-plugins-official": false,
+    "my@personal-skills": true,
+    "typesafe@typesafe-ai": true
   },
   "extraKnownMarketplaces": {
     "personal-skills": {
@@ -181,6 +272,12 @@
         "repo": "dodecasphere/personal-skills"
       },
       "autoUpdate": true
+    },
+    "typesafe-ai": {
+      "source": {
+        "source": "github",
+        "repo": "typesafe-ai/skills"
+      }
     }
   },
   "effortLevel": "high",
