@@ -417,7 +417,9 @@ model_text=""
 if [ "$show_model" = "1" ] && [ -n "$model" ]; then
   # Model mascot + per-model hue family, ported from Gui-Gou/claude-statusline-burnrate:
   # Opus = warm reds/golds, Sonnet = blues, Fable = purples, Haiku = greens.
-  # Each character takes the next hue (static; upstream drifts it per render).
+  # Each character takes the next hue, offset by the epoch second so the gradient
+  # drifts between renders (upstream counts renders in a cache file; the clock
+  # keeps this script stateless).
   case "$(printf '%s' "$model" | tr '[:upper:]' '[:lower:]')" in
     *opus*)   model_hues="196 202 208 214 220 226 214 208"; model_emoji="🎭" ;;
     *sonnet*) model_hues="21 27 33 39 45 51 45 39";         model_emoji="🪶" ;;
@@ -427,9 +429,10 @@ if [ "$show_model" = "1" ] && [ -n "$model" ]; then
   esac
   if [ "$color_mode" = "colored" ]; then
     read -r -a hues <<< "$model_hues"
+    frame=$(date +%s)
     model_text=""
     for (( i=0; i<${#model}; i++ )); do
-      model_text="${model_text}"$'\033[38;5;'"${hues[$(( i % ${#hues[@]} ))]}m${model:$i:1}"
+      model_text="${model_text}"$'\033[38;5;'"${hues[$(( (i + frame) % ${#hues[@]} ))]}m${model:$i:1}"
     done
     model_text="${model_emoji} ${model_text}${RESET}"
   else
