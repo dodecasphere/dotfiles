@@ -166,7 +166,8 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "bash \"$HOME/.claude/statusline/statusline.sh\""
+    "command": "bash \"$HOME/.claude/statusline/statusline.sh\"",
+    "refreshInterval": 1
   },
   "enabledPlugins": {
     "code-simplifier@claude-plugins-official": false,
