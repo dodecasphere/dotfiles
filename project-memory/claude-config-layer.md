@@ -41,3 +41,12 @@ tech-stack) live in `claude/memory/` → symlinked to `~/.claude/memory/`.
 Dotfiles-specific project memory lives in `brain/memory/` → symlinked to
 `~/.claude/projects/-Users-<user>-Dotfiles/memory/`. Both wired by
 `install.sh`.
+
+**Symlink drift (found 2026-09-22):** `~/.claude/settings.json` had silently
+become a regular file (last written 2026-09-21 16:06, likely by a plugin or
+iTerm2 cc-status installer rewriting it), so repo edits to
+`claude/settings.json` never went live and the live file grew extras (typesafe
+plugin, cc-status hooks) that git didn't have. When a settings change "doesn't
+take", first run `ls -la ~/.claude/settings.json` and diff it against the repo
+before debugging the setting itself. Fixed by folding the extras into the repo
+and relinking.
