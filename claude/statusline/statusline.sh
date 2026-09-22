@@ -28,6 +28,7 @@ if [ -f "$config_file" ]; then
   show_lines=${SHOW_LINES:-1}             # +added/-removed
   show_duration=${SHOW_DURATION:-1}       # session wall-clock
   show_thinking=${SHOW_THINKING:-1}       # extended-thinking dot
+  animate_model=${ANIMATE_MODEL:-0}       # drift the model-name gradient each second
   responsive=${RESPONSIVE:-1}             # collapse segments on narrow terminals
   show_dir=$SHOW_DIRECTORY
   show_branch=$SHOW_BRANCH
@@ -68,6 +69,7 @@ else
   show_lines=1
   show_duration=1
   show_thinking=1
+  animate_model=0
   responsive=1
   show_dir=1
   show_branch=1
@@ -417,9 +419,9 @@ model_text=""
 if [ "$show_model" = "1" ] && [ -n "$model" ]; then
   # Model mascot + per-model hue family, ported from Gui-Gou/claude-statusline-burnrate:
   # Opus = warm reds/golds, Sonnet = blues, Fable = purples, Haiku = greens.
-  # Each character takes the next hue, offset by the epoch second so the gradient
-  # drifts between renders (upstream counts renders in a cache file; the clock
-  # keeps this script stateless).
+  # Each character takes the next hue. With ANIMATE_MODEL=1 the start hue is
+  # offset by the epoch second so the gradient drifts between renders (upstream
+  # counts renders in a cache file; the clock keeps this script stateless).
   case "$(printf '%s' "$model" | tr '[:upper:]' '[:lower:]')" in
     *opus*)   model_hues="196 202 208 214 220 226 214 208"; model_emoji="🎭" ;;
     *sonnet*) model_hues="21 27 33 39 45 51 45 39";         model_emoji="🪶" ;;
@@ -429,7 +431,8 @@ if [ "$show_model" = "1" ] && [ -n "$model" ]; then
   esac
   if [ "$color_mode" = "colored" ]; then
     read -r -a hues <<< "$model_hues"
-    frame=$(date +%s)
+    frame=0
+    [ "$animate_model" = "1" ] && frame=$(date +%s)
     model_text=""
     for (( i=0; i<${#model}; i++ )); do
       model_text="${model_text}"$'\033[38;5;'"${hues[$(( (i + frame) % ${#hues[@]} ))]}m${model:$i:1}"
