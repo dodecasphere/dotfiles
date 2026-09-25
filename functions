@@ -304,6 +304,17 @@ function clone-all() {
                 tolower($1)=="hostname" && $2 ~ /github\.com$/ { n=split(h, a, " "); for (i=1; i<=n; i++) print a[i] }' ~/.ssh/config \
         | fzf --height=~10 --prompt="ssh host> " --preview 'ssh -T -o BatchMode=yes git@{} 2>&1 | sed -E "s/^Hi ([^!]+)!.*/SSH key logs in as \1/"' --preview-window=down,1 ) || return 1
 
+    # A different account can still work (e.g. both are org members), so warn rather than stop.
+    local ssh_user
+    ssh_user=$(ssh -T -o BatchMode=yes "git@$host" 2>&1 | sed -nE 's/^Hi ([^!]+)!.*/\1/p')
+    if [ -z "$ssh_user" ]; then
+        echo "Warning: the $host SSH key doesn't log in to GitHub, so clones will likely fail." >&2
+        [ "$(ask_yes_or_no "Continue anyway")" = yes ] || return 1
+    elif [ "$ssh_user" != "$account" ]; then
+        echo "Warning: the $host SSH key logs in as $ssh_user, but repos were listed as $account." >&2
+        [ "$(ask_yes_or_no "Continue anyway")" = yes ] || return 1
+    fi
+
     local archived=false forks=false
     [ "$(ask_yes_or_no "Include archived repos")" = yes ] && archived=true
     [ "$(ask_yes_or_no "Include forks")" = yes ] && forks=true
