@@ -273,7 +273,8 @@
     "claude-md-management@claude-plugins-official": false,
     "code-simplifier@claude-plugins-official": false,
     "my@personal-skills": true,
-    "typesafe@typesafe-ai": true
+    "typesafe@typesafe-ai": true,
+    "ponytail@ponytail": true
   },
   "extraKnownMarketplaces": {
     "personal-skills": {
@@ -287,6 +288,12 @@
       "source": {
         "source": "github",
         "repo": "typesafe-ai/skills"
+      }
+    },
+    "ponytail": {
+      "source": {
+        "source": "github",
+        "repo": "dietrichgebert/ponytail"
       }
     }
   },
