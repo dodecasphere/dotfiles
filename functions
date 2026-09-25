@@ -302,7 +302,7 @@ function clone-all() {
     local host
     host=$(awk 'tolower($1)=="host" { h=""; for (i=2; i<=NF; i++) if ($i !~ /[*?!]/) h=h" "$i }
                 tolower($1)=="hostname" && $2 ~ /github\.com$/ { n=split(h, a, " "); for (i=1; i<=n; i++) print a[i] }' ~/.ssh/config \
-        | fzf --height=~10 --prompt="ssh host> " --preview 'ssh -T -o BatchMode=yes git@{} 2>&1' --preview-window=down,1 ) || return 1
+        | fzf --height=~10 --prompt="ssh host> " --preview 'ssh -T -o BatchMode=yes git@{} 2>&1 | sed -E "s/^Hi ([^!]+)!.*/SSH key logs in as \1/"' --preview-window=down,1 ) || return 1
 
     local archived=false forks=false
     [ "$(ask_yes_or_no "Include archived repos")" = yes ] && archived=true
