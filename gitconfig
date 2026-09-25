@@ -12,15 +12,6 @@
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
 
-[includeIf "gitdir:~/Sites/"]
-        path = ~/.gitconfig-work
-
-[includeIf "gitdir:~/SitesMine/"]
-        path = ~/.gitconfig-personal
-
-[includeIf "gitdir:~/Dotfiles/"]
-        path = ~/.gitconfig-personal
-
 # OS-specific config (e.g. the mac-only osxkeychain credential helper).
 # Written by provisioning; git silently skips the include when absent.
 [include]
