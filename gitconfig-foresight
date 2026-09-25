@@ -1,0 +1,6 @@
+# Foresight identity. Included by gitconfig for every repo under ~/Projects/platform/.
+[user]
+	name = Mike Dulle
+	email = mike.dulle@foresight.works
+[core]
+	sshCommand = ssh -i ~/.ssh/id_rsa_fsw

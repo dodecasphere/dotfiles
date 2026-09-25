@@ -12,6 +12,11 @@
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
 
+# Foresight repos live under ~/Projects/platform/. Everything else is personal
+# (global identity above) or sets its own identity in .git/config.
+[includeIf "gitdir:~/Projects/platform/"]
+        path = ~/.gitconfig-foresight
+
 # OS-specific config (e.g. the mac-only osxkeychain credential helper).
 # Written by provisioning; git silently skips the include when absent.
 [include]
