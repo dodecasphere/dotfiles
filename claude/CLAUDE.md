@@ -35,6 +35,14 @@ build commands — lives in each repo's own CLAUDE.md, not here.
 5. **Suggest better ways.** I'm always open to them — don't hesitate to propose
    a different approach, especially one with lasting impact over a tactical fix.
 
+**Ponytail precedence.** When the ponytail plugin is active, it governs solution
+size only (YAGNI, reuse, stdlib first, smallest diff). Where it conflicts with
+this file, this file wins. Specifically: rule 1 (ask before assuming) beats
+ponytail's "ship the lazy version and question it in the same response"; the
+project's test bar and the test-first rule beat ponytail's "one runnable check,
+no frameworks"; and a spec plus a verified versus unverified summary is
+requested output, not debt to trim.
+
 ## Default workflow
 Scale this to the task. Trivial, clear changes: just make them. For anything
 non-trivial, multi-step, or ambiguous, work this way by default without being
