@@ -271,3 +271,55 @@ function keys () {
     line "Ctrl + N    Next command from the History"
     line "Ctrl + P    previous command from the History"
 }
+
+# Clone every repo of a GitHub user or org into the current directory.
+# Pick the gh account used to list repos (so private ones show up), the owner,
+# and the ~/.ssh/config Host alias to clone through (so the right key is used).
+# Repos that already exist here are skipped.
+function clone-all() {
+    command -v gh >/dev/null && command -v fzf >/dev/null || { echo "clone-all needs gh and fzf" >&2; return 1; }
+
+    local new="+ Sign in to another account" account token
+    account=$( { gh auth status --json hosts --jq '.hosts["github.com"][] | .login + (if .active then "  (active)" else "" end)'; echo "$new"; } \
+        | fzf --height=~10 --prompt="gh account> " ) || return 1
+    if [ "$account" = "$new" ]; then
+        gh auth login --hostname github.com --git-protocol ssh --web || return 1
+        account=$(gh api user --jq .login) || return 1
+    fi
+    account=${account%  (active)}
+    # Use this account's token for this run only, without switching gh's active account.
+    token=$(gh auth token --user "$account") || return 1
+
+    # Your own login plus your orgs. Type a name that isn't listed and press Enter to use it.
+    local out owner
+    out=$( { echo "$account"; GH_TOKEN=$token gh api user/orgs --paginate --jq '.[].login'; } \
+        | fzf --height=~15 --prompt="owner (or type one)> " --print-query )
+    [ $? -eq 130 ] && return 1
+    owner=${out##*$'\n'}
+    [ -n "$owner" ] || return 1
+
+    # Host aliases whose HostName is GitHub. The preview shows which account each key logs in as.
+    local host
+    host=$(awk 'tolower($1)=="host" { h=""; for (i=2; i<=NF; i++) if ($i !~ /[*?!]/) h=h" "$i }
+                tolower($1)=="hostname" && $2 ~ /github\.com$/ { n=split(h, a, " "); for (i=1; i<=n; i++) print a[i] }' ~/.ssh/config \
+        | fzf --height=~10 --prompt="ssh host> " --preview 'ssh -T -o BatchMode=yes git@{} 2>&1' --preview-window=down,1 ) || return 1
+
+    local archived=false forks=false
+    [ "$(ask_yes_or_no "Include archived repos")" = yes ] && archived=true
+    [ "$(ask_yes_or_no "Include forks")" = yes ] && forks=true
+
+    local repos count
+    repos=$(GH_TOKEN=$token gh repo list "$owner" --limit 1000 --json name,isArchived,isFork \
+        --jq ".[] | select(($archived or (.isArchived | not)) and ($forks or (.isFork | not))) | .name") || return 1
+    [ -n "$repos" ] || { echo "No repos visible to $account under $owner" >&2; return 1; }
+    count=$(printf '%s\n' "$repos" | wc -l | tr -d ' ')
+    [ "$(ask_yes_or_no "Clone $count repos from $owner via git@$host into $PWD")" = yes ] || return 1
+
+    local name cloned=0 skipped=0 failed=0
+    while IFS= read -r name; do
+        if [ -e "$name" ]; then skipped=$((skipped + 1)); continue; fi
+        # </dev/null so ssh can't swallow the rest of the repo list from stdin.
+        if git clone "git@$host:$owner/$name.git" </dev/null; then cloned=$((cloned + 1)); else failed=$((failed + 1)); fi
+    done <<< "$repos"
+    echo "Cloned $cloned, skipped $skipped existing, failed $failed."
+}
