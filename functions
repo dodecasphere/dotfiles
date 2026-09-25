@@ -286,7 +286,7 @@ function clone-all() {
         gh auth login --hostname github.com --git-protocol ssh --web || return 1
         account=$(gh api user --jq .login) || return 1
     fi
-    account=${account%  (active)}
+    account=${account%"  (active)"}
     # Use this account's token for this run only, without switching gh's active account.
     token=$(gh auth token --user "$account") || return 1
 
