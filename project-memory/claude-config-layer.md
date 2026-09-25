@@ -50,3 +50,18 @@ plugin, cc-status hooks) that git didn't have. When a settings change "doesn't
 take", first run `ls -la ~/.claude/settings.json` and diff it against the repo
 before debugging the setting itself. Fixed by folding the extras into the repo
 and relinking.
+
+**Drifted again (found 2026-09-25).** The only extra this time was a second,
+unguarded copy of the cc-status hook on every event, so each event ran cc-status
+twice. The culprit is iTerm2's Claude Code integration: its binary logs
+"Onboarding: updated stale cc-status hook", and its prefs carry
+`NoSyncClaudeCodeHooksInstalled`. Working hypothesis (not proven, since
+onboarding can't be triggered on demand): iTerm2 looks for its exact command
+`/Users/mikedulle/.config/iterm2/cc-status`, didn't recognize our guarded
+`[ -x … ] && … || true` form, and re-added its own, rewriting the file over
+the symlink. Two changes: the repo now uses iTerm2's exact unguarded command
+(so on a machine without iTerm2 that hook errors, but it never blocks), and
+`claude/hooks/settings-drift-check.sh` runs on SessionStart (startup) and warns
+in the session when settings.json is not a symlink. If the alarm fires again
+even with the exact command, the hypothesis is wrong and iTerm2 rewrites on
+some other trigger.

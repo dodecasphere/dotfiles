@@ -84,7 +84,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "[ -x \"$HOME/.config/iterm2/cc-status\" ] && \"$HOME/.config/iterm2/cc-status\" || true"
+            "command": "/Users/mikedulle/.config/iterm2/cc-status"
           }
         ]
       }
@@ -94,7 +94,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "[ -x \"$HOME/.config/iterm2/cc-status\" ] && \"$HOME/.config/iterm2/cc-status\" || true"
+            "command": "/Users/mikedulle/.config/iterm2/cc-status"
           }
         ]
       }
@@ -122,7 +122,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "[ -x \"$HOME/.config/iterm2/cc-status\" ] && \"$HOME/.config/iterm2/cc-status\" || true"
+            "command": "/Users/mikedulle/.config/iterm2/cc-status"
           }
         ]
       }
@@ -163,7 +163,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "[ -x \"$HOME/.config/iterm2/cc-status\" ] && \"$HOME/.config/iterm2/cc-status\" || true"
+            "command": "/Users/mikedulle/.config/iterm2/cc-status"
           }
         ]
       }
@@ -173,7 +173,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "[ -x \"$HOME/.config/iterm2/cc-status\" ] && \"$HOME/.config/iterm2/cc-status\" || true"
+            "command": "/Users/mikedulle/.config/iterm2/cc-status"
           }
         ]
       }
@@ -192,7 +192,16 @@
         "hooks": [
           {
             "type": "command",
-            "command": "[ -x \"$HOME/.config/iterm2/cc-status\" ] && \"$HOME/.config/iterm2/cc-status\" || true"
+            "command": "/Users/mikedulle/.config/iterm2/cc-status"
+          }
+        ]
+      },
+      {
+        "matcher": "startup",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/settings-drift-check.sh"
           }
         ]
       }
@@ -211,7 +220,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "[ -x \"$HOME/.config/iterm2/cc-status\" ] && \"$HOME/.config/iterm2/cc-status\" || true"
+            "command": "/Users/mikedulle/.config/iterm2/cc-status"
           }
         ]
       }
@@ -221,7 +230,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "[ -x \"$HOME/.config/iterm2/cc-status\" ] && \"$HOME/.config/iterm2/cc-status\" || true"
+            "command": "/Users/mikedulle/.config/iterm2/cc-status"
           }
         ]
       }
@@ -231,7 +240,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "[ -x \"$HOME/.config/iterm2/cc-status\" ] && \"$HOME/.config/iterm2/cc-status\" || true"
+            "command": "/Users/mikedulle/.config/iterm2/cc-status"
           }
         ]
       }
@@ -249,7 +258,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "[ -x \"$HOME/.config/iterm2/cc-status\" ] && \"$HOME/.config/iterm2/cc-status\" || true"
+            "command": "/Users/mikedulle/.config/iterm2/cc-status"
           }
         ]
       }
