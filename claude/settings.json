@@ -80,26 +80,6 @@
     "my:writing-great-skills": "off"
   },
   "hooks": {
-    "Notification": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "/Users/mikedulle/.config/iterm2/cc-status"
-          }
-        ]
-      }
-    ],
-    "PermissionRequest": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "/Users/mikedulle/.config/iterm2/cc-status"
-          }
-        ]
-      }
-    ],
     "PostToolUse": [
       {
         "matcher": "Edit|Write|MultiEdit",
@@ -116,14 +96,6 @@
           {
             "type": "command",
             "command": "bash $HOME/.claude/hooks/phased-workflow/post-bash.sh"
-          }
-        ]
-      },
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "/Users/mikedulle/.config/iterm2/cc-status"
           }
         ]
       }
@@ -159,24 +131,6 @@
             "command": "bash $HOME/.claude/hooks/phased-workflow/guard.sh"
           }
         ]
-      },
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "/Users/mikedulle/.config/iterm2/cc-status"
-          }
-        ]
-      }
-    ],
-    "SessionEnd": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "/Users/mikedulle/.config/iterm2/cc-status"
-          }
-        ]
       }
     ],
     "SessionStart": [
@@ -186,14 +140,6 @@
           {
             "type": "command",
             "command": "bash $HOME/.claude/hooks/context-recovery.sh"
-          }
-        ]
-      },
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "/Users/mikedulle/.config/iterm2/cc-status"
           }
         ]
       },
@@ -216,34 +162,6 @@
             "timeout": 180
           }
         ]
-      },
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "/Users/mikedulle/.config/iterm2/cc-status"
-          }
-        ]
-      }
-    ],
-    "StopFailure": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "/Users/mikedulle/.config/iterm2/cc-status"
-          }
-        ]
-      }
-    ],
-    "SubagentStop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "/Users/mikedulle/.config/iterm2/cc-status"
-          }
-        ]
       }
     ],
     "UserPromptSubmit": [
@@ -252,14 +170,6 @@
           {
             "type": "command",
             "command": "bash $HOME/.claude/hooks/standing-behaviors.sh"
-          }
-        ]
-      },
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "/Users/mikedulle/.config/iterm2/cc-status"
           }
         ]
       }
