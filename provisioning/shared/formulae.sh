@@ -44,6 +44,7 @@ formula "btop"       # system/process monitor
 formula "tealdeer"   # tldr cheatsheets
 formula "gitleaks"   # secret scanner (used by the pre-commit hook)
 formula "tmux"       # terminal multiplexer
+formula "herdr"      # agent multiplexer (no Linux bottle: builds from source via rust+zig)
 
 # Docker helpers (the docker engine itself is per-OS: Docker Desktop cask on
 # macOS, docker-ce via apt on Linux — these are just ergonomics on top).
