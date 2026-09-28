@@ -6,6 +6,9 @@ fi
 
 # Use the right Claude account for the job
 function claude() {
+  # Install any pending update now instead of waiting for the "restart to
+  # install" nag mid-session.
+  command claude update >/dev/null 2>&1
   case "$PWD" in
     # "$HOME/something-work" | "$HOME/something-work/"*)
     #   CLAUDE_CONFIG_DIR=~/.claude-work command claude "$@"
