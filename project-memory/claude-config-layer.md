@@ -65,3 +65,11 @@ the symlink. Two changes: the repo now uses iTerm2's exact unguarded command
 in the session when settings.json is not a symlink. If the alarm fires again
 even with the exact command, the hypothesis is wrong and iTerm2 rewrites on
 some other trigger.
+
+**cc-status hooks removed (2026-09-28).** The owner doesn't want the iTerm2
+status indicator, and the unguarded hook errored on every event on the Linux
+VPS (`/bin/sh: … cc-status: not found`). All 10 cc-status hooks are gone from
+`claude/settings.json`. Do not re-add them or build Linux no-op stubs. iTerm2's
+Claude Code integration must be turned off on the Mac, or its onboarding may
+re-add the hooks and rewrite settings.json over the symlink again. The drift
+check stays as the alarm for that.
