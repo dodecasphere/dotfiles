@@ -54,7 +54,7 @@ confirm-close-surface = false
 clipboard-read = allow
 copy-on-select = true
 
-# --- Herdr: release these so they reach herdr's own bindings (see config/herdr)
+# --- Herdr + Neovim: release these so they reach herdr (config/herdr) and nvim (cmd+e)
 keybind = super+t=unbind
 keybind = super+w=unbind
 keybind = super+k=unbind
@@ -62,3 +62,4 @@ keybind = super+shift+[=unbind
 keybind = super+shift+]=unbind
 keybind = super+shift+arrow_up=unbind
 keybind = super+shift+arrow_down=unbind
+keybind = super+e=unbind
