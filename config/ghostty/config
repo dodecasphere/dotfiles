@@ -53,3 +53,12 @@ confirm-close-surface = false
 # iTerm: "Applications in terminal may access clipboard" was on
 clipboard-read = allow
 copy-on-select = true
+
+# --- Herdr: release these so they reach herdr's own bindings (see config/herdr)
+keybind = super+t=unbind
+keybind = super+w=unbind
+keybind = super+k=unbind
+keybind = super+shift+[=unbind
+keybind = super+shift+]=unbind
+keybind = super+shift+arrow_up=unbind
+keybind = super+shift+arrow_down=unbind
