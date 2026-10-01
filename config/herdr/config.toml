@@ -1,0 +1,50 @@
+# Herdr config. Linked to ~/.config/herdr/config.toml by install.sh.
+# Apply: herdr server reload-config
+# Sidebar/colour ideas from learn.datalumina.com/docs/herdr, reviewed 2026-10-01.
+onboarding = false
+
+[theme]
+name = "one-dark"
+auto_switch = false
+
+[theme.custom]
+red = "#4e82ef"     # blocked, needs input
+teal = "#4e82ef"    # done, not seen yet
+yellow = "#a78bfa"  # working
+active_row_bg = "#45475a"
+
+[ui]
+status_indicators = "symbols"
+agent_panel_sort = "priority"   # blocked, then done, then working
+prompt_new_tab_name = false
+
+[ui.toast]
+delivery = "system"
+
+[ui.sound]
+enabled = false
+
+[ui.sidebar.agents]
+row_gap = 1
+rows = [
+  ["state_icon", "workspace"],
+  ["tab"],
+]
+
+[ui.sidebar.spaces]
+row_gap = 1
+rows = [
+  ["state_icon", "workspace"],
+  ["branch"],
+]
+
+# Prefix stays ctrl+b. cmd keys mirror iTerm/Ghostty tab habits; Ghostty
+# unbinds them in config/ghostty/config so they reach herdr.
+[keys]
+new_tab = ["prefix+c", "cmd+t"]
+close_tab = ["prefix+shift+x", "cmd+w"]
+goto = ["prefix+g", "cmd+k"]
+previous_tab = ["prefix+p", "cmd+shift+["]
+next_tab = ["prefix+n", "cmd+shift+]"]
+previous_workspace = "cmd+shift+up"
+next_workspace = "cmd+shift+down"

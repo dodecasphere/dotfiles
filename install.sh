@@ -20,8 +20,8 @@ for name in *; do
 
   # ignore *.md and *.sh files, the claude/ subtree (handled separately
   # below — it links individual files into ~/.claude, not the whole dir) and
-  # ghostty (linked to ~/.config/ghostty/config below, not ~/.ghostty)
-  if [[ ${name: -3} != ".sh" && ${name: -3} != ".md" && "$name" != "claude" && "$name" != "ghostty" ]]; then
+  # config/ (linked file-by-file into ~/.config below, not ~/.config itself)
+  if [[ ${name: -3} != ".sh" && ${name: -3} != ".md" && "$name" != "claude" && "$name" != "config" ]]; then
     # check if file already exists
     if [ -e "$target" ]; then
       # check if file is a symlink.
@@ -44,19 +44,25 @@ for name in *; do
 
 done
 
-# --- Ghostty (~/.config/ghostty/config) -----------------------------------
-# Ghostty reads $XDG_CONFIG_HOME/ghostty/config, not a ~/.ghostty dotfile.
-ghostty_dst="$HOME/.config/ghostty/config"
-if [ -f "$PWD/ghostty" ]; then
-  mkdir -p "$(dirname "$ghostty_dst")"
-  if [ -e "$ghostty_dst" ] && [ ! -L "$ghostty_dst" ]; then
-    mkdir -p "$HOME/$backup_dir"
-    echo "Backing up ghostty config in $HOME/$backup_dir/"
-    mv "$ghostty_dst" "$HOME/$backup_dir/ghostty-config$(date +"%d-%m-%Y-%H:%M:%S")"
-  fi
-  rm -f "$ghostty_dst"
-  echo "Creating $ghostty_dst"
-  ln -s "$PWD/ghostty" "$ghostty_dst"
+# --- XDG app configs (~/.config/<app>/...) --------------------------------
+# config/<app>/<path> is linked to ~/.config/<app>/<path>, one file at a time,
+# never the app dir itself: ~/.config/herdr also holds sockets, logs and
+# session state that must stay machine-local, and ~/.config/nvim grows
+# lazy-lock.json and plugin caches. Real files in the way are backed up.
+if [ -d "$PWD/config" ]; then
+  find "$PWD/config" -type f | while read -r src; do
+    rel="${src#"$PWD/config/"}"
+    dst="$HOME/.config/$rel"
+    mkdir -p "$(dirname "$dst")"
+    if [ -e "$dst" ] && [ ! -L "$dst" ]; then
+      mkdir -p "$HOME/$backup_dir"
+      echo "Backing up .config/$rel in $HOME/$backup_dir/"
+      mv "$dst" "$HOME/$backup_dir/config-$(echo "$rel" | tr / -)$(date +"%d-%m-%Y-%H:%M:%S")"
+    fi
+    rm -f "$dst"
+    echo "Creating $dst"
+    ln -s "$src" "$dst"
+  done
 fi
 
 # --- Claude Code config (~/.claude) ---------------------------------------
