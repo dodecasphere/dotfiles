@@ -59,6 +59,7 @@ A separate private repo is expected at `~/.dotfiles-secrets/` containing `secret
 
 ## Key conventions
 
+- Ghostty terminal config is the root `ghostty` file, linked by `install.sh` to `~/.config/ghostty/config` (not `~/.ghostty`). Ported from the iTerm2 default profile on 2026-10-01.
 - Adding a new alias: create or edit a file in `aliases/` (picked up automatically by both shells).
 - Adding a new formula/cask: add a `formula "name"` or `cask "name"` call in `provisioning/mac/formulae.sh` or `apps.sh`.
 - The `zsh-completions` fix (`chmod -R go-w "$(brew --prefix)/share"`) runs in `provision.sh` after all brew installs to prevent the compinit insecure directories warning.

@@ -18,9 +18,10 @@ for name in *; do
 
   target="$HOME/.$name"
 
-  # ignore *.md and *.sh files, and the claude/ subtree (handled separately
-  # below — it links individual files into ~/.claude, not the whole dir)
-  if [[ ${name: -3} != ".sh" && ${name: -3} != ".md" && "$name" != "claude" ]]; then
+  # ignore *.md and *.sh files, the claude/ subtree (handled separately
+  # below — it links individual files into ~/.claude, not the whole dir) and
+  # ghostty (linked to ~/.config/ghostty/config below, not ~/.ghostty)
+  if [[ ${name: -3} != ".sh" && ${name: -3} != ".md" && "$name" != "claude" && "$name" != "ghostty" ]]; then
     # check if file already exists
     if [ -e "$target" ]; then
       # check if file is a symlink.
@@ -42,6 +43,21 @@ for name in *; do
   fi
 
 done
+
+# --- Ghostty (~/.config/ghostty/config) -----------------------------------
+# Ghostty reads $XDG_CONFIG_HOME/ghostty/config, not a ~/.ghostty dotfile.
+ghostty_dst="$HOME/.config/ghostty/config"
+if [ -f "$PWD/ghostty" ]; then
+  mkdir -p "$(dirname "$ghostty_dst")"
+  if [ -e "$ghostty_dst" ] && [ ! -L "$ghostty_dst" ]; then
+    mkdir -p "$HOME/$backup_dir"
+    echo "Backing up ghostty config in $HOME/$backup_dir/"
+    mv "$ghostty_dst" "$HOME/$backup_dir/ghostty-config$(date +"%d-%m-%Y-%H:%M:%S")"
+  fi
+  rm -f "$ghostty_dst"
+  echo "Creating $ghostty_dst"
+  ln -s "$PWD/ghostty" "$ghostty_dst"
+fi
 
 # --- Claude Code config (~/.claude) ---------------------------------------
 # The canonical config lives in this repo's claude/ subtree. We symlink it into
