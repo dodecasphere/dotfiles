@@ -31,7 +31,10 @@ state_set() { # state_set key value [repo_root]
   mkdir -p "$(dirname "$f")"
   touch "$f"
   if grep -q "^$1=" "$f"; then
-    sed -i '' "s|^$1=.*|$1=$2|" "$f"
+    # Portable in-place edit: GNU sed and BSD/macOS sed disagree on `-i ''`,
+    # so write to a temp file and move it over the original instead.
+    local tmp
+    tmp=$(mktemp) && sed "s|^$1=.*|$1=$2|" "$f" > "$tmp" && mv "$tmp" "$f"
   else
     echo "$1=$2" >> "$f"
   fi
