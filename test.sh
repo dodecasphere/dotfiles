@@ -81,7 +81,7 @@ if jq -e '.extraKnownMarketplaces["personal-skills"].source.repo == "dodecaspher
 else
   bad "personal-skills marketplace missing from settings.json"
 fi
-for p in product-discovery engineering writing workflow; do
+for p in my; do
   if jq -e --arg k "$p@personal-skills" '.enabledPlugins[$k] == true' \
        "$FAKEHOME/.claude/settings.json" >/dev/null 2>&1; then
     ok "plugin $p enabled"
