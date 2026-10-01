@@ -76,8 +76,9 @@ just directory, branch, model, and context.
   reasons: the session has not made its first API response yet, the account is
   not a Claude.ai Pro/Max subscription, or the Claude Code build predates the
   `rate_limits` field. Nothing to fix in this repo.
-* **Reset time looks wrong**: it renders in the box's local timezone. On a UTC
-  VPS you will see UTC. Set the machine timezone if you want local.
+* **Reset time looks wrong**: it always renders in Eastern time
+  (`TZ="America/New_York"` is hardcoded at the top of `statusline.sh`), whatever
+  the machine timezone. If it shows UTC instead, the box is missing tzdata.
 
 ## History
 

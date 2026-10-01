@@ -8,6 +8,9 @@
 # where it's symlinked from (~/.claude/statusline -> Dotfiles/claude/statusline).
 SL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+# Render all clock times in Eastern regardless of host TZ (DST via tzdata).
+export TZ="America/New_York"
+
 # Portable date helper. macOS ships BSD date; Linux ships GNU date; their flags
 # for "format an epoch" are incompatible, so branch once here. All reset times
 # arrive as epoch seconds on stdin, so only the epoch->string direction is needed.
