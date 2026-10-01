@@ -98,3 +98,8 @@ command -v zoxide &>/dev/null && eval "$(zoxide init bash)"
 
 # Herd injected PHP 8.4 configuration.
 export HERD_PHP_84_INI_SCAN_DIR="$HOME/Library/Application Support/Herd/config/php/84/"
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/Users/mikedulle/.lmstudio/bin"
+# End of LM Studio CLI section
+
