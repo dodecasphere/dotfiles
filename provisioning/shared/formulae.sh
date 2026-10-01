@@ -39,6 +39,7 @@ formula "eza"        # modern ls
 formula "bat"        # modern cat (syntax highlighting)
 formula "fd"         # modern find
 formula "ripgrep"    # modern grep (rg)
+formula "neovim"     # code viewer inside herdr panes (config/nvim, LazyVim)
 formula "zoxide"     # smarter cd (replaces z)
 formula "btop"       # system/process monitor
 formula "tealdeer"   # tldr cheatsheets

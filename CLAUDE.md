@@ -59,7 +59,7 @@ A separate private repo is expected at `~/.dotfiles-secrets/` containing `secret
 
 ## Key conventions
 
-- XDG app configs (Ghostty, Herdr) live under `config/<app>/` and are linked file-by-file into `~/.config/<app>/` by `install.sh`, never the app dir itself (herdr keeps sockets and logs there). Ghostty was ported from the iTerm2 default profile on 2026-10-01; Herdr keys and sidebar follow the datalumina herdr guide, reviewed the same day.
+- XDG app configs (Ghostty, Herdr, Neovim) live under `config/<app>/` and are linked file-by-file into `~/.config/<app>/` by `install.sh`, never the app dir itself (herdr keeps sockets and logs there). Ghostty was ported from the iTerm2 default profile on 2026-10-01; Herdr keys and sidebar, and the LazyVim viewer config under `config/nvim/` (Dave's datalumina herdr guide, adapted: our background, PHP extra added), were reviewed the same day. `lazy-lock.json` and Mason packages stay machine-local.
 - Adding a new alias: create or edit a file in `aliases/` (picked up automatically by both shells).
 - Adding a new formula/cask: add a `formula "name"` or `cask "name"` call in `provisioning/mac/formulae.sh` or `apps.sh`.
 - The `zsh-completions` fix (`chmod -R go-w "$(brew --prefix)/share"`) runs in `provision.sh` after all brew installs to prevent the compinit insecure directories warning.
