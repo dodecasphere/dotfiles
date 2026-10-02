@@ -37,7 +37,7 @@ cursor-style = underline
 cursor-style-blink = true
 
 # --- Window (iTerm: 120x40, minimal tab style, dim inactive panes ~48%)
-window-width = 120
+window-width = 180
 window-height = 40
 macos-titlebar-style = tabs
 unfocused-split-opacity = 0.52
