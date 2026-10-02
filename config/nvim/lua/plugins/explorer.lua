@@ -160,7 +160,8 @@ return {
         },
       },
       window = {
-        width = 34,
+        position = "right",
+        width = 38,
         mappings = {
           ["<cr>"] = on_enter,
           ["<LeftRelease>"] = on_single_click,
