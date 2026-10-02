@@ -46,6 +46,15 @@ formula "tealdeer"   # tldr cheatsheets
 formula "gitleaks"   # secret scanner (used by the pre-commit hook)
 formula "tmux"       # terminal multiplexer
 formula "herdr"      # agent multiplexer (no Linux bottle: builds from source via rust+zig)
+formula "go"         # herdr builds its plugins (auto-title) from source with go
+
+# herdr auto-title plugin: names tabs after their work (dir, branch, agent task).
+# Takes effect on the next herdr server start, or now via
+# `herdr plugin action invoke herdr.auto-title.restart`.
+if ! herdr plugin list 2>/dev/null | grep -q 'herdr.auto-title'; then
+  doing "herdr auto-title plugin..."
+  herdr plugin install --yes kryptamine/herdr-auto-title
+fi
 
 # Docker helpers (the docker engine itself is per-OS: Docker Desktop cask on
 # macOS, docker-ce via apt on Linux — these are just ergonomics on top).
