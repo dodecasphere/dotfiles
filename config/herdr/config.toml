@@ -17,6 +17,7 @@ active_row_bg = "#45475a"
 status_indicators = "symbols"
 agent_panel_sort = "priority"   # blocked, then done, then working
 prompt_new_tab_name = false
+window_title = "Ghostty: {pane}"
 
 [ui.toast]
 delivery = "system"
