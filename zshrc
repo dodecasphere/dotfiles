@@ -176,6 +176,6 @@ export HERD_PHP_85_INI_SCAN_DIR="$HOME/Library/Application Support/Herd/config/p
 
 
 # Added by LM Studio CLI (lms)
-export PATH="$PATH:/Users/mikedulle/.lmstudio/bin"
+export PATH="$PATH:$HOME/.lmstudio/bin"
 # End of LM Studio CLI section
 
