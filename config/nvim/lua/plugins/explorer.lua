@@ -143,11 +143,12 @@ return {
         hijack_netrw_behavior = "open_default",
         follow_current_file = { enabled = true },
         filtered_items = {
-          visible = true,
+          visible = false,
           hide_dotfiles = false,
           hide_gitignored = true,
           hide_hidden = false,
-          never_show = { ".git", ".DS_Store" },
+          hide_by_name = { ".git" },
+          never_show = { ".DS_Store" },
         },
         components = {
           name = function(config, node, state)
