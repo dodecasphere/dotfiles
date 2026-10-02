@@ -32,6 +32,8 @@ sudo tee /etc/apt/apt.conf.d/52unattended-upgrades-local >/dev/null <<'EOF'
 Unattended-Upgrade::Remove-Unused-Dependencies "true";
 // Manual reboots: check MOTD or /var/run/reboot-required after kernel updates.
 Unattended-Upgrade::Automatic-Reboot "false";
+// Google Chrome (installed by claude.sh for the playwright MCP).
+Unattended-Upgrade::Origins-Pattern { "origin=Google LLC"; };
 EOF
 
 # Only offer LTS-to-LTS release upgrades; run `do-release-upgrade` by hand.
