@@ -29,6 +29,16 @@ if [ -x "$claude_bin" ]; then
   fi
 fi
 
+# The playwright MCP drives the `chrome` channel (real Google Chrome at
+# /opt/google/chrome), not Playwright's bundled chromium. macOS gets Chrome
+# from apps.sh; on Linux install it here. Guarded because `playwright install
+# chrome` errors when Chrome is already present. --with-deps uses sudo + apt and
+# adds Google's apt repo (updates.sh lets unattended-upgrades patch it).
+if [ "$(uname)" = Linux ] && [ ! -x /opt/google/chrome/chrome ]; then
+  doing "Google Chrome for the playwright MCP..."
+  npx -y playwright install --with-deps chrome
+fi
+
 # The portable statusline (claude/statusline/) is now fully self-contained: it
 # reads everything, including subscription usage, from the JSON Claude Code pipes
 # to it on stdin. No extra dependencies, no cookie, nothing to provision here.
