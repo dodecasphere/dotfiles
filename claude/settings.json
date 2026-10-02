@@ -70,7 +70,6 @@
   },
   "model": "opus[1m]",
   "skillOverrides": {
-    "inertia-vue": "off",
     "my:agent-capability-tiers": "off",
     "my:diagnosing-bugs": "off",
     "my:pre-mortem": "off",
