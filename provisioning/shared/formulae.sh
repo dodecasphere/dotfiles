@@ -57,6 +57,18 @@ if ! herdr plugin list 2>/dev/null | grep -q 'herdr.auto-title'; then
   herdr plugin install --yes kryptamine/herdr-auto-title
 fi
 
+# herdr delegation skill: lets an agent in any harness split panes and drive
+# another agent (learn.datalumina.com/docs/herdr/delegation). The binary ships
+# the skill (`herdr --skill`), so we render it from the installed version instead
+# of vendoring a copy or using `npx skills add`; re-running refreshes it after a
+# herdr upgrade. Machine-local on purpose (not in the plugin store: it must match
+# the installed binary). Codex only if ~/.codex exists.
+for skills_dir in "$HOME/.claude/skills" "$HOME/.codex/skills"; do
+  [ -d "$(dirname "$skills_dir")" ] || [ "$skills_dir" = "$HOME/.claude/skills" ] || continue
+  mkdir -p "$skills_dir/herdr"
+  herdr --skill > "$skills_dir/herdr/SKILL.md"
+done
+
 # Docker helpers (the docker engine itself is per-OS: Docker Desktop cask on
 # macOS, docker-ce via apt on Linux — these are just ergonomics on top).
 formula "lazydocker"
