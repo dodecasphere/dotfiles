@@ -51,6 +51,7 @@ formula "go"         # herdr builds its plugins (auto-title) from source with go
 # herdr auto-title plugin: names tabs after their work (dir, branch, agent task).
 # Takes effect on the next herdr server start, or now via
 # `herdr plugin action invoke herdr.auto-title.restart`.
+export GOPATH="$HOME/.local/share/go"  # provision.sh does not source exports; keep go out of ~/go
 if ! herdr plugin list 2>/dev/null | grep -q 'herdr.auto-title'; then
   doing "herdr auto-title plugin..."
   herdr plugin install --yes kryptamine/herdr-auto-title
