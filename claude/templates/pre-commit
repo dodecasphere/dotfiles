@@ -2,7 +2,7 @@
 # Tracked git pre-commit wall. Copy to <project>/.githooks/pre-commit,
 # chmod +x, then: git config core.hooksPath .githooks
 #
-# Backstop for the Claude PreToolUse guard (bash-pretooluse-dispatcher.sh):
+# Backstop for the Claude PreToolUse guard (builder's git-guard.sh):
 # this one catches commits made directly in a terminal, where Claude's hook
 # never runs. Enforces the same solo-dev branching policy, config-driven from
 # the project's own .claude/git-guard.conf (see templates/git-guard.conf) -

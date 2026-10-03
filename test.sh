@@ -91,11 +91,23 @@ for p in my; do
 done
 
 echo
-echo "## 7. A restored hook actually runs (blocks a force-push)"
-printf '{"tool_name":"Bash","tool_input":{"command":"git push --force"}}' \
-  | bash "$FAKEHOME/.claude/hooks/bash-pretooluse-dispatcher.sh" >/dev/null 2>&1
-[ "$?" -eq 2 ] && ok "bash-pretooluse-dispatcher blocked force-push (exit 2)" \
-  || bad "hook did not block force-push"
+echo "## 7. A restored hook actually runs (standing-behaviors injects context)"
+printf '{"prompt":"hi"}' \
+  | bash "$FAKEHOME/.claude/hooks/standing-behaviors.sh" 2>/dev/null \
+  | jq -e '.hookSpecificOutput.hookEventName == "UserPromptSubmit"' >/dev/null 2>&1 \
+  && ok "standing-behaviors emitted UserPromptSubmit context" \
+  || bad "standing-behaviors hook did not run"
+
+echo
+echo "## 8. builder enabled at user scope (it owns the guard hooks)"
+for p in builder stacks; do
+  if jq -e --arg k "$p@builder" '.enabledPlugins[$k] == true' \
+       "$FAKEHOME/.claude/settings.json" >/dev/null 2>&1; then
+    ok "plugin $p@builder enabled"
+  else
+    bad "plugin $p@builder not enabled in settings.json"
+  fi
+done
 
 echo
 echo "## RESULT: $pass passed, $fail failed"
