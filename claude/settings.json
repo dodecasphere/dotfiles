@@ -169,11 +169,13 @@
       }
     }
   },
+  "feedbackDrafts": "notify",
   "effortLevel": "high",
   "fastMode": true,
   "awaySummaryEnabled": false,
   "theme": "auto",
   "autoCompactEnabled": true,
+  "autoContinueAtUsageLimit": true,
   "remoteControlAtStartup": true,
   "inputNeededNotifEnabled": true,
   "agentPushNotifEnabled": true
