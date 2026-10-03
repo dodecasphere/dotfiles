@@ -8,7 +8,7 @@ they are starting points you drop into a repo.
 The verify gate and the code guidelines gate moved to the builder plugin
 (retired here 2026-10-03). In a repository with builder state, set
 `verify_command` (builder's `verify-done` Stop hook runs it before Claude can
-finish) and `code_guidelines` (builder's `code-guidelines-gate` points the
+finish, when code changed) and `code_guidelines` (builder's `code-guidelines-gate` points the
 first code edit of a session at that file) in `.builder/config.yml`. Install
 builder state with `/builder:install`.
 
@@ -43,7 +43,9 @@ policies in step.
 Tune the values in the copied `git-guard.conf` for this project (protected
 branch names, allowed branch-name types, what counts as "fast lane").
 
-The two gotchas below were observed with the retired Claude layer dispatcher; the git level half still applies, and builder's guard has not been checked against them.
+The two gotchas below were observed with the retired Claude layer dispatcher;
+the git level half still applies, and builder's guard has not been checked
+against them.
 
 **Gotcha - `git commit --amend` on a clean tree can't pass the fast lane.**
 Both layers determine the fast lane from the *actual staged diff*
