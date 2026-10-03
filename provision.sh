@@ -67,6 +67,9 @@ elif [[ "$1" == "--linux" ]]; then
 
     source provisioning/shared/formulae.sh
 
+    # Headless-only TUI for git (the Mac uses GitHub Desktop).
+    formula "lazygit"
+
     # Fix zsh compinit "insecure directories" warning — same brew quirk as macOS.
     chmod -R go-w "$(brew --prefix)/share"
 
