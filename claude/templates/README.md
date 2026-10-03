@@ -8,9 +8,9 @@ they are starting points you drop into a repo.
 The verify gate and the code guidelines gate moved to the builder plugin
 (retired here 2026-10-03). In a repository with builder state, set
 `verify_command` (builder's `verify-done` Stop hook runs it before Claude can
-finish, when code changed) and `code_guidelines` (builder's `code-guidelines-gate` points the
-first code edit of a session at that file) in `.builder/config.yml`. Install
-builder state with `/builder:install`.
+finish, when code changed) and `code_guidelines` (builder's
+`code-guidelines-gate` points the first code edit of a session at that file)
+in `.builder/config.yml`. Install builder state with `/builder:install`.
 
 ## git-guard.conf + pre-commit (branch protection, fast lane, naming)
 
