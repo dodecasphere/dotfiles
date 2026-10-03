@@ -343,3 +343,16 @@ function clone-all() {
     done <<< "$repos"
     echo "Cloned $cloned, skipped $skipped existing, failed $failed."
 }
+
+# Git status across every repo under ~ (depth 2). Linux/VPS only: the Mac uses GitHub Desktop.
+if [ "$(uname)" = Linux ]; then
+    function gsa {
+        local g r
+        for g in ~/*/.git ~/*/*/.git; do
+            [ -e "$g" ] || continue
+            r=${g%/.git}
+            echo "== ${r/#$HOME/~}"
+            git -C "$r" status -sb
+        done
+    }
+fi
