@@ -50,3 +50,14 @@ previous_tab = ["prefix+p", "cmd+shift+["]
 next_tab = ["prefix+n", "cmd+shift+]"]
 previous_workspace = "cmd+shift+up"
 next_workspace = "cmd+shift+down"
+
+# lazygit popup over the active pane, in that pane's repo. q closes it.
+# From learn.datalumina.com/docs/herdr/lazygit. prefix+shift+g as well, since
+# cmd keys only reach herdr when the terminal passes them through.
+[[keys.command]]
+key = ["prefix+shift+g", "cmd+shift+g"]
+type = "popup"
+command = "cd \"$HERDR_ACTIVE_PANE_CWD\" && exec lazygit"
+description = "lazygit"
+width = "90%"
+height = "90%"
