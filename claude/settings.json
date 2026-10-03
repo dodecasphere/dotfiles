@@ -176,39 +176,5 @@
   "autoCompactEnabled": true,
   "remoteControlAtStartup": true,
   "inputNeededNotifEnabled": true,
-  "agentPushNotifEnabled": true,
-  "autoMode": {
-    "soft_deny": [
-      "$defaults",
-      "Bash(scripts/promote.sh*) in /home/michael/Projects/crestlite — production deploy via Forge/Hetzner; CLAUDE.md explicitly states prior broad approval does not authorize this, must be named and confirmed each time",
-      "Bash(vendor/bin/rector process*) without --dry-run in /home/michael/Projects/crestlite — applies automated code rewrites repo-wide"
-    ],
-    "environment": [
-      "### Org-wide",
-      "**Organization**: None configured",
-      "**Cloud provider(s)**: DigitalOcean Spaces (S3-compatible, via AWS_* env vars) for the public disk; Hetzner (staging/production server, via Laravel Forge)",
-      "**Repository visibility**: not queryable via gh for this remote (gh-personal:CrestLite/crestlite.git is not a plain owner/repo GitHub URL shape) — treat as possibly public pending verification; scope commits/pushes accordingly until confirmed private",
-      "**Internal sharing / snippet hosting**: None configured — treat public paste/gist services as outside the trust boundary",
-      "**Secrets management**: .env-based (APP_KEY, HASHID_SALT, PASSKEYS_USER_HANDLE_SECRET, ANTHROPIC_API_KEY, SENTRY_LARAVEL_DSN, AWS_* credentials, GOOGLE/APPLE client secrets) — never commit .env, .env.backup, .env.production, or /storage/*.key (gitignored)",
-      "**Default / protected branches**: main (default, production); develop (staging) — branch protection/rulesets not queryable via gh for this remote; repo's own branching policy (CLAUDE.md) says never commit directly on main/develop, all dev on feature/* branches merged --no-ff",
-      "**CI/CD deploy targets**: staging.crestlite.com (Hetzner, via deploy.sh staging gate), production (main branch, Hetzner via Forge) — no GitHub CI; deploy.sh and local pre-merge gate are the only automated checks",
-      "**Network posture**: None configured",
-      "**Host containment**: None configured — assume Claude Code runs on an ordinary developer machine with open internet",
-      "**Source control**: this repo (gh-personal:CrestLite/crestlite.git) and its origin remote only",
-      "**Trusted internal domains**: crestlite.test (local Herd dev domain), staging.crestlite.com",
-      "**Trusted cloud buckets**: None configured",
-      "**Key internal services**: staging.crestlite.com (Hetzner staging); self-hosted Reverb websocket server (local + production, via Supervisor); self-hosted Photon geocoder (optional, MAP_PHOTON_BASE_URL)",
-      "**Internal package registry**: npm.fontawesome.com (Font Awesome Pro package registry, token-gated via FONTAWESOME_PACKAGE_TOKEN)",
-      "**Sensitive data locations & audiences**: .env / .env.backup / .env.production (API keys, DB/Redis credentials, OAuth secrets, HASHID_SALT, PASSKEYS_USER_HANDLE_SECRET); /storage/*.key; legacy CrestLite 5.7 production database accessed read-only via LEGACY_DB_* for the one-time crestlite:import-legacy cutover — share only with the repo owner",
-      "**Data retention / declassification**: None configured",
-      "**Sensitive remote targets**: any host/namespace containing 'prod' or 'production' as a whole segment (e.g. production deploy target, APP_ENV=production); staging.crestlite.com is a CI/CD deploy target but not matched by this heuristic",
-      "**Protected deployment namespaces / environments**: staging.crestlite.com and the production Hetzner deploy reached via scripts/promote.sh — CLAUDE.md notes a prior general approval does NOT authorize running promote.sh; the specific action must be named and confirmed each time",
-      "**Protected IaC scopes**: IAM, RBAC, networking, quota, and node-pool resources; anything whose name or tag carries 'prod' or 'production' as a whole segment",
-      "### User-specific",
-      "**Primary use of Claude Code**: software development (Laravel/Inertia/Vue web app — CrestLite gear-list manager)",
-      "**Trusted repo**: /home/michael/Projects/crestlite (this repo) and its origin remote gh-personal:CrestLite/crestlite.git",
-      "**Org-specific CLIs**: gh (GitHub CLI, per repo's own CLAUDE.md instruction to prefer it for GitHub operations); builder slash-command workflow (/builder:idea, /builder:bug, /builder:resume, /builder:status)",
-      "Routine under /home/michael/Projects/crestlite/ prefix: composer/php/pest/npm/vite commands, builder and design-sync skill scripts"
-    ]
-  }
+  "agentPushNotifEnabled": true
 }
