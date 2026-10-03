@@ -52,12 +52,13 @@ previous_workspace = "cmd+shift+up"
 next_workspace = "cmd+shift+down"
 
 # lazygit popup over the active pane, in that pane's repo. q closes it.
-# From learn.datalumina.com/docs/herdr/lazygit. prefix+shift+g as well, since
-# cmd keys only reach herdr when the terminal passes them through.
+# From learn.datalumina.com/docs/herdr/lazygit. cmd+shift+g only works when the
+# terminal passes cmd keys through. The herdr server runs with a minimal PATH
+# (no Homebrew), so add the brew bins or lazygit exits 127 and the popup flashes.
 [[keys.command]]
 key = ["prefix+shift+g", "cmd+shift+g"]
 type = "popup"
-command = "cd \"$HERDR_ACTIVE_PANE_CWD\" && exec lazygit"
+command = "export PATH=\"$PATH:/home/linuxbrew/.linuxbrew/bin:/opt/homebrew/bin\"; cd \"$HERDR_ACTIVE_PANE_CWD\" && exec lazygit"
 description = "lazygit"
 width = "90%"
 height = "90%"
