@@ -67,8 +67,9 @@ elif [[ "$1" == "--linux" ]]; then
 
     source provisioning/shared/formulae.sh
 
-    # Headless-only TUI for git (the Mac uses GitHub Desktop).
+    # Headless-only git TUI and its diff renderer (the Mac uses GitHub Desktop).
     formula "lazygit"
+    formula "git-delta"
 
     # Fix zsh compinit "insecure directories" warning — same brew quirk as macOS.
     chmod -R go-w "$(brew --prefix)/share"
