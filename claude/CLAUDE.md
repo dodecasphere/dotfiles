@@ -39,7 +39,7 @@ build commands — lives in each repo's own CLAUDE.md, not here.
 size only (YAGNI, reuse, stdlib first, smallest diff). Where it conflicts with
 this file, this file wins. Specifically: rule 1 (ask before assuming) beats
 ponytail's "ship the lazy version and question it in the same response"; the
-project's test bar and the test-first rule beat ponytail's "one runnable check,
+project's test bar and builder's test-first rule beat ponytail's "one runnable check,
 no frameworks"; and a spec plus a verified versus unverified summary is
 requested output, not debt to trim.
 
@@ -48,27 +48,15 @@ Scale this to the task. Trivial, clear changes: just make them. For anything
 non-trivial, multi-step, or ambiguous, work this way by default without being
 asked:
 
-Stack-specific gotchas live in Engineering OS packs
-(`engineering-os/plugins/core/references/packs/`), loaded per project via the
-`profile:` line in `.engineering-os/STATE.md`. EOS covers app-development
-repos only, so what stays in this file is deliberately stack-agnostic and
-applies to every repo, including non-app ones that will never adopt EOS. Add a
-pack entry rather than re-adding a stack gotcha here.
-- **Spec first.** For non-trivial work, write a short spec (problem, key
-  decisions, what done means) and build against it.
-- **Interview to remove ambiguity.** Work open questions with me one at a
-  time, recommending an answer for each.
+Stack-specific gotchas live in builder's stack packs (the `stacks` plugin,
+`references/packs/`), loaded per project via the `profile:` line in
+`.builder/config.yml`. What stays in this file is deliberately stack-agnostic
+and applies to every repo, including ones without builder state. Add a pack
+entry rather than re-adding a stack gotcha here. The lifecycle itself (spec
+first, the interview, test first, a commit per slice, one tracker for
+deferred work) is builder's to run, through its skills and hooks.
 - **Verify before and after.** Confirm context and access up front; afterward
   state what you verified versus what only I can validate.
-- **Branch-protection hooks under git worktree isolation.** Fixed 2026-07-13
-  in `bash-pretooluse-dispatcher.sh`, which resolves the branch of the repo a
-  git command actually targets (`cd` prefix, `git -C`, or the call's own
-  `cwd`) rather than a fixed project-directory env var. If a worktree commit
-  is denied unexpectedly, check the worktree's own branch first, not the main
-  checkout's.
-- **Test-first.** For non-trivial logic, write the failing test before the
-  implementation; never call work done with failing tests or below the
-  project's coverage bar.
 - **Propose parallelism.** For large tasks that split into independent parts,
   propose sub-agents for parallel work or diverse perspectives, and spawn them
   when the scope clearly justifies the extra cost. Don't reflexively parallelize
@@ -78,7 +66,7 @@ pack entry rather than re-adding a stack gotcha here.
 - **Editing under a format-on-save hook.** A formatter can strip a just-added
   import before the edit that uses it. Land the import and its first usage in
   the same edit, or reference fully qualified. The Laravel/Pint structural fix
-  lives in the EOS `laravel` pack.
+  lives in the stacks `laravel` pack.
 - **When merging or editing PreToolUse/guardrail hook scripts, verify
   behavioral parity via side-by-side scenario testing before deleting the
   originals.** Feed identical simulated stdin JSON to the old script(s) and
@@ -87,20 +75,8 @@ pack entry rather than re-adding a stack gotcha here.
   This is cheap insurance against silently loosening a security/workflow
   guardrail during a "purely mechanical" consolidation — caught zero
   regressions this way across 20 scenarios merging 4 hooks into 2
-  dispatchers on a real project, but the point is confirming that, not
+  consolidated hooks on a real project, but the point is confirming that, not
   assuming it.
-- **Commit every slice, unprompted.** Before committing, sync whatever the
-  slice touched first (project state records, docs, CLAUDE.md, agent memory),
-  then commit with a conventional message. Don't wait to be asked, and don't batch
-  multiple slices into one commit — a granular, reviewable history with a
-  green checkpoint after each slice is the point.
-- **Keep one backlog file, not several.** A deferred requirement, an
-  accepted-not-fixed finding, a descoped bug, or a feature idea that isn't
-  ready to build all go in one prioritized `docs/BACKLOG.md` (or equivalent),
-  never scattered across a PRD's Open Questions, a findings doc, and a
-  project-brain open-questions file. Once a backlog file exists for a
-  project, default to using it rather than parking the item wherever the
-  current conversation happens to be.
 - **Automate with restraint** (this governs the rest): only fully automate
   tasks that don't require taste and where roughly 80%-good output is
   acceptable. Otherwise keep me in the loop and augment my judgment rather than
@@ -147,10 +123,3 @@ not here.
   prompt), act on it or make a conscious, stated decision to skip it — don't
   silently ignore it repeatedly. (A reminder ignored often enough tends to get
   promoted to a hard block.)
-- **If a git commit is unexpectedly blocked by a branch-protection hook** even
-  though the branch/files look correct, check what the guard actually saw.
-  Chained `git add && git commit` in one Bash call is handled since 2026-07-16
-  (the dispatcher enumerates the add via `git add --dry-run`), but a dry-run
-  that errors (bad pathspec, incompatible flags) still falls back to a
-  conservative deny — split into two separate tool calls in that case before
-  assuming the hook itself is misconfigured.

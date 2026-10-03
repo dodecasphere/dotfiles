@@ -70,12 +70,12 @@
   },
   "model": "opus[1m]",
   "skillOverrides": {
-    "my:agent-capability-tiers": "off",
-    "my:diagnosing-bugs": "off",
-    "my:pre-mortem": "off",
-    "my:prioritization": "off",
-    "my:prototype": "off",
-    "my:working-backwards": "off",
+    "builder:agent-capability-tiers": "off",
+    "builder:diagnosing-bugs": "off",
+    "builder:pre-mortem": "off",
+    "builder:prioritization": "off",
+    "builder:prototype": "off",
+    "builder:working-backwards": "off",
     "my:writing-great-skills": "off"
   },
   "hooks": {
@@ -86,48 +86,6 @@
           {
             "type": "command",
             "command": "bash $HOME/.claude/hooks/auto-format.sh"
-          }
-        ]
-      },
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash $HOME/.claude/hooks/phased-workflow/post-bash.sh"
-          }
-        ]
-      }
-    ],
-    "PreToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash $HOME/.claude/hooks/bash-pretooluse-dispatcher.sh"
-          }
-        ]
-      },
-      {
-        "matcher": "Edit|Write|MultiEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash $HOME/.claude/hooks/protect-sensitive-files.sh"
-          },
-          {
-            "type": "command",
-            "command": "bash $HOME/.claude/hooks/code-guidelines-gate.sh"
-          }
-        ]
-      },
-      {
-        "matcher": "Bash|Edit|Write|NotebookEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash $HOME/.claude/hooks/phased-workflow/guard.sh"
           }
         ]
       }
@@ -158,17 +116,6 @@
             "type": "command",
             "command": "bash $HOME/.claude/hooks/herdr-agent-state.sh session",
             "timeout": 10
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash $HOME/.claude/hooks/verify-done.sh",
-            "timeout": 180
           }
         ]
       }
