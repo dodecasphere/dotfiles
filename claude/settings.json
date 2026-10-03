@@ -194,7 +194,9 @@
     "code-simplifier@claude-plugins-official": false,
     "my@personal-skills": true,
     "typesafe@typesafe-ai": true,
-    "ponytail@ponytail": true
+    "ponytail@ponytail": true,
+    "builder@builder": true,
+    "stacks@builder": true
   },
   "extraKnownMarketplaces": {
     "personal-skills": {
@@ -214,6 +216,12 @@
       "source": {
         "source": "github",
         "repo": "dietrichgebert/ponytail"
+      }
+    },
+    "builder": {
+      "source": {
+        "source": "git",
+        "url": "git@github.com:dodecasphere/product-builder-plugin.git"
       }
     }
   },
