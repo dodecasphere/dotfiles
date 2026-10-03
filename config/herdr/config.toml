@@ -11,7 +11,7 @@ auto_switch = false
 red = "#4e82ef"     # blocked, needs input
 teal = "#4e82ef"    # done, not seen yet
 yellow = "#a78bfa"  # working
-active_row_bg = "#45475a"
+active_row_bg = "#2c2c2c"
 
 [ui]
 status_indicators = "symbols"
