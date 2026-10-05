@@ -24,6 +24,8 @@
       "Bash(vendor/bin/pint:*)",
       "Bash(vendor/bin/rector:*)",
       "Bash(git:*)",
+      "Bash(herdr agent start:*)",
+      "Bash(herdr agent prompt:*)",
       "Bash(php artisan:*)",
       "Bash(npm:*)",
       "Bash(yarn:*)",
