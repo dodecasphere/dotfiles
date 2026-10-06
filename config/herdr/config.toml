@@ -15,7 +15,7 @@ active_row_bg = "#2c2c2c"
 
 [ui]
 status_indicators = "symbols"
-agent_panel_sort = "priority"   # blocked, then done, then working
+agent_panel_sort = "spaces"     # follow workspace order (no per-machine grouping in herdr)
 prompt_new_tab_name = false
 window_title = "Ghostty: {pane}"
 
@@ -26,16 +26,16 @@ delivery = "system"
 enabled = false
 
 [ui.sidebar.agents]
-row_gap = 1
+row_gap = 0
 rows = [
+  ["machine", "agent"],
   ["state_icon", "workspace"],
-  ["tab"],
 ]
 
 [ui.sidebar.spaces]
 row_gap = 0
 rows = [
-  ["state_icon", "workspace", "git_status"],
+  ["state_icon", "workspace"],
 ]
 
 # Prefix stays ctrl+b. cmd keys mirror iTerm/Ghostty tab habits; Ghostty
