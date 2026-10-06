@@ -33,11 +33,9 @@ rows = [
 ]
 
 [ui.sidebar.spaces]
-row_gap = 1
+row_gap = 0
 rows = [
-  ["state_icon", "workspace"],
-  ["branch"],
-  ["$topic"],   # what the active tab is doing, from the auto-title plugin
+  ["state_icon", "workspace", "git_status"],
 ]
 
 # Prefix stays ctrl+b. cmd keys mirror iTerm/Ghostty tab habits; Ghostty
