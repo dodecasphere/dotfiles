@@ -14,7 +14,7 @@ yellow = "#a78bfa"  # working
 active_row_bg = "#2c2c2c"
 
 [ui]
-status_indicators = "symbols"
+status_indicators = "dots"
 agent_panel_sort = "spaces"     # follow workspace order (no per-machine grouping in herdr)
 prompt_new_tab_name = false
 window_title = "Ghostty: {pane}"
