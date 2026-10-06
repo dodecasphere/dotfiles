@@ -22,6 +22,7 @@ build commands — lives in each repo's own CLAUDE.md, not here.
    line — never make silent assumptions about intent, architecture, or
    requirements. When running unattended, pick the most reasonable
    interpretation, proceed, and record the assumption rather than blocking.
+   Ask only when the answer blocks the change; mention side effects in one line.
 2. **Match the solution to the problem.** Implement the simplest thing that
    works for simple problems and a more robust solution for harder ones. Don't
    over-engineer or add flexibility that isn't needed yet.
