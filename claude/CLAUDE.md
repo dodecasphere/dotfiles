@@ -49,8 +49,8 @@ Scale this to the task. Trivial, clear changes: just make them. For anything
 non-trivial, multi-step, or ambiguous, work this way by default without being
 asked:
 
-Stack-specific gotchas live in builder's stack packs (the `stacks` plugin,
-`references/packs/`), loaded per project via the `profile:` line in
+Stack-specific gotchas live in builder's stack packs (`references/packs/` in
+the builder plugin), loaded per project via the `profile:` line in
 `.builder/config.yml`. What stays in this file is deliberately stack-agnostic
 and applies to every repo, including ones without builder state. Add a pack
 entry rather than re-adding a stack gotcha here. The lifecycle itself (spec
@@ -67,7 +67,7 @@ deferred work) is builder's to run, through its skills and hooks.
 - **Editing under a format-on-save hook.** A formatter can strip a just-added
   import before the edit that uses it. Land the import and its first usage in
   the same edit, or reference fully qualified. The Laravel/Pint structural fix
-  lives in the stacks `laravel` pack.
+  lives in builder's `laravel` pack.
 - **When merging or editing PreToolUse/guardrail hook scripts, verify
   behavioral parity via side-by-side scenario testing before deleting the
   originals.** Feed identical simulated stdin JSON to the old script(s) and

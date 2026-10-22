@@ -100,7 +100,7 @@ printf '{"prompt":"hi"}' \
 
 echo
 echo "## 8. builder enabled at user scope (it owns the guard hooks)"
-for p in builder stacks; do
+for p in builder; do
   if jq -e --arg k "$p@builder" '.enabledPlugins[$k] == true' \
        "$FAKEHOME/.claude/settings.json" >/dev/null 2>&1; then
     ok "plugin $p@builder enabled"
