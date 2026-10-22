@@ -141,8 +141,7 @@
     "my@personal-skills": true,
     "typesafe@typesafe-ai": true,
     "ponytail@ponytail": true,
-    "builder@builder": true,
-    "stacks@builder": true
+    "builder@builder": true
   },
   "extraKnownMarketplaces": {
     "personal-skills": {
