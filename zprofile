@@ -1,3 +1,7 @@
+# The following lines were added by Docker Desktop to add commands to your PATH.
+export PATH="$PATH:/Users/mikedulle/.docker/bin"
+# End of Docker Desktop section.
+
 #!/usr/bin/env zsh
 
 # Login-shell environment for zsh.
