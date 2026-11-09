@@ -40,14 +40,13 @@ marketplaces on disk, not docs):**
 - `claude plugin update` syncs to the marketplace rather than strictly upgrading;
   it downgrades cleanly too.
 
-**Open question, do not assume resolved:** `skillOverrides` in `settings.json`
-appears not to suppress a plugin skill at all. Neither the bare name nor the
-namespaced `plugin:skill` key had any effect, so the six skills deliberately set
-to "off" came back on the moment the plugins loaded. `disable-model-invocation:
-true` in the skill's own frontmatter is the documented mechanism and is now set on
-all six, but its effect could not be confirmed: `claude plugin details` still
-bills them as always-on and a headless probe gave contradictory answers. Re-check
-after a full app restart before trusting either lever.
+**Suppressing a plugin skill:** `skillOverrides` in `settings.json` has no effect
+on plugin skills (neither the bare name nor `plugin:skill`), and the dead block was
+removed from `settings.json` on 2026-11-09. Use `disable-model-invocation: true` in
+the skill's own frontmatter. On 2026-11-09 every skill carrying that flag (in my
+and builder) was absent from the model's invocable skill list, including ones never
+in `skillOverrides`, so the flag works. `claude plugin details` still bills them as
+always-on; ignore that.
 
 **Useful:** `claude plugin marketplace add` writes `extraKnownMarketplaces` and
 `enabledPlugins` into `settings.json`, which Dotfiles version-controls, so a fresh

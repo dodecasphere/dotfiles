@@ -68,15 +68,6 @@
     "defaultMode": "auto"
   },
   "model": "opus[1m]",
-  "skillOverrides": {
-    "builder:agent-capability-tiers": "off",
-    "builder:diagnosing-bugs": "off",
-    "builder:pre-mortem": "off",
-    "builder:prioritization": "off",
-    "builder:prototype": "off",
-    "builder:working-backwards": "off",
-    "my:writing-great-skills": "off"
-  },
   "hooks": {
     "PostToolUse": [
       {
