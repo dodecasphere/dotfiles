@@ -1,69 +1,58 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-
-## What this repo is
-
-Personal dotfiles for macOS (primary) and Linux (headless Ubuntu/Debian server, CLI parity via Homebrew on Linux). Files are symlinked into `$HOME` as hidden files by `install.sh`. Provisioning scripts install apps and configure the machine.
+Personal dotfiles for macOS (primary) and Linux (headless Ubuntu/Debian server, CLI parity via Homebrew on Linux). Root files are symlinked into `$HOME` as hidden files by `install.sh`; provisioning scripts install apps and configure the machine.
 
 ## Scripts
 
 | Script | Purpose |
 |---|---|
-| `bootstrap.sh` | Fresh machine: clones repo + runs `install.sh`. Curl-runnable. |
-| `install.sh` | Symlinks every non-`.sh`/non-`.md` file in the repo root into `$HOME` as `~/.<name>`. Backs up real files, replaces existing symlinks. Also wires up the gitleaks pre-commit hook. |
-| `provision.sh --mac` | Installs formulae, apps, fonts, configures macOS defaults, sets up Node/PHP/Claude/SSH/Git. Safe to re-run (all steps are idempotent). |
-| `test.sh` | Dry-run restore test: clones committed HEAD into a temp dir and simulates a fresh-machine install, verifying the Claude config layer restores and no secrets leak. |
-| `autoupdate.sh` | Scheduled-only, not run by hand: daily `git pull --ff-only` + `install.sh` relink. Skips the pull (and logs a `SKIP` warning to `~/.dotfiles-autoupdate.log`) if the working tree is dirty; a prior settings.json-absorb/rebase workaround for this was tried and reverted (`2f035f0`), so a dirty tree just waits for manual cleanup now. Deliberately doesn't run `provision.sh` (formula/cask installs, macOS defaults) unattended; re-run that by hand after a provisioning change. Also on every run (even with a dirty tree or no new commits): `hc update` on Linux, and a re-render of the Herdr agent skills via `provisioning/shared/agent-skills.sh`. Prunes log entries older than 180 days on every run. Scheduled daily at 23:45 via `provisioning/mac/launchagents/com.dotfiles.autoupdate.plist` on mac and `provisioning/linux/crons.sh` on Linux — takes effect only after `provision.sh`/`launchagents.sh` next runs on a given machine. |
+| `bootstrap.sh` | Fresh machine: clones repo, runs `install.sh`. Curl-runnable. |
+| `install.sh` | Symlinks every non-`.sh`/non-`.md` root file into `$HOME` as `~/.<name>` (backs up real files, replaces symlinks). Also links `claude/`, `config/` and `project-memory/`, and wires the gitleaks pre-commit hook. |
+| `provision.sh --mac` | Formulae, apps, fonts, macOS defaults, Node/PHP/Claude/SSH/Git. Idempotent. |
+| `provision.sh --linux` | See Provisioning. Run as a sudo user; it refuses to run as root. Idempotent. |
+| `test.sh` | Clones committed HEAD into a temp dir and simulates a fresh install: checks the Claude config layer restores and no secrets leak. |
+| `autoupdate.sh` | Scheduled only: daily at 23:45 (LaunchAgent on mac, also at login; cron on Linux). Re-renders the Herdr agent skills and, on Linux, runs `hc update`. Then `git pull --ff-only`, and `install.sh` only when the pull brought commits. A dirty tree skips the pull and logs `SKIP` to `~/.dotfiles-autoupdate.log` (leave it for manual cleanup; an auto-absorb workaround was tried and reverted). Never runs `provision.sh`; re-run that by hand after a provisioning change. |
 
-## Provisioning architecture
+## Provisioning
 
-`provision.sh --mac` sources scripts from `provisioning/mac/` in order; all scheduled/recurring jobs on mac are LaunchAgents (`provisioning/mac/launchagents.sh` + `launchagents/*.plist`), never cron (unreliable on macOS — a mac `crons.sh` used to exist and was retired). `provision.sh --linux` sources `provisioning/linux/` (apt base packages, unattended-upgrades for OS patching, VPS hardening with sshd/ufw/fail2ban, Tailscale, Docker engine, a swapfile, Homebrew on Linux, Linux ports of git/php/crons — cron is fine on headless Linux) plus the portable mac scripts directly (`helpers.sh`, `node.sh`, `claude.sh`, `secrets.sh`). The OS-agnostic formula list lives in `provisioning/shared/formulae.sh`, sourced by both platforms so the two never drift; macOS-only formulae stay in `provisioning/mac/formulae.sh`. The install guards (`formula`, `cask`, `mas_install`, `npm_global`, `pecl_install`, `composer_global`, `add_cron`) live in `provisioning/mac/helpers.sh` and skip anything already installed. That is what makes re-running safe. The helpers are also symlinked into interactive shells via `~/.provisioning`, so commands like `cask foo` work at the prompt.
+`provision.sh --mac` sources `provisioning/mac/` in order. Scheduled jobs on mac are always LaunchAgents (`launchagents.sh` + `launchagents/*.plist`), never cron. `provision.sh --linux` sources `provisioning/linux/` (apt, unattended-upgrades, sshd/ufw/fail2ban hardening, Tailscale, Docker, swap, Homebrew, cron) plus the portable mac scripts `helpers.sh`, `node.sh`, `claude.sh`, `secrets.sh`.
+
+Formulae: OS-agnostic ones go in `provisioning/shared/formulae.sh` (sourced by both platforms), macOS-only ones in `provisioning/mac/formulae.sh`, casks in `provisioning/mac/apps.sh`. The install guards (`formula`, `cask`, `mas_install`, `npm_global`, `pecl_install`, `composer_global`, `add_cron`) in `provisioning/mac/helpers.sh` skip anything installed, which is what makes re-running safe; they're also on the interactive shell via `~/.provisioning`.
 
 ## Claude Code config layer (`claude/`)
 
-The `claude/` subtree is the canonical, version-controlled Claude Code config (agents, hooks, rules, mcp, memory, templates, plus `settings.json` and the statusline). `install.sh` handles it separately from the generic root-file loop: it symlinks the individual files into `~/.claude`, which is otherwise full of machine-local state (plugins, projects, sessions) that must stay out of git. `test.sh` verifies this restore on a simulated fresh machine.
+`claude/` is the version-controlled Claude Code config. `~/.claude` otherwise holds machine-local state (plugins, projects, sessions) that must stay out of git, so `install.sh` links only named entries: `CLAUDE.md` and `settings.json` as files, and `agents`, `commands`, `hooks`, `rules`, `skills`, `memory`, `statusline` as whole directories (empty or missing ones are skipped). Anything written to `~/.claude/hooks` or `~/.claude/memory` lands in the repo. `mcp/` and `templates/` are reference only, not linked. A new top-level entry needs adding to the loops in `install.sh` and `test.sh`.
 
-**Skills and commands no longer live here.** They moved out on 2026-08-26 to the private plugin store at `dodecasphere/personal-skills`, which installs into both Claude Code and OpenAI Codex so the same set is available on the personal and work machines. `claude/skills/` and `claude/commands/` are gone; `install.sh` still lists both in its link loop, but `link_claude` skips a missing or empty source and clears any stale symlink, so a machine-local or experimental skill can still be dropped into `claude/skills/` and it will layer alongside the plugins.
+- Skills, commands, agents and the guardrail hooks live in plugins, not here: the private store `dodecasphere/personal-skills` (installs into Claude Code and Codex) and the builder plugin. `claude/agents/` stays empty so its link resolves.
+- Don't drop skills into `claude/skills/`: `install.sh` would then replace the real `~/.claude/skills` (where the Herdr skills render) with a link into the repo, the render would dirty the tree, and autoupdate would stop pulling. Put machine-local skills in `~/.claude/skills/` directly.
+- Hooks kept here (builder doesn't replace them): auto-format, context-recovery, settings-drift-check, herdr-agent-state, standing-behaviors. They're Claude Code only; Codex has no equivalent hook carrier.
+- `settings.json` declares the marketplaces and enabled plugins, so a fresh machine needs no manual plugin install. Codex config (`~/.codex/config.toml`) is unmanaged and needs the store's `INSTALL.md` steps by hand.
+- `project-memory/` holds this repo's Claude project memories (linked into `~/.claude/projects/-Users-<user>-Dotfiles/memory`); global memories are in `claude/memory/`.
 
-Things that stay in Dotfiles because they are not plugin component types, or cannot work as plugins: `rules/`, `templates/`, `statusline/`, `mcp/`, `memory/`, `settings.json`, and the five hooks builder does not replace (auto-format, context-recovery, settings-drift-check, herdr-agent-state, standing-behaviors). Codex plugins cannot carry hooks at all (no official Codex plugin ships a `hooks/` directory), so `standing-behaviors.sh` is Claude Code only by necessity. The guardrail hooks and the agents moved to the builder plugin on 2026-10-03; `claude/agents/` is kept empty so the `~/.claude/agents` link still resolves.
+## Durable decisions
 
-`settings.json` declares the marketplaces in `extraKnownMarketplaces` (personal-skills, builder, and two others) and enables four plugins in `enabledPlugins` (my, builder, typesafe, ponytail; two others are listed disabled), written by `claude plugin marketplace add` and `claude plugin install`. Because that file is version-controlled, a fresh machine needs no manual Claude Code install: `install.sh` puts settings.json in place and Claude Code picks up the marketplace and the plugins on first launch. Codex config lives in `~/.codex/config.toml`, which Dotfiles does not manage, so Codex still needs its two commands by hand (see the store's `INSTALL.md`).
+- Third-party Claude skills are hand-ported (markdown, house-styled, selective), never installed with upstream `curl | bash` or `npx` installers, which write into machine-local `~/.claude`. Provenance lives in the store's `UPSTREAM.md`.
+- `skillOverrides` in `settings.json` does not suppress a plugin skill (verified). Use `disable-model-invocation: true` in the skill's frontmatter instead; set in the store and in builder, and observed hiding those skills from the model's list on 2026-11-09.
+- The Matt Pocock skills were adopted disciplines-only. The issue-tracker pipeline half (triage, to-spec, to-tickets, wayfinder, CONTEXT.md) was rejected as colliding with the owner's workflow. Don't re-propose it.
+- Non-goals: multi-account `CLAUDE_CONFIG_DIR` switching, TypeScript in app-code guidance (owner uses plain JS), Filament, Capacitor.
+- The statusline usage gauge reads `rate_limits` from Claude Code's stdin JSON (no cookie scraping, no cache). It follows the logged-in account and shows `~` until the first API response or on non-subscription auth.
 
-`project-memory/` (repo root) holds this repo's Claude project memories, symlinked by `install.sh` into `~/.claude/projects/-Users-<user>-Dotfiles/memory`. Global cross-project memories live in `claude/memory/`, symlinked to `~/.claude/memory/`. (The old `brain/` Project Brain was retired 2026-07-17, EOS IDEA-014 slice 6; durable content was distilled below, full history in git.)
+## Shell config
 
-## Durable decisions (distilled from the retired brain)
+Bash and zsh both source the same shared files in the same order: `colors`, `path`, `exports`, `aliases/` (one file per topic, picked up automatically), `functions`, `extra` (a tracked empty placeholder; don't put local config in it). Machine-local overrides go in untracked `~/.shell.local`, sourced last. Entry points: `zshrc`/`zprofile`, `bash_profile`/`bashrc`. Both shells also source `~/.dotfiles-secrets/secrets.env` from a separate private repo, which `provisioning/mac/secrets.sh` clones.
 
-- Third-party Claude skills are always hand-ported (markdown, house-styled, selective), never installed via upstream `curl | bash` or `npx` installers: those write into machine-local `~/.claude` and fight the version-controlled model. Provenance and refresh steps for vendored skills now live in the plugin store's `UPSTREAM.md`, which moved there with the skills on 2026-08-26.
-- `skillOverrides` in `settings.json` does not suppress a plugin skill. Verified 2026-08-26: neither the bare name nor the namespaced `plugin:skill` key has any effect, so the six skills that had been turned off came back on the moment the plugins loaded. The per-skill `disable-model-invocation: true` frontmatter flag is the documented mechanism and is now set on all six in the store, but its effect could not be confirmed with `claude plugin details` (which still bills them as always-on) or a headless probe. Treat this as open, and re-check after a full restart before assuming either lever works.
-- The Matt Pocock skills adoption (2026-07-09) was deliberately disciplines-only: the issue-tracker delivery pipeline half (triage, to-spec, to-tickets, wayfinder, CONTEXT.md domain models) was rejected because it collides with the owner's own workflow systems. Do not re-propose adopting it wholesale.
-- Non-goals: multi-account `CLAUDE_CONFIG_DIR` switching (deliberately abandoned), TypeScript in app-code guidance (owner uses plain JS), Filament and Capacitor (not part of the stack).
-- The statusline usage gauge reads `rate_limits` straight from the JSON Claude Code pipes to it on stdin (no cookie, no cache, no `curl-impersonate`, no Claude Usage app). It follows whatever account Claude Code is logged into, so switching accounts needs nothing. The numbers are absent until the first API response of a session and on non-subscription auth, where the gauge shows `~`. This replaced the old cookie-scraping approach (retired 2026-07-21).
+## Herdr
 
-## Shell config architecture
-
-Both bash and zsh are fully configured. Shared files are sourced by both shells:
-
-- `colors`: terminal color variables
-- `path`: `$PATH` extensions and `brew shellenv`
-- `exports`: environment variables
-- `aliases/`: alias files split by topic (`git`, `brew`, `docker`, `directories`, `mac`, etc.)
-- `functions`: shell functions
-- `extra`: machine-local overrides, not committed
-
-Shell-specific entry points: `zshrc` / `zprofile` (zsh), `bash_profile` / `bashrc` (bash). Both source the shared files above in the same order.
-
-## Private secrets
-
-A separate private repo is expected at `~/.dotfiles-secrets/` containing `secrets.env`. The `zshrc` sources it if present. `provisioning/mac/secrets.sh` handles cloning it during provisioning.
+- **TUI** (`herdr`): config in `config/herdr/config.toml`, which has its own `[keys]`. The desktop app's keys are separate, so a key change may need both.
+- **Desktop app** (`herdr-app`, reads `~/.config/herdr-app/`): before editing anything under `config/herdr-app/`, read `~/.config/herdr-app/AGENTS.md`. The app regenerates it for its installed version, so it's the source of truth for layouts, keys, settings and mods. Repo-specific facts:
+  - Tracked: `keys.json`, `settings.json`, layout `layouts/my-herdr.json` (clone of `main`) and its tab bar mod `mods/my-tabs` (clone of `tabs`, labels unnamed tabs "folder › agent title"). The mod's generated `gpui-kit.d.ts` and `jsconfig.json` stay untracked.
+  - The shown layout is machine-local (`shared.json`): a fresh machine needs `herdr-app do layout.switch --name my-herdr`; `--name main` reverts to stock.
+  - The app writes `settings.json` through the symlink, so a zoom or Settings change dirties the repo.
+  - Unverified: the `ctrl-alt-shift-escape` reset may replace the `keys.json` symlink with a real file until `install.sh` relinks.
+- **SSH machines**: `provisioning/mac/herdr.sh` (mac only) is the source of truth, a `label|target` list replayed through `herdr machine add` and `hc machine add --install`. The hc name is the label lowercased with dashes (e.g. `agent-vps`). Already saved targets are skipped, so a relabel needs a manual remove. Edit that list, not machine-local `~/.local/state/herdr/client/endpoints.json`; sidebar order follows list order for new entries, and reordering a saved machine means editing that JSON. Crestlite Legacy and DulleCo (Ubuntu 16.04, systemd 229) can't run hc (needs systemd 236+), so they fail every provision run until upgraded.
+- **Agent skills** (`herdr`, `herdr-core`, `herdr-app`) are rendered from the installed binaries' `--skill` output by `provisioning/shared/agent-skills.sh` into `~/.claude/skills/` and `~/.codex/skills/`, nightly. Machine-local so they track upgrades; don't vendor them in the store or use `npx skills add`. New ones need a new agent session.
 
 ## Key conventions
 
-- XDG app configs (Ghostty, Herdr, Neovim) live under `config/<app>/` and are linked file-by-file into `~/.config/<app>/` by `install.sh`, never the app dir itself (herdr keeps sockets and logs there). Ghostty was ported from the iTerm2 default profile on 2026-10-01; Herdr keys and sidebar, and the LazyVim viewer config under `config/nvim/` (Dave's datalumina herdr guide, adapted: our background, PHP extra added), were reviewed the same day. `lazy-lock.json` and Mason packages stay machine-local. The herdr auto-title plugin (`kryptamine/herdr-auto-title`, reviewed 2026-10-02: local socket only, no network or exec) is installed by `provisioning/shared/formulae.sh` and built with Go; plugin files under `~/.config/herdr/plugins` stay machine-local.
-- The Herdr desktop app (`herdr-app`) reads `~/.config/herdr-app/`. Tracked under `config/herdr-app/`: `keys.json`, `settings.json`, the personal layout `layouts/my-herdr.json` (a clone of shipped `main` whose tab bar is `mods/my-tabs`, a clone of shipped `tabs` that labels unnamed tabs "folder › agent title"). Before editing anything under `config/herdr-app/`, read `~/.config/herdr-app/AGENTS.md`: the app regenerates it on every start for its installed version, so it is the source of truth for layouts, keys, settings and mods (cloning, `<name>.error` files, `herdr-app check` for mods, `herdr-app shot`). Repo-specific facts only below. Revert to stock with `herdr-app do layout.switch --name main`. The shown layout is remembered in machine-local `shared.json`, so a fresh machine needs one `layout.switch --name my-herdr`. The mod's generated `gpui-kit.d.ts` and `jsconfig.json` are editor hints and stay untracked. Keys and settings were migrated from `config/herdr/config.toml` on 2026-11-09. The app writes `settings.json` through the symlink (verified with zoom), so a zoom or Settings change dirties the repo. Unverified: the `ctrl-alt-shift-escape` reset sets `keys.json` aside, which may replace the symlink with a real file until `install.sh` relinks.
-- Herdr's saved SSH machines (sidebar remotes) live in machine-local `~/.local/state/herdr/client/endpoints.json`, so `provisioning/mac/herdr.sh` (mac only, runs after `ssh.sh`) is the source of truth: a `label|target` list replayed through `herdr machine add`, skipping targets already saved. Edit that list, not the JSON. Sidebar order follows the `ssh` array order in `endpoints.json` (verified 2026-10-23, picked up live), so keep the `herdr.sh` list in the order you want shown; reordering an already-saved machine means editing the JSON array directly. The same list also feeds the Herdr desktop app's machines (`hc machine add --install`, name = label lowercased with dashes, since hc names allow only a-z 0-9 - _ .). Crestlite Legacy and DulleCo (Ubuntu 16.04, systemd 229) can't run hc: its core start needs `systemd-run --collect` (systemd 236+), so those two fail on every provision run until the boxes are upgraded.
-- The Herdr agent skills are rendered from the installed binaries by `provisioning/shared/agent-skills.sh` (sourced by `formulae.sh`, re-run nightly by `autoupdate.sh`): `herdr --skill` into `~/.claude/skills/herdr` and `~/.codex/skills/herdr`, `hc --skill` into `.../herdr-core`, and `herdr-app --skill` into `.../herdr-app` (for the last two, upstream prints no frontmatter, so the script prepends name and description; the body is upstream's). Machine-local so they track upgrades; deliberately not vendored in the plugin store and not installed via `npx skills add`. Needs a new agent session to load.
-- Adding a new alias: create or edit a file in `aliases/` (picked up automatically by both shells).
-- Adding a new formula/cask: add a `formula "name"` or `cask "name"` call in `provisioning/mac/formulae.sh` or `apps.sh`.
-- The `zsh-completions` fix (`chmod -R go-w "$(brew --prefix)/share"`) runs in `provision.sh` after all brew installs to prevent the compinit insecure directories warning.
-- The gitleaks pre-commit hook (`.githooks/`) scans for secrets on every commit.
+- XDG app configs live under `config/<app>/` and are linked file-by-file into `~/.config/<app>/`, never the app dir itself (herdr keeps sockets and logs there). `lazy-lock.json`, Mason packages and herdr plugin files stay machine-local. The herdr auto-title plugin is built by `provisioning/shared/formulae.sh`.
+- `provision.sh` runs `chmod -R go-w "$(brew --prefix)/share"` after brew installs to stop the compinit insecure directories warning.
