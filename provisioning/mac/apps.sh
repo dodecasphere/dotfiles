@@ -39,6 +39,7 @@ cask "github"
 cask "google-chrome"; press_key_to_continue "Chrome: Remember to remove from starting at login. [Press any key...]"
 cask "grandperspective"
 cask "herd"
+cask "herdr-app"   # Herdr desktop app; CLI is the herdr formula in shared/formulae.sh
 # cask "hyper"
 cask "imageoptim"
 cask "iterm2"

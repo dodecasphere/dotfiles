@@ -57,6 +57,15 @@ if ! herdr plugin list 2>/dev/null | grep -q 'herdr.auto-title'; then
   herdr plugin install --yes kryptamine/herdr-auto-title
 fi
 
+# herdr-core (hc): the session server the Herdr desktop app (herdr-app cask)
+# needs. Not in Homebrew, so use its own installer (reviewed 2026-11-09:
+# writes only ~/.local/bin, no sudo, sha256 + Apple codesign checked).
+# Install-only guard; re-run the installer by hand to update (keeps terminals alive).
+if [ ! -x "$HOME/.local/bin/herdr-core" ]; then
+  doing "herdr-core..."
+  curl -fsSL https://releases.herdr.dev/core/install.sh | sh
+fi
+
 # herdr delegation skill: lets an agent in any harness split panes and drive
 # another agent (learn.datalumina.com/docs/herdr/delegation). The binary ships
 # the skill (`herdr --skill`), so we render it from the installed version instead
