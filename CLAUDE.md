@@ -27,7 +27,7 @@ Formulae: OS-agnostic ones go in `provisioning/shared/formulae.sh` (sourced by b
 - Don't drop skills into `claude/skills/`: `install.sh` would then replace the real `~/.claude/skills` (where the Herdr skills render) with a link into the repo, the render would dirty the tree, and autoupdate would stop pulling. Put machine-local skills in `~/.claude/skills/` directly.
 - Hooks kept here (builder doesn't replace them): auto-format, context-recovery, settings-drift-check, herdr-agent-state, standing-behaviors. They're Claude Code only; Codex has no equivalent hook carrier.
 - `settings.json` declares the marketplaces and enabled plugins, so a fresh machine needs no manual plugin install. Codex config (`~/.codex/config.toml`) is unmanaged and needs the store's `INSTALL.md` steps by hand.
-- `project-memory/` holds this repo's Claude project memories (linked into `~/.claude/projects/-Users-<user>-Dotfiles/memory`); global memories are in `claude/memory/`.
+- `project-memory/` holds this repo's Claude project memories (linked into `~/.claude/projects/<repo path, non-alphanumerics as dashes>/memory`); global memories are in `claude/memory/`.
 
 ## Durable decisions
 

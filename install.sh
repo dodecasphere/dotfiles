@@ -123,7 +123,9 @@ fi
 # (moved out of the retired brain/ dir, 2026-07-17). We symlink it into the
 # path Claude Code uses for this project so memories survive a machine wipe
 # and stay version-controlled.
-dotfiles_project_memory_dst="$HOME/.claude/projects/-Users-$(whoami)-Dotfiles/memory"
+# Claude Code names a project dir after its resolved path with every
+# non-alphanumeric turned into "-" (/home/u/Dotfiles -> -home-u-Dotfiles).
+dotfiles_project_memory_dst="$HOME/.claude/projects/$(pwd -P | sed 's/[^A-Za-z0-9]/-/g')/memory"
 dotfiles_project_memory_src="$PWD/project-memory"
 if [ -d "$dotfiles_project_memory_src" ]; then
   mkdir -p "$(dirname "$dotfiles_project_memory_dst")"
