@@ -10,6 +10,8 @@
 #   hc --skill      herdr-core's manual (run, read, message terminals in the
 #                   desktop app's core). Upstream prints no skill frontmatter,
 #                   so we prepend name/description; the body is upstream's.
+#   herdr-app --skill  the desktop app's window manual (inspect, show, change
+#                   layouts/keys/mods). Same frontmatter treatment. mac only.
 #
 
 PATH="$HOME/.local/bin:/opt/homebrew/bin:/home/linuxbrew/.linuxbrew/bin:/usr/local/bin:$PATH"
@@ -29,5 +31,14 @@ for skills_dir in "$HOME/.claude/skills" "$HOME/.codex/skills"; do
       printf -- 'description: "Run, read, message and wait on terminals and agents in the Herdr desktop app'"'"'s core with hc. Use when HC_TERMINAL_ID is set and the user asks about other terminals, tabs or agents, or to start or drive one."\n---\n\n'
       hc --skill
     } > "$skills_dir/herdr-core/SKILL.md"
+  fi
+
+  if command -v herdr-app >/dev/null; then
+    mkdir -p "$skills_dir/herdr-app"
+    {
+      printf -- '---\nname: herdr-app\n'
+      printf -- 'description: "Drive the Herdr desktop app window with herdr-app: inspect spaces, tabs and panes, show or focus things, run app commands, and change its layouts, keys, settings or mods. Use when HC_TERMINAL_ID is set and the user asks to change what the Herdr window shows or how it looks or behaves."\n---\n\n'
+      herdr-app --skill
+    } > "$skills_dir/herdr-app/SKILL.md"
   fi
 done
