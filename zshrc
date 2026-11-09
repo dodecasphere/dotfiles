@@ -16,7 +16,7 @@ bindkey -e
 source ~/.colors
 
 # * ~/.path can be used to extend `$PATH`.
-for dotfile in ~/.{path,exports,aliases,functions}; do
+for dotfile in ~/.{path,exports,functions}; do
     [ -r "$dotfile" ] && [ -f "$dotfile" ] && source "$dotfile";
 done;
 unset dotfile;

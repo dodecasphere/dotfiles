@@ -8,7 +8,7 @@ source ~/.colors
 
 # Load the shell dotfiles, and then some:
 # * ~/.path can be used to extend `$PATH`.
-for dotfile in ~/.{path,bash_prompt,exports,aliases,functions}; do
+for dotfile in ~/.{path,bash_prompt,exports,functions}; do
     [ -r "$dotfile" ] && [ -f "$dotfile" ] && source "$dotfile";
 done;
 unset dotfile;
