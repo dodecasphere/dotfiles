@@ -23,6 +23,7 @@ formula "git"                     # up-to-date git (newer than the OS's)
 formula "gh"                      # GitHub CLI (PRs, issues, API)
 formula "httpie"                  # friendlier curl for HTTP requests
 formula "jpegoptim"               # JPEG optimizer
+formula "jq"                      # JSON processor (pretty-print with jq .)
 formula "libavif"                 # AVIF image encoding/decoding
 formula "node"                    # Node.js runtime
 formula "optipng"                 # PNG optimizer (lossless)
