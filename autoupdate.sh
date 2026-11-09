@@ -7,6 +7,9 @@
 # working tree isn't clean, it skips the pull and logs a warning instead of
 # stashing, so in-progress edits on a given machine are never silently moved.
 #
+# Also, every run: `hc update` (Linux) and a re-render of the Herdr agent
+# skills, so both track upgrades without a provision run.
+#
 # Deliberately does NOT run provision.sh — that installs new formulae/casks
 # and can touch macOS defaults, too heavy/risky to run unattended every day.
 # Re-run `./provision.sh --mac` (or `--linux`) by hand when formulae.sh changes.
@@ -40,6 +43,16 @@ prune_log() {
 prune_log
 
 cd "$DOTFILES_DIR" || { log "ERROR: cannot cd to $DOTFILES_DIR"; exit 1; }
+
+# Herdr, before the git steps so a dirty tree or no new commits doesn't skip it.
+# Linux only: update herdr-core (on mac the desktop app updates its own core).
+# `hc update` is a no-op when current; terminals keep running when it isn't.
+if [ "$(uname)" = Linux ] && [ -x "$HOME/.local/bin/hc" ]; then
+  "$HOME/.local/bin/hc" update >> "$LOG_FILE" 2>&1 || log "WARN: hc update failed"
+fi
+# Re-render the Herdr agent skills so they match upgraded binaries (brew
+# upgrades herdr nightly; hc may have just updated).
+bash provisioning/shared/agent-skills.sh >> "$LOG_FILE" 2>&1 || log "WARN: agent skill render failed"
 
 if [ -n "$(git status --porcelain)" ]; then
   log "SKIP: working tree dirty, not pulling"
