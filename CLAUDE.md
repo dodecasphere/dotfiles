@@ -39,7 +39,7 @@ Formulae: OS-agnostic ones go in `provisioning/shared/formulae.sh` (sourced by b
 
 ## Shell config
 
-Bash and zsh both source the same shared files in the same order: `colors`, `path`, `exports`, `aliases/` (one file per topic, picked up automatically), `functions`, `extra` (a tracked empty placeholder; don't put local config in it). Machine-local overrides go in untracked `~/.shell.local`, sourced last. Entry points: `zshrc`/`zprofile`, `bash_profile`/`bashrc`. Both shells also source `~/.dotfiles-secrets/secrets.env` from a separate private repo, which `provisioning/mac/secrets.sh` clones.
+Bash and zsh both source the same shared files in the same order: `colors`, `path`, `exports`, `aliases/` (one file per topic, picked up automatically), `functions`. Machine-local overrides go in untracked `~/.shell.local`, sourced last. Entry points: `zshrc`/`zprofile`, `bash_profile`/`bashrc`. Both shells also source `~/.dotfiles-secrets/secrets.env` from a separate private repo, which `provisioning/mac/secrets.sh` clones.
 
 ## Herdr
 
