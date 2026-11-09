@@ -102,7 +102,7 @@ Rule: start minimal, load more only when the task proves it needs it.
   Rephrase using periods, commas, or parentheses instead.
 
 ## Writing emails and personal prose (my voice)
-Use the `my:write` skill. My voice rules live in its `references/voice.md`,
+Use the `my:writer` skill. My voice rules live in its `references/voice.md`,
 not here.
 
 ## Using GitHub
