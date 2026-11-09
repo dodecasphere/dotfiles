@@ -33,3 +33,23 @@ else
     fi
   done
 fi
+
+# Same machines for the Herdr desktop app, whose core (hc) keeps its own list.
+# hc names allow only a-z 0-9 - _ . so the label is lowercased and spaces
+# become dashes ("Agent VPS" -> agent-vps). A target already added is skipped.
+if ! command -v hc &>/dev/null; then
+  echo "hc (herdr-core) not installed — skipping desktop app machines"
+else
+  for entry in "${HERDR_MACHINES[@]}"; do
+    label="${entry%%|*}"
+    target="${entry#*|}"
+    name="$(echo "$label" | tr 'A-Z ' 'a-z-')"
+    doing "Herdr app machine [$name]..."
+    if hc machine ls --json 2>/dev/null | grep -q "\"target\":\"$target\""; then
+      echo "$name already added — skipping"
+    else
+      hc machine add --install --name "$name" "$target" \
+        || echo "Could not add $name ($target), re-run provision or: hc machine add --name $name $target"
+    fi
+  done
+fi
