@@ -109,11 +109,10 @@ if [ -d "$claude_src" ]; then
   for f in CLAUDE.md settings.json; do
     link_claude "$f"
   done
-  # Config subdirectories (ours alone; safe to link wholesale).
-  # skills and commands are listed so a machine-local or experimental one can be
-  # dropped into claude/ and picked up without editing this script; both are
-  # normally empty because they ship from the personal-skills plugin store.
-  for d in agents commands hooks rules skills memory statusline; do
+  # Config subdirectories (ours alone; safe to link wholesale). skills and
+  # commands ship from the plugin store and are deliberately not linked:
+  # ~/.claude/skills is a real dir where agent-skills.sh renders the Herdr skills.
+  for d in agents hooks rules memory statusline; do
     link_claude "$d"
   done
 fi
