@@ -3,8 +3,9 @@
 #
 # Keep Ubuntu itself patched.
 #
-# Package updates: unattended-upgrades applies security updates daily —
-# it handles dpkg locks and conffile prompts properly, unlike a cron'd
+# Package updates: unattended-upgrades applies security updates, regular
+# Ubuntu bugfix updates (-updates), Docker CE and Chrome daily. It handles
+# dpkg locks and conffile prompts properly, unlike a cron'd
 # `apt-get -y upgrade`. Logs land in /var/log/unattended-upgrades/.
 #
 # Reboots stay manual (deliberate): when a kernel update needs one, MOTD
@@ -32,8 +33,14 @@ sudo tee /etc/apt/apt.conf.d/52unattended-upgrades-local >/dev/null <<'EOF'
 Unattended-Upgrade::Remove-Unused-Dependencies "true";
 // Manual reboots: check MOTD or /var/run/reboot-required after kernel updates.
 Unattended-Upgrade::Automatic-Reboot "false";
+// Ubuntu bugfix updates (stock config only takes -security).
+// Docker CE: an upgrade restarts dockerd, so containers restart too.
 // Google Chrome (installed by claude.sh for the playwright MCP).
-Unattended-Upgrade::Origins-Pattern { "origin=Google LLC"; };
+Unattended-Upgrade::Origins-Pattern {
+  "origin=Ubuntu,archive=${distro_codename}-updates";
+  "origin=Docker,label=Docker CE";
+  "origin=Google LLC";
+};
 EOF
 
 # Only offer LTS-to-LTS release upgrades; run `do-release-upgrade` by hand.
