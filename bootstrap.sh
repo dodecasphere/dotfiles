@@ -70,6 +70,8 @@ case "$(uname -s)" in
   Darwin) provision_flag="--mac" ;;
   Linux)  provision_flag="--linux" ;;
 esac
+# A Laravel Forge server (Forge keeps ~/.forge) gets the user-space-only mode.
+[ -d "$HOME/.forge" ] && provision_flag="--forge"
 
 info "Bootstrap complete."
 printf '\nNext, provision the machine when you are ready:\n  cd %s && ./provision.sh %s\n\n' "$DOTFILES_DIR" "$provision_flag"

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #
-# `./provision.sh --mac or --linux`
+# `./provision.sh --mac`, `--linux` or `--forge` (a Laravel Forge server)
 #
 
 clear
@@ -84,6 +84,33 @@ elif [[ "$1" == "--linux" ]]; then
     source provisioning/linux/php.sh
 
     source provisioning/linux/crons.sh
+
+elif [[ "$1" == "--forge" ]]; then
+    # Laravel Forge server: Forge owns apt, PHP, Node, composer, the firewall,
+    # sshd, swap and ~/.ssh, so none of those are touched. User-space only:
+    # brew CLI tools, Claude Code, Codex, crons, zsh.
+    if [ "$(id -u)" -eq 0 ]; then
+        echo "Do not run provisioning as root — run it as the forge user." >&2
+        exit 1
+    fi
+
+    source provisioning/linux/brew.sh
+    source provisioning/shared/helpers.sh
+    source provisioning/forge/formulae.sh
+    chmod -R go-w "$(brew --prefix)/share"
+
+    # Global npm installs go to ~/.local instead of Forge's /usr. Set via env,
+    # not `npm config set`, which would write through the ~/.npmrc symlink
+    # into this repo.
+    export NPM_CONFIG_PREFIX="$HOME/.local"
+    grep -qs 'NPM_CONFIG_PREFIX' "$HOME/.shell.local" || \
+        echo 'export NPM_CONFIG_PREFIX="$HOME/.local"' >> "$HOME/.shell.local"
+
+    SKIP_PLAYWRIGHT=1   # claude.sh: no Playwright MCP, no Chrome
+    source provisioning/shared/claude.sh
+    source provisioning/linux/codex.sh
+
+    source provisioning/forge/crons.sh
 
 fi
 

@@ -19,8 +19,9 @@ fi
 # scope; per-project servers (e.g. a database MCP) live in that project's
 # own .mcp.json — see claude/mcp/README.md.
 #
+# SKIP_PLAYWRIGHT=1 (set by provision.sh --forge) skips the MCP and Chrome.
 claude_bin="$HOME/.local/bin/claude"
-if [ -x "$claude_bin" ]; then
+if [ -x "$claude_bin" ] && [ -z "${SKIP_PLAYWRIGHT:-}" ]; then
   doing "Claude MCP servers..."
   if "$claude_bin" mcp get playwright >/dev/null 2>&1; then
     echo "playwright MCP already registered — skipping"
@@ -34,7 +35,7 @@ fi
 # from apps.sh; on Linux install it here. Guarded because `playwright install
 # chrome` errors when Chrome is already present. --with-deps uses sudo + apt and
 # adds Google's apt repo (updates.sh lets unattended-upgrades patch it).
-if [ "$(uname)" = Linux ] && [ ! -x /opt/google/chrome/chrome ]; then
+if [ "$(uname)" = Linux ] && [ -z "${SKIP_PLAYWRIGHT:-}" ] && [ ! -x /opt/google/chrome/chrome ]; then
   doing "Google Chrome for the playwright MCP..."
   npx -y playwright install --with-deps chrome
 fi
