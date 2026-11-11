@@ -20,8 +20,9 @@ for name in *; do
 
   # ignore *.md and *.sh files, the claude/ subtree (handled separately
   # below — it links individual files into ~/.claude, not the whole dir) and
-  # config/ (linked file-by-file into ~/.config below, not ~/.config itself)
-  if [[ ${name: -3} != ".sh" && ${name: -3} != ".md" && "$name" != "claude" && "$name" != "config" ]]; then
+  # config/ (linked file-by-file into ~/.config below, not ~/.config itself),
+  # and a stray ssh/ (~/.ssh is a real dir; keys link from the secrets repo)
+  if [[ ${name: -3} != ".sh" && ${name: -3} != ".md" && "$name" != "claude" && "$name" != "config" && "$name" != "ssh" ]]; then
     # check if file already exists
     if [ -e "$target" ]; then
       # check if file is a symlink.
