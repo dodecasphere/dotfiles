@@ -11,7 +11,6 @@
 HERDR_MACHINES=(
   "Agent VPS|michael@dulle"
   "Crestlite|forge@178.156.194.174"
-  "Crestlite Legacy|forge@159.65.236.104"
   "Hosted Tools|forge@159.65.225.238"
   "Smart Mirror|forge@159.203.182.250"
   "DulleCo|forge@67.205.154.110"
