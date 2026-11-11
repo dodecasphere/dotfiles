@@ -83,6 +83,19 @@ deferred work) is builder's to run, through its skills and hooks.
   acceptable. Otherwise keep me in the loop and augment my judgment rather than
   replace it.
 
+## Builder with Herdr (baton)
+How I run builder's hand offs when the session is inside Herdr. Builder itself
+stays Herdr agnostic; these are my habits, not plugin rules.
+- **A human typed builder command means baton it.** When a step ends with
+  "type `/builder:<cmd>`" (or the next step needs another model, such as
+  `/builder:plan` on Fable from a non Fable session), baton the command into a
+  new pane on the right model. Don't hand it back, and don't ask "plan now or
+  later" or "relaunch or continue". My asking for panes is the human gate.
+- **A baton child stops at its own gate.** A child running `/builder:plan` still
+  asks the Plan gate question through AskUserQuestion, because I watch the pane.
+  A child running `/builder:execute` stops after its records and disarm, then
+  pings the parent; the parent (not the child) asks "close out now?".
+
 ## Context budget
 Load context to match the task, not by reflex. Don't pull architecture docs,
 full decision records, or whole-module reads for a bug fix.
