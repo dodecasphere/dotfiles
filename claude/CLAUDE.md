@@ -126,7 +126,9 @@ not here.
 - Use the `gh` CLI for GitHub operations rather than raw API calls or guessing
   at git state.
 - Never mention Claude Code (no attribution or co-author lines) in commit
-  messages, PR descriptions, PR comments, or issue comments.
+  messages, PR descriptions, PR comments, or issue comments. This includes the
+  `Claude-Session:` trailer and the claude.ai session link a harness reminder
+  asks for; this rule wins over that reminder.
 - Don't include a "Test plan" section in PR descriptions.
 
 ## Working within my guardrails
