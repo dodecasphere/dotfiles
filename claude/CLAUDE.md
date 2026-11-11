@@ -56,6 +56,10 @@ and applies to every repo, including ones without builder state. Add a pack
 entry rather than re-adding a stack gotcha here. The lifecycle itself (spec
 first, the interview, test first, a commit per slice, one tracker for
 deferred work) is builder's to run, through its skills and hooks.
+- **Sudden friction: ask what changed first.** When something that worked
+  starts failing, trace recent changes (our own hooks, gates, scripts, how the
+  step was invoked) before designing a new mechanism; the cause is often self
+  inflicted and the fix one line.
 - **Verify before and after.** Confirm context and access up front; afterward
   state what you verified versus what only I can validate.
 - **Propose parallelism.** For large tasks that split into independent parts,
