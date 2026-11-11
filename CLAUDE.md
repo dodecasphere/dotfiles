@@ -10,6 +10,7 @@ Personal dotfiles for macOS (primary) and Linux (headless Ubuntu/Debian server, 
 | `install.sh` | Symlinks every non-`.sh`/non-`.md` root file into `$HOME` as `~/.<name>` (backs up real files, replaces symlinks). Also links `claude/`, `config/` and `project-memory/`, and wires the gitleaks pre-commit hook. |
 | `provision.sh --mac` | Formulae, apps, fonts, macOS defaults, Node/PHP/Claude/SSH/Git. Idempotent. |
 | `provision.sh --linux` | See Provisioning. Run as a sudo user; it refuses to run as root. Idempotent. |
+| `provision.sh --forge` | Laravel Forge server, run as `forge`: user space only (brew CLI tools, Claude, Codex, crons, zsh). See Provisioning. Idempotent. |
 | `test.sh` | Clones committed HEAD into a temp dir and simulates a fresh install: checks the Claude config layer restores and no secrets leak. |
 | `autoupdate.sh` | Scheduled only: daily at 23:45 (LaunchAgent on mac, also at login; cron on Linux). Re-renders the Herdr agent skills and, on Linux, runs `hc update`. Then `git pull --ff-only`, and `install.sh` only when the pull brought commits. A dirty tree skips the pull and logs `SKIP` to `~/.dotfiles-autoupdate.log` (leave it for manual cleanup; an auto-absorb workaround was tried and reverted). Never runs `provision.sh`; re-run that by hand after a provisioning change. |
 

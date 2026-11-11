@@ -8,3 +8,9 @@
 #
 
 npm_global "@openai/codex"
+
+# Render the Herdr skills for Codex now. agent-skills.sh skips Codex until
+# ~/.codex exists, and Codex only creates it on first launch, so without this
+# the skills would wait for the nightly autoupdate.
+mkdir -p "$HOME/.codex"
+source provisioning/shared/agent-skills.sh

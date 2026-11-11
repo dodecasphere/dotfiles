@@ -12,7 +12,7 @@
 #
 # Deliberately does NOT run provision.sh — that installs new formulae/casks
 # and can touch macOS defaults, too heavy/risky to run unattended every day.
-# Re-run `./provision.sh --mac` (or `--linux`) by hand when formulae.sh changes.
+# Re-run `./provision.sh --mac` (or `--linux`, `--forge`) by hand when formulae change.
 #
 # Logs every run to LOG_FILE for manual review; no notifications. Prunes
 # entries older than 180 days on every run so the log doesn't grow forever.
