@@ -2,7 +2,7 @@
 
 #
 # Set up Git — verify GitHub SSH auth works. The keys themselves come from the
-# private secrets repo (provisioning/mac/secrets.sh, portable, sourced before
+# private secrets repo (provisioning/shared/secrets.sh, portable, sourced before
 # this). Same flow as provisioning/mac/git.sh minus pbcopy/open: headless box,
 # so the public key is printed to paste from the terminal instead.
 #

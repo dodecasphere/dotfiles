@@ -5,7 +5,7 @@ in this repo's `settings.json`. Portability is handled by scope:
 
 - **User scope** (`-s user`): secret-free, project-agnostic servers, available
   everywhere. These are re-registered on each machine by
-  `provisioning/mac/claude.sh`. Currently: **playwright** (browser automation
+  `provisioning/shared/claude.sh`. Currently: **playwright** (browser automation
   for the Vue/Capacitor UI, via `npx @playwright/mcp@latest`).
 - **Project scope** (`-s project`): servers specific to one app, written to that
   app's `.mcp.json`. This is where a database MCP would belong, since the

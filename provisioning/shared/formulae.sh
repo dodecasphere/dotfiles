@@ -3,7 +3,7 @@
 #
 # Install Brew Formulae — the OS-agnostic core, shared by macOS and Linux.
 # macOS-only formulae live in provisioning/mac/formulae.sh, which sources this.
-# Relies on the `formula` install guard from provisioning/mac/helpers.sh.
+# Relies on the `formula` install guard from provisioning/shared/helpers.sh.
 #
 
 doing "Installing brew applications..."

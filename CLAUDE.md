@@ -15,9 +15,9 @@ Personal dotfiles for macOS (primary) and Linux (headless Ubuntu/Debian server, 
 
 ## Provisioning
 
-`provision.sh --mac` sources `provisioning/mac/` in order. Scheduled jobs on mac are always LaunchAgents (`launchagents.sh` + `launchagents/*.plist`), never cron. `provision.sh --linux` sources `provisioning/linux/` (apt, unattended-upgrades, sshd/ufw/fail2ban hardening, Tailscale, Docker, swap, Homebrew, cron) plus the portable mac scripts `helpers.sh`, `node.sh`, `claude.sh`, `secrets.sh`.
+`provision.sh --mac` sources `provisioning/mac/` in order. Scheduled jobs on mac are always LaunchAgents (`launchagents.sh` + `launchagents/*.plist`), never cron. `provision.sh --linux` sources `provisioning/linux/` (apt, unattended-upgrades, sshd/ufw/fail2ban hardening, Tailscale, Docker, swap, Homebrew, cron) plus the portable `provisioning/shared/` scripts (`helpers.sh`, `formulae.sh`, `node.sh`, `claude.sh`, `secrets.sh`, `agent-skills.sh`). Codex is per-OS: the `codex` cask on mac (the CLI; it owns the brew `codex` link), npm on Linux (`linux/codex.sh`).
 
-Formulae: OS-agnostic ones go in `provisioning/shared/formulae.sh` (sourced by both platforms), macOS-only ones in `provisioning/mac/formulae.sh`, casks in `provisioning/mac/apps.sh`. The install guards (`formula`, `cask`, `mas_install`, `npm_global`, `pecl_install`, `composer_global`, `add_cron`) in `provisioning/mac/helpers.sh` skip anything installed, which is what makes re-running safe; they're also on the interactive shell via `~/.provisioning`.
+Formulae: OS-agnostic ones go in `provisioning/shared/formulae.sh` (sourced by both platforms), macOS-only ones in `provisioning/mac/formulae.sh`, casks in `provisioning/mac/apps.sh`. The install guards (`formula`, `cask`, `mas_install`, `npm_global`, `pecl_install`, `composer_global`, `add_cron`) in `provisioning/shared/helpers.sh` skip anything installed, which is what makes re-running safe; they're also on the interactive shell via `~/.provisioning`.
 
 ## Claude Code config layer (`claude/`)
 
@@ -39,7 +39,7 @@ Formulae: OS-agnostic ones go in `provisioning/shared/formulae.sh` (sourced by b
 
 ## Shell config
 
-Entry points: `zshrc` (with `zprofile`) and `bash_profile` (`bashrc` just sources it). Both load, in order: `colors`, `path`, `exports`, `functions`, every file in `aliases/` (one per topic, picked up automatically), then `~/.dotfiles-secrets/secrets.env` from a separate private repo (cloned by `provisioning/mac/secrets.sh`). The prompt is shell-specific: bash sources `bash_prompt` right after `path`, zsh sources `zsh_prompt` after the secrets. Machine-local overrides go in untracked `~/.shell.local`, sourced last by both.
+Entry points: `zshrc` (with `zprofile`) and `bash_profile` (`bashrc` just sources it). Both load, in order: `colors`, `path`, `exports`, `functions`, every file in `aliases/` (one per topic, picked up automatically), then `~/.dotfiles-secrets/secrets.env` from a separate private repo (cloned by `provisioning/shared/secrets.sh`). The prompt is shell-specific: bash sources `bash_prompt` right after `path`, zsh sources `zsh_prompt` after the secrets. Machine-local overrides go in untracked `~/.shell.local`, sourced last by both.
 
 ## Herdr
 

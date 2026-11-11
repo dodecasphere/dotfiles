@@ -3,7 +3,7 @@
 #
 # Create cron jobs
 #
-# `add_cron` comes from provisioning/mac/helpers.sh (sourced earlier on the
+# `add_cron` comes from provisioning/shared/helpers.sh (sourced earlier on the
 # Linux path too) and only appends an entry when that exact line isn't already
 # in the crontab, so re-running provisioning doesn't pile up duplicate jobs.
 #

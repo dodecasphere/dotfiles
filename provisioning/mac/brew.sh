@@ -5,7 +5,7 @@
 # Maybe move all of this to brew bundle? https://github.com/driesvints/dotfiles/blob/master/Brewfile
 #
 # The `formula` / `cask` install guards (and other helpers) now live in
-# provisioning/mac/helpers.sh, sourced at the top of provision.sh.
+# provisioning/shared/helpers.sh, sourced at the top of provision.sh.
 #
 
 doing "Installing Brew..."

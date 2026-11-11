@@ -15,7 +15,7 @@ while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
 if [[ "$1" == "--mac" ]]; then
     # Install guards (formula/cask/mas_install/... skip anything already installed)
-    source provisioning/mac/helpers.sh
+    source provisioning/shared/helpers.sh
 
     source provisioning/mac/terminal.sh
     source provisioning/mac/xcode.sh
@@ -32,9 +32,9 @@ if [[ "$1" == "--mac" ]]; then
 
     source provisioning/mac/macos.sh
 
-    source provisioning/mac/node.sh
-    source provisioning/mac/claude.sh
-    source provisioning/mac/secrets.sh
+    source provisioning/shared/node.sh
+    source provisioning/shared/claude.sh
+    source provisioning/shared/secrets.sh
     source provisioning/mac/ssh.sh
     source provisioning/mac/herdr.sh
     source provisioning/mac/git.sh
@@ -65,7 +65,7 @@ elif [[ "$1" == "--linux" ]]; then
 
     # Install guards — portable; the mac-only ones (cask/mas_install) are
     # defined but simply never called on this path.
-    source provisioning/mac/helpers.sh
+    source provisioning/shared/helpers.sh
 
     source provisioning/shared/formulae.sh
 
@@ -76,10 +76,10 @@ elif [[ "$1" == "--linux" ]]; then
     # Fix zsh compinit "insecure directories" warning — same brew quirk as macOS.
     chmod -R go-w "$(brew --prefix)/share"
 
-    source provisioning/mac/node.sh
-    source provisioning/mac/claude.sh
+    source provisioning/shared/node.sh
+    source provisioning/shared/claude.sh
     source provisioning/linux/codex.sh
-    source provisioning/mac/secrets.sh
+    source provisioning/shared/secrets.sh
     source provisioning/linux/git.sh
     source provisioning/linux/php.sh
 
