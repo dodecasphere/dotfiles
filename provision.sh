@@ -23,6 +23,7 @@ if [[ "$1" == "--mac" ]]; then
     source provisioning/mac/brew.sh
     source provisioning/mac/formulae.sh
     source provisioning/mac/apps.sh
+    source provisioning/shared/agent-skills.sh  # again: herdr-app cask lands in apps.sh, after formulae.sh rendered
     source provisioning/mac/fonts.sh
     source provisioning/mac/app-store-apps.sh
 
