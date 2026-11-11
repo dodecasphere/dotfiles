@@ -348,6 +348,12 @@ sudo pmset -b sleep 5
 doing "Setting never go into computer sleep mode ..."
 sudo systemsetup -setcomputersleep Off > /dev/null
 
+# Remote Login (SSH), so other machines can add this one as a Herdr machine.
+# Recent macOS refuses this unless the terminal has Full Disk Access.
+doing "Enabling Remote Login (SSH) ..."
+sudo systemsetup -setremotelogin on \
+  || echo "Could not enable Remote Login: grant the terminal Full Disk Access, or System Settings › General › Sharing › Remote Login"
+
 ###############################################################################
 # Dock                                                                        #
 ###############################################################################

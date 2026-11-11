@@ -13,7 +13,16 @@ HERDR_MACHINES=(
   "Crestlite|forge@178.156.194.174"
   "Smart Mirror|forge@159.203.182.250"
   "DulleCo|forge@67.205.154.110"
+  "Home MacBook Air M1|michaeldulle@home-macbook-air-m1"
+  "Foresight MacBook Pro M5|mikedulle@fsw-fvjhnh2lph"
 )
+
+# Drop this machine's own entry, so provisioning a listed Mac doesn't add
+# itself as a remote. Matches a target host equal to the short hostname.
+herdr_self="$(hostname -s | tr 'A-Z' 'a-z')"
+for i in "${!HERDR_MACHINES[@]}"; do
+  [[ "${HERDR_MACHINES[$i]##*@}" == "$herdr_self" ]] && unset 'HERDR_MACHINES[i]'
+done
 
 if ! command -v herdr &>/dev/null; then
   echo "herdr not installed — skipping saved machines"

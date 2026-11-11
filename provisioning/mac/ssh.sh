@@ -6,6 +6,14 @@
 
 mkdir -p ~/.ssh
 
+# Accept the shared id_rsa key (from the secrets repo), so the other Macs can
+# SSH in as Herdr machines. Remote Login itself is turned on in macos.sh.
+if [ -f ~/.ssh/id_rsa.pub ] && ! grep -qF "$(cat ~/.ssh/id_rsa.pub)" ~/.ssh/authorized_keys 2>/dev/null; then
+  doing "Authorizing ~/.ssh/id_rsa.pub for SSH logins..."
+  cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+  chmod 600 ~/.ssh/authorized_keys
+fi
+
 doing "Listing ~/.ssh directory contents..."
 ls -al ~/.ssh
 
