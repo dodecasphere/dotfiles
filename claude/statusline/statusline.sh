@@ -108,6 +108,8 @@ else
 fi
 
 input=$(cat)
+# Feed the crabby desk display (usage + session info). Backgrounded and throttled inside; never slows the statusline.
+printf '%s' "$input" | bash "$HOME/.claude/hooks/crabby.sh" status >/dev/null 2>&1 &
 current_dir_path=$(echo "$input" | grep -o '"current_dir":"[^"]*"' | head -1 | sed 's/"current_dir":"//;s/"$//')
 current_dir=$(basename "$current_dir_path")
 model=$(echo "$input" | grep -o '"display_name":"[^"]*"' | head -1 | sed 's/"display_name":"//;s/"$//')

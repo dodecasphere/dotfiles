@@ -4,6 +4,7 @@
 # Install Brew Formulae — macOS-only ones, then the shared core list.
 #
 
+formula "arduino-cli"             # compile/flash microcontrollers (ESP32 boards) from the CLI
 formula "bluetoothconnector"      # connect/disconnect Bluetooth devices from the CLI
 formula "mas"                     # Mac App Store CLI (used by apps.sh)
 formula "svn"                     # Subversion (needed by some font casks)

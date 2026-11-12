@@ -28,7 +28,7 @@ Formulae: OS-agnostic ones go in `provisioning/shared/formulae.sh` (sourced by b
 
 - Skills, commands, agents and the guardrail hooks live in plugins, not here: the private store `dodecasphere/personal-skills` (installs into Claude Code and Codex) and the builder plugin. `claude/agents/` stays empty so its link resolves.
 - `~/.claude/skills` is deliberately not linked: it's a real machine-local dir where the Herdr skills render. Put machine-local skills there directly.
-- Hooks kept here (builder doesn't replace them): auto-format, context-recovery, settings-drift-check, herdr-agent-state, standing-behaviors. They're Claude Code only; Codex has no equivalent hook carrier.
+- Hooks kept here (builder doesn't replace them): auto-format, context-recovery, settings-drift-check, herdr-agent-state, standing-behaviors, crabby (feeds the ESP32 desk display in `~/Projects/desk-gadgets`; also called from the statusline for usage). They're Claude Code only; Codex has no equivalent hook carrier.
 - `settings.json` declares the marketplaces and enabled plugins, so a fresh machine needs no manual plugin install. Codex config (`~/.codex/config.toml`) is unmanaged and needs the store's `INSTALL.md` steps by hand.
 - `project-memory/` holds this repo's Claude project memories (linked into `~/.claude/projects/<repo path, non-alphanumerics as dashes>/memory`); global memories are in `claude/memory/`.
 
