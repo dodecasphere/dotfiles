@@ -28,7 +28,10 @@ if [[ "${1:-}" == status ]]; then
     exit 0
   fi
   printf '%s' "$form" > "$cache"
-  send status "$form&now=$now"
+  # Org name of the logged-in account, so the board can say whose usage it shows. Read only when
+  # sending: .claude.json is large and the statusline runs every second.
+  acct=$(jq -r '.oauthAccount.organizationName // "" | @uri' "${CLAUDE_CONFIG_DIR:-$HOME}/.claude.json" 2>/dev/null)
+  send status "$form&now=$now&acct=$acct"
   exit 0
 fi
 
