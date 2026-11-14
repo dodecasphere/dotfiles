@@ -2,16 +2,16 @@
 # Mirror Claude Code state onto "crabby", the ESP32 desk display
 # (firmware in ~/Projects/desk-gadgets/devices/crabby). Fire and forget: returns immediately and
 # never blocks or fails Claude, even when the board is off or out of range.
-# Override the target with CRABBY_HOST (default crabby.local).
+# Override the targets with CRABBY_HOST, space separated (default: crabby.local and crabby-cyd.local).
 #
 #   crabby.sh          hook mode: stdin is a hook payload  -> POST /event
 #   crabby.sh status   statusline mode: stdin is the statusline payload -> POST /status
 #                            (only when it changed, or every 10s, since the statusline runs every second)
 
-host="http://${CRABBY_HOST:-crabby.local}"
+hosts="${CRABBY_HOST:-crabby.local crabby-cyd.local}"
 send() {
   # -4: macOS stalls ~5s on the AAAA lookup for .local names the board doesn't answer.
-  curl -4 -s --max-time 2 -d "$2" "$host/$1" >/dev/null 2>&1 &
+  for h in $hosts; do curl -4 -s --max-time 2 -d "$2" "http://$h/$1" >/dev/null 2>&1 & done
 }
 
 if [[ "${1:-}" == status ]]; then
