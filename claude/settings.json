@@ -194,7 +194,8 @@
     "my@personal-skills": true,
     "typesafe@typesafe-ai": true,
     "ponytail@ponytail": true,
-    "builder@builder": true
+    "builder@builder": true,
+    "clangd-lsp@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "personal-skills": {
