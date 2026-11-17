@@ -225,7 +225,7 @@ function keys () {
 # Clone every repo of a GitHub user or org into the current directory.
 # Pick the gh account used to list repos (so private ones show up), the owner,
 # and the ~/.ssh/config Host alias to clone through (so the right key is used).
-# Repos that already exist here are skipped.
+# Repos that already exist here are skipped, or fast-forward pulled if you choose.
 function clone-all() {
     command -v gh >/dev/null && command -v fzf >/dev/null || { echo "clone-all needs gh and fzf" >&2; return 1; }
 
@@ -265,9 +265,10 @@ function clone-all() {
         [ "$(ask_yes_or_no "Continue anyway")" = yes ] || return 1
     fi
 
-    local archived=false forks=false
+    local archived=false forks=false pull=false
     [ "$(ask_yes_or_no "Include archived repos")" = yes ] && archived=true
     [ "$(ask_yes_or_no "Include forks")" = yes ] && forks=true
+    [ "$(ask_yes_or_no "Pull existing repos")" = yes ] && pull=true
 
     local repos count
     repos=$(GH_TOKEN=$token gh repo list "$owner" --limit 1000 --json name,isArchived,isFork \
@@ -276,13 +277,22 @@ function clone-all() {
     count=$(printf '%s\n' "$repos" | wc -l | tr -d ' ')
     [ "$(ask_yes_or_no "Clone $count repos from $owner via git@$host into $PWD")" = yes ] || return 1
 
-    local name cloned=0 skipped=0 failed=0
+    local name cloned=0 pulled=0 skipped=0 failed=0
     while IFS= read -r name; do
-        if [ -e "$name" ]; then skipped=$((skipped + 1)); continue; fi
         # </dev/null so ssh can't swallow the rest of the repo list from stdin.
+        if [ -e "$name" ]; then
+            if $pull && [ -d "$name/.git" ]; then
+                echo "== $name"
+                # --ff-only: a diverged branch fails loudly instead of creating a merge commit.
+                if git -C "$name" pull --ff-only </dev/null; then pulled=$((pulled + 1)); else failed=$((failed + 1)); fi
+            else
+                skipped=$((skipped + 1))
+            fi
+            continue
+        fi
         if git clone "git@$host:$owner/$name.git" </dev/null; then cloned=$((cloned + 1)); else failed=$((failed + 1)); fi
     done <<< "$repos"
-    echo "Cloned $cloned, skipped $skipped existing, failed $failed."
+    echo "Cloned $cloned, pulled $pulled, skipped $skipped, failed $failed."
 }
 
 # Git status across every repo under ~ (depth 2). Linux/VPS only: the Mac uses GitHub Desktop.
